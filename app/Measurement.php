@@ -32,9 +32,9 @@ class Measurement extends Model
      * Returns the latest inserted record of a Measurement filtered by station name
      *
      * @param string $name
-     * @return Measurement
+     * @return Measurement | null
      */
-    public static function getLastMeasurementByStationName(string $name): Measurement
+    public static function getLastMeasurementByStationName(string $name): ?Measurement
     {
         return Measurement::where('station', $name)->orderBy('created_at', 'desc')->first();
     }
