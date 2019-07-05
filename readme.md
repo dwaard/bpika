@@ -18,3 +18,7 @@ Once installed, send an empty GET request to `/api/ping`. It should return:
     "message": "Hello wold!"
 }
 ```
+
+## Documentation
+
+[Sensor API](https://www.meteobridge.com/wiki/index.php/Templates)
