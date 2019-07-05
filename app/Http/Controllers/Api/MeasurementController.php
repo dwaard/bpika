@@ -40,6 +40,11 @@ class MeasurementController extends Controller
     private function requestCameBeforeTimeout(array $validated): bool
     {
         $lastMeasurement = Measurement::getLastMeasurementByStationName($validated['station'])->created_at;
+
+        if (!$lastMeasurement) {
+            return false; // allow always if station does not have any measurements at all
+        }
+
         $requestTimeout = Carbon::now()->addMinutes(env('REQUEST_TIMEOUT_IN_MINUTES'));
 
         if ($lastMeasurement < $requestTimeout) {
