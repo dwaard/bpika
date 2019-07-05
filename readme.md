@@ -8,3 +8,13 @@ $ cp .env.example .env
 $ composer install
 $ php artisan migrate
 ```
+
+## Testing
+
+Once installed, send an empty GET request to `/api/ping`. It should return:
+
+```json
+{
+    "message": "Hello wold!"
+}
+```
