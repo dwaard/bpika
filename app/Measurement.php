@@ -12,7 +12,7 @@ class Measurement extends Model
      * @var array
      */
     protected $fillable = [
-        'station'
+        'station', 'th0temp'
     ];
 
     /**
