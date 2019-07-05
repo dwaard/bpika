@@ -17,3 +17,4 @@ $router->get('/', function () use ($router) {
 
 $router->get('api/ping', 'Api\PingController@handle');
 
+$router->get('api/store', 'Api\MeasurementController@store');
