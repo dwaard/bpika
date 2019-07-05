@@ -23,7 +23,8 @@ class Measurement extends Model
     public static function rules(): array
     {
         return [
-            'station' => 'required|string|max:255'
+            'station' => 'required|string|max:255',
+            'th0temp' => 'numeric|min:-50|max:75'
         ];
     }
 

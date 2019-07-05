@@ -17,7 +17,7 @@ class CreateMeasurementsTable extends Migration
             $table->bigIncrements('id');
 
             $table->string('station');
-
+            $table->float('th0temp')->nullable();
             $table->timestamps();
         });
 
