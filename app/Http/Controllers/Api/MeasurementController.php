@@ -24,7 +24,11 @@ class MeasurementController extends Controller
         $validated = $this->validate($request, Measurement::rules());
 
         if ($this->requestCameBeforeTimeout($validated)) {
-            return new Response(['error' => 'Already added measurement less than 10 minutes ago.'],Response::HTTP_PRECONDITION_FAILED);
+
+            $msg = 'Already added measurement less than '.env('REQUEST_TIMEOUT_IN_MINUTES').' minutes ago.';
+
+            return new Response(['error' => $msg],Response::HTTP_PRECONDITION_FAILED);
+
         }
 
         $measurement = Measurement::create($validated);
@@ -45,9 +49,8 @@ class MeasurementController extends Controller
             return false; // allow always if station does not have any measurements at all
         }
 
-        $requestTimeout = Carbon::now()->addMinutes(env('REQUEST_TIMEOUT_IN_MINUTES'));
-
-        if ($lastMeasurement->created_at < $requestTimeout) {
+        $requestTimeout = $lastMeasurement->created_at->addMinutes(env('REQUEST_TIMEOUT_IN_MINUTES'));
+        if (Carbon::now() < $requestTimeout) {
             return true;
         }
 
