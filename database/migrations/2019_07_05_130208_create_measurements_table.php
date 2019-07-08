@@ -20,6 +20,14 @@ class CreateMeasurementsTable extends Migration
             $table->float('th_temp')->nullable();
             $table->float('th_hum')->nullable();
             $table->float('th_dew')->nullable();
+            $table->float('th_heatindex')->nullable();
+            $table->float('thb_temp')->nullable();
+            $table->float('thb_hum')->nullable();
+            $table->float('thb_dew')->nullable();
+            $table->float('thb_press')->nullable();
+            $table->float('thb_seapress')->nullable();
+            $table->float('wind_wind')->nullable();
+
             $table->timestamps();
         });
 

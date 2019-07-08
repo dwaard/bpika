@@ -44,3 +44,10 @@ Success: ```measurement.created```
 - th_temp
 - th_hum
 - th_dew
+- th_heatindex
+- thb_temp
+- thb_hum
+- thb_dew
+- thb_press
+- thb_seapress
+- wind_wind

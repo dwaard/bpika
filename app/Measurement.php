@@ -12,7 +12,8 @@ class Measurement extends Model
      * @var array
      */
     protected $fillable = [
-        'station_name', 'th_temp', 'th_hum', 'th_dew'
+        'station_name', 'th_temp', 'th_hum', 'th_dew', 'th_heatindex', 'thb_temp', 'thb_hum', 'thb_dew',
+        'thb_press', 'thb_seapress', 'wind_wind'
     ];
 
     /**
@@ -26,7 +27,14 @@ class Measurement extends Model
             'station_name' => 'required|exists:stations,name',
             'th_temp' => 'numeric|min:-50|max:75',
             'th_hum' => 'numeric|min:0|max:100',
-            'th_dew' => 'numeric|min:-50|max:75'
+            'th_dew' => 'numeric|min:-50|max:75',
+            'th_heatindex' => 'numeric|min:-50|max:75',
+            'thb_temp' => 'numeric|min:-50|max:75',
+            'thb_hum' => 'numeric|min:0|max:100',
+            'thb_dew' => 'numeric|min:-50|max:75',
+            'thb_press' => 'numeric|min:700|max:1200',
+            'thb_seapress' => 'numeric|min:700|max:1200',
+            'wind_wind' => 'numeric|min:0|max:120',
         ];
     }
 

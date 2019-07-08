@@ -9,8 +9,10 @@ class StationsTableSeeder extends Seeder
      * @var array List of the station names that will be seeded
      */
     protected $names = [
-        'Middelburg.Zuid',
-        'Vlissingen.Spuistraat'
+        'HZ1', 'HZ2', 'HZ3', 'HZ4',
+        'HSR1', 'HSR2',
+        'VHL1', 'VHL2',
+        'HHG1', 'HHG2'
     ];
 
     /**
