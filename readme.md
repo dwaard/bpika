@@ -43,3 +43,4 @@ Success: ```measurement.created```
 - station_name: NOT A TEMPLATE PARAMETER. Should be filled in manually
 - th_temp
 - th_hum
+- th_dew

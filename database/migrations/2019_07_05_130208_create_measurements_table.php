@@ -19,6 +19,7 @@ class CreateMeasurementsTable extends Migration
             $table->string('station_name');
             $table->float('th_temp')->nullable();
             $table->float('th_hum')->nullable();
+            $table->float('th_dew')->nullable();
             $table->timestamps();
         });
 

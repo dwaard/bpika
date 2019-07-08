@@ -12,7 +12,7 @@ class Measurement extends Model
      * @var array
      */
     protected $fillable = [
-        'station_name', 'th_temp', 'th_hum'
+        'station_name', 'th_temp', 'th_hum', 'th_dew'
     ];
 
     /**
@@ -25,7 +25,8 @@ class Measurement extends Model
         return [
             'station_name' => 'required|exists:stations,name',
             'th_temp' => 'numeric|min:-50|max:75',
-            'th_hum' => 'numeric|min:0|max:100'
+            'th_hum' => 'numeric|min:0|max:100',
+            'th_dew' => 'numeric|min:-50|max:75'
         ];
     }
 
