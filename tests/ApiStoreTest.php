@@ -79,7 +79,7 @@ class ApiStoreTest extends TestCase
         $response = $this->get('/api/store?station_name=Bonaire.jibe_city');
 
         $response->assertResponseStatus(412);
-        $response->seeJson(['error' => "Already added measurement less than 1 minutes ago."]);
+        $response->seeJson(['error' => "Already added measurement less than 55 seconds ago."]);
 
 
     }
