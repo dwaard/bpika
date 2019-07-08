@@ -51,3 +51,11 @@ Success: ```measurement.created```
 - thb_press
 - thb_seapress
 - wind_wind
+- wind_avgwind
+- wind_chill
+- rain_rate
+- rain_total
+- uv_index
+- sol_rad
+- sol_evo
+- sun_total

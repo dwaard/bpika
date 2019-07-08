@@ -32,6 +32,14 @@ class ApiStoreTest extends TestCase
             'thb_press' => 998,
             'thb_seapress' => 1002,
             'wind_wind' => 6.4,
+            'wind_avgwind' => 4.4,
+            'wind_chill' => 15.4,
+            'rain_rate' => 0.1,
+            'rain_total' => 76.3,
+            'uv_index' => 11.1,
+            'sol_rad' => 22.2,
+            'sol_evo' => 2.2,
+            'sun_total' => 4.4,
         ];
 
         $uri = '/api/store?' . http_build_query($data, '', '&');
