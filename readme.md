@@ -53,6 +53,7 @@ Success: ```measurement.created```
 - wind_wind
 - wind_avgwind
 - wind_chill
+- wind_dir
 - rain_rate
 - rain_total
 - uv_index
