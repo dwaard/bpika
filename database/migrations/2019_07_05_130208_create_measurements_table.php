@@ -15,6 +15,7 @@ class CreateMeasurementsTable extends Migration
     {
         Schema::create('measurements', function (Blueprint $table) {
             $table->bigIncrements('id');
+            $table->timestamps();
 
             $table->string('station_name');
             $table->float('th_temp')->nullable();
@@ -28,6 +29,7 @@ class CreateMeasurementsTable extends Migration
             $table->float('thb_seapress')->nullable();
             $table->float('wind_wind')->nullable();
             $table->float('wind_avgwind')->nullable();
+            $table->float('wind_dir')->nullable();
             $table->float('wind_chill')->nullable();
             $table->float('rain_rate')->nullable();
             $table->float('rain_total')->nullable();
@@ -35,8 +37,6 @@ class CreateMeasurementsTable extends Migration
             $table->float('sol_rad')->nullable();
             $table->float('sol_evo')->nullable();
             $table->float('sun_total')->nullable();
-
-            $table->timestamps();
         });
 
     }

@@ -33,6 +33,7 @@ class ApiStoreTest extends TestCase
             'thb_seapress' => 1002,
             'wind_wind' => 6.4,
             'wind_avgwind' => 4.4,
+            'wind_dir' => 127,
             'wind_chill' => 15.4,
             'rain_rate' => 0.1,
             'rain_total' => 76.3,
