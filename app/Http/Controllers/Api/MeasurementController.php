@@ -33,7 +33,7 @@ class MeasurementController extends Controller
 
         $measurement = Measurement::create($validated);
 
-        return json_encode(['message' => 'Measurement created with id ' . $measurement->id]);
+        return json_encode(['measurement.created' => 'Measurement created with id ' . $measurement->id]);
 
     }
 
@@ -43,7 +43,7 @@ class MeasurementController extends Controller
      */
     private function requestCameBeforeTimeout(array $validated): bool
     {
-        $lastMeasurement = Measurement::getLastMeasurementByStationName($validated['station']);
+        $lastMeasurement = Measurement::getLastMeasurementByStationName($validated['station_name']);
 
         if (!$lastMeasurement) {
             return false; // allow always if station does not have any measurements at all

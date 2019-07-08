@@ -12,7 +12,7 @@ class Measurement extends Model
      * @var array
      */
     protected $fillable = [
-        'station', 'th0temp'
+        'station_name', 'th_temp', 'th_hum'
     ];
 
     /**
@@ -23,8 +23,9 @@ class Measurement extends Model
     public static function rules(): array
     {
         return [
-            'station' => 'required|string|max:255',
-            'th0temp' => 'numeric|min:-50|max:75'
+            'station_name' => 'required|exists:stations,name',
+            'th_temp' => 'numeric|min:-50|max:75',
+            'th_hum' => 'numeric|min:0|max:100'
         ];
     }
 
@@ -36,6 +37,6 @@ class Measurement extends Model
      */
     public static function getLastMeasurementByStationName(string $name): ?Measurement
     {
-        return Measurement::where('station', $name)->orderBy('created_at', 'desc')->first();
+        return Measurement::where('station_name', $name)->orderBy('created_at', 'desc')->first();
     }
 }

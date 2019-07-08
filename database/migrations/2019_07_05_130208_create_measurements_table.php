@@ -16,8 +16,9 @@ class CreateMeasurementsTable extends Migration
         Schema::create('measurements', function (Blueprint $table) {
             $table->bigIncrements('id');
 
-            $table->string('station');
-            $table->float('th0temp')->nullable();
+            $table->string('station_name');
+            $table->float('th_temp')->nullable();
+            $table->float('th_hum')->nullable();
             $table->timestamps();
         });
 
