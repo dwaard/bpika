@@ -39,7 +39,7 @@ class Measurement extends Model
             'wind_avgwind' => 'numeric|min:0|max:120',
             'wind_dir' => 'numeric|min:0|max:360',
             'wind_chill' => 'numeric|min:-50|max:75',
-            'rain_rate' => 'numeric|min:0|max:200',
+            'rain_rate' => 'numeric|min:0|max:1000',
             'rain_total' => 'numeric|min:0|max:2000',
             'uv_index' => 'numeric|min:0|max:800',
             'sol_rad' => 'numeric|min:0|max:1500',
