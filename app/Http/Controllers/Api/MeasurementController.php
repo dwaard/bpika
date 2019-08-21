@@ -31,11 +31,28 @@ class MeasurementController extends Controller
 
         }
 
-        $measurement = Measurement::create($validated);
+        $evaluated = $this->evaluateInput($validated);
+
+        $measurement = Measurement::create($evaluated);
 
         return json_encode(['measurement.created' => 'Measurement created with id ' . $measurement->id]);
 
     }
+
+    /**
+     * Evaluates the input-collection and removes any invalid values.
+     *
+     * @param $input array
+     * @return array filtered array where all invalid values are removed
+     */
+    public function evaluateInput(array $input) : array
+    {
+        return collect($input)->filter(function($value, $key) {
+
+            return $key == 'station_name' || is_numeric($value);
+        })->toArray();
+    }
+
 
     /**
      * @param array $validated
