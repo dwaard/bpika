@@ -94,9 +94,9 @@ class ApiStoreTest extends TestCase
 
     public function testInvalidNameShouldReturn()
     {
-        $this->get('/api/store');
+        $response = $this->call('GET', '/api/store');
 
-        $this->assertResponseStatus(422);
+        $this->assertEquals(422, $response->status());
 
     }
 
@@ -115,16 +115,14 @@ class ApiStoreTest extends TestCase
 
     public function testTimeoutShouldReturn412()
     {
-        $this->get('/api/store?station_name=Bonaire.jibe_city');
+        $this->call('GET', '/api/store?station_name=Bonaire.jibe_city');
 
         $this->assertResponseOk();
 
-        $response = $this->get('/api/store?station_name=Bonaire.jibe_city');
+        $response = $this->call('GET', '/api/store?station_name=Bonaire.jibe_city');
 
-        $response->assertResponseStatus(412);
-        $response->seeJson(['error' => "Already added measurement less than 55 seconds ago."]);
-
-
+        $this->assertEquals(412, $response->status());
+        $this->seeJson(['error' => "Already added measurement less than 55 seconds ago."]);
     }
 
 }
