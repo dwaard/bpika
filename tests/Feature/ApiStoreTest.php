@@ -1,18 +1,19 @@
 <?php
 
-use Laravel\Lumen\Testing\DatabaseMigrations;
-use Laravel\Lumen\Testing\DatabaseTransactions;
+namespace Tests\Feature;
+
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\TestCase;
 use App\Station;
 
 class ApiStoreTest extends TestCase
 {
-    use DatabaseMigrations, DatabaseTransactions;
 
     protected function setUp(): void
     {
         parent::setUp();
         // Set up dummy weather station
-        Station::create([
+        $station = factory(Station::class)->make([
             'name' => "Bonaire.jibe_city"
         ]);
     }
@@ -45,11 +46,11 @@ class ApiStoreTest extends TestCase
 
         $uri = '/api/store?' . http_build_query($data, '', '&');
 
-        $this->get($uri);
+        $response = $this->get($uri);
 
-        $this->assertResponseOk();
+        $response->assertOk();
 
-        $this->seeInDatabase('measurements', $data);
+        $this->assertDatabaseHas('measurements', $data);
     }
 
 
@@ -80,14 +81,14 @@ class ApiStoreTest extends TestCase
 
         $uri = '/api/store?' . http_build_query($data, '', '&');
 
-        $this->get($uri);
+        $response = $this->get($uri);
 
-        $this->assertResponseOk();
+        $response->assertOk();
 
         // because of the invalid parameter, this value should be null
         $data['th_temp'] = null;
 
-        $this->seeInDatabase('measurements', $data);
+        $this->assertDatabaseHas('measurements', $data);
 
     }
 
@@ -103,11 +104,11 @@ class ApiStoreTest extends TestCase
 
     public function testSimpleStoreShouldAddtoDatabase()
     {
-        $this->get('/api/store?station_name=Bonaire.jibe_city');
+        $response = $this->get('/api/store?station_name=Bonaire.jibe_city');
 
-        $this->assertResponseOk();
+        $response->assertOk();
 
-        $this->seeInDatabase('measurements', [
+        $this->assertDatabaseHas('measurements', [
             'station_name' => 'Bonaire.jibe_city'
         ]);
     }
@@ -115,14 +116,16 @@ class ApiStoreTest extends TestCase
 
     public function testTimeoutShouldReturn412()
     {
-        $this->call('GET', '/api/store?station_name=Bonaire.jibe_city');
+        $response = $this->call('GET', '/api/store?station_name=Bonaire.jibe_city');
 
-        $this->assertResponseOk();
+        $response->assertOk();
 
         $response = $this->call('GET', '/api/store?station_name=Bonaire.jibe_city');
 
         $this->assertEquals(412, $response->status());
-        $this->seeJson(['error' => "Already added measurement less than 55 seconds ago."]);
+        $response->assertJson([
+            'error' => "Already added measurement less than 55 seconds ago."
+        ]);
     }
 
 }

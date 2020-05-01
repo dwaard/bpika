@@ -16,13 +16,8 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
-//$router->get('/', function () use ($router) {
-//    return $router->app->version();
-//});
 
 
 Route::get('api/ping', 'Api\PingController@handle');
-//$router->get('api/ping', 'Api\PingController@handle');
 
 Route::get('api/store', 'Api\MeasurementController@store');
-//$router->get('api/store', 'Api\MeasurementController@store');
