@@ -1,28 +1,29 @@
 <?php
 
-namespace App;
+namespace App\Http\Requests;
 
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\Exceptions\HttpResponseException;
 
-class Measurement extends Model
+class StoreMeasurementRequest extends FormRequest
 {
     /**
-     * The attributes that are mass assignable.
+     * Determine if the user is authorized to make this request.
      *
-     * @var array
+     * @return bool
      */
-    protected $fillable = [
-        'station_name', 'th_temp', 'th_hum', 'th_dew', 'th_heatindex', 'thb_temp', 'thb_hum', 'thb_dew',
-        'thb_press', 'thb_seapress', 'wind_wind', 'wind_avgwind', 'wind_dir', 'wind_chill',
-        'rain_rate', 'rain_total', 'uv_index', 'sol_rad', 'sol_evo', 'sun_total'
-    ];
+    public function authorize()
+    {
+        return true;
+    }
 
     /**
-     * Return validation rules for the resource
+     * Get the validation rules that apply to the request.
      *
      * @return array
      */
-    public static function rules(): array
+    public function rules()
     {
         return [
             'station_name' => 'required|exists:stations,name',
@@ -48,14 +49,8 @@ class Measurement extends Model
         ];
     }
 
-    /**
-     * Returns the latest inserted record of a Measurement filtered by station name
-     *
-     * @param string $name
-     * @return Measurement | null
-     */
-    public static function getLastMeasurementByStationName(string $name): ?Measurement
+    protected function failedValidation(Validator $validator)
     {
-        return Measurement::where('station_name', $name)->orderBy('created_at', 'desc')->first();
+        throw new HttpResponseException(response()->json($validator->errors(), 422));
     }
 }

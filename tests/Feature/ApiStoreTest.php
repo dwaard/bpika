@@ -8,12 +8,15 @@ use App\Station;
 
 class ApiStoreTest extends TestCase
 {
+    use RefreshDatabase;
+
+    protected $station;
 
     protected function setUp(): void
     {
         parent::setUp();
         // Set up dummy weather station
-        $station = factory(Station::class)->make([
+        $this->station = factory(Station::class)->create([
             'name' => "Bonaire.jibe_city"
         ]);
     }

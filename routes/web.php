@@ -18,6 +18,3 @@ Route::get('/', function () {
 });
 
 
-Route::get('api/ping', 'Api\PingController@handle');
-
-Route::get('api/store', 'Api\MeasurementController@store');
