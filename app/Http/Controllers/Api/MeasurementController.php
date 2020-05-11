@@ -2,7 +2,8 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Controller;
+use App\Http\Requests\StoreMeasurementRequest;
+use Illuminate\Routing\Controller;
 use App\Measurement;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -15,13 +16,14 @@ class MeasurementController extends Controller
      *
      * Returns a JSON message with outcome of validation.
      *
-     * @param Request $request
+     * @param StoreMeasurementRequest $request
      * @return false|Response|string
      * @throws \Illuminate\Validation\ValidationException
      */
-    public function store(Request $request)
+    public function store(StoreMeasurementRequest $request)
     {
-        $validated = $this->validate($request, Measurement::rules());
+
+        $validated = $request->validated();
 
         if ($this->requestCameBeforeTimeout($validated)) {
 
