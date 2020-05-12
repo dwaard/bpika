@@ -2,15 +2,15 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Controller;
+use Illuminate\Routing\Controller;
 use Carbon\Carbon;
-use Illuminate\Http\Request;
 
 class PingController extends Controller
 {
     public function handle()
     {
         $dt = Carbon::now()->format('Y-m-d H:i:s');
-        return json_encode(['message' => 'You sent us a request at ' . $dt]);
+        return response(json_encode(['message' => 'You sent us a request at ' . $dt]))
+            ->header('Content-type', 'application/json');
     }
 }
