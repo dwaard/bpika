@@ -32,4 +32,5 @@ jobs:
       env:
         DB_CONNECTION: sqlite
         DB_DATABASE: database/database.sqlite
+        REQUEST_TIMEOUT_IN_SECONDS: 55
       run: vendor/bin/phpunit
