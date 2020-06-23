@@ -1031,11 +1031,11 @@ class PETService {
             otherwise return null.
             This may change in the future.
         */
-        if ($createdDateTime == null or
-            $airTemperature == null or
-            $solarRadiation == null or
-            $humidity == null or
-            $windSpeed == null) {
+        if ($createdDateTime === null or
+            $airTemperature === null or
+            $solarRadiation === null or
+            $humidity === null or
+            $windSpeed === null) {
             return null;
         }
 
@@ -1044,9 +1044,23 @@ class PETService {
         $createdDateTime = $createdDateTime->setTimezone(new DateTimeZone('UTC'));
         // date 'z' returns day of the year starting from 0, so add 1
         $dayOfTheYear = date('z', $createdDateTime->getTimestamp()) + 1;
-        $utcDecTime =   floatval($createdDateTime->format('H')) +
+        $decimalTime =   floatval($createdDateTime->format('H')) +
                         (floatval($createdDateTime->format('i'))/60) +
                         (floatval($createdDateTime->format('s'))/3600);
+
+        // Correct for incorrect values of solar radiation
+        if ($solarRadiation < 0) {
+            $solarRadiation = 0;
+        }
+        else if ($solarRadiation > 75. + 1.2 * $this->solar_clear(  $longitude,
+                                                                    $latitude,
+                                                                    $dayOfTheYear,
+                                                                    $decimalTime)) {
+            $solarRadiation = $this->solar_clear(   $longitude,
+                                                    $latitude,
+                                                    $dayOfTheYear,
+                                                    $decimalTime);
+        }
 
         // Currently no urban correction applied
         // $urbanFactor = log(10/1.)/log(3.5/1.);
@@ -1056,14 +1070,15 @@ class PETService {
         $fractionOfDiffuseSolarRadiation = $this->fr_diffuse(   $solarRadiation,
                                                                 $latitude,
                                                                 $longitude,
-                                                                $dayOfTheYear);
+                                                                $dayOfTheYear,
+                                                                $decimalTime);
         $fractionOfDirectSolarRadiation = 1. - $fractionOfDiffuseSolarRadiation;
 
         // Get cosine of zenith angle
         $cosineOfZenithAngle = $this->sin_solar_elev(   $latitude,
                                                         $longitude,
                                                         $dayOfTheYear,
-                                                        $utcDecTime);
+                                                        $decimalTime);
 
         // Get globe temperature
         $globeTemperature = $this->calc_Tglobe( $airTemperature,
