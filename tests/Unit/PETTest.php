@@ -181,8 +181,12 @@ class PETTest extends TestCase {
             }
 
             // Calculate and check intermediate values if they are within acceptable limits
-            // Currently, the accepted limit is: 0,001
-            $acceptedLimit = 0.2;
+            // Currently, the general accepted limit is: 0,001
+            // The accepted limit for the system output is: 0,15
+            // The accepted limit for the PET value is: 0,01
+            $acceptedLimit = 0.001;
+            $systemAcceptedLimit = 0.15;
+            $PETAcceptedLimit = 0.01;
 
             // Diffuse and Direct solar radiation
             if ($screenedSolarRadiation !== null and
@@ -293,21 +297,21 @@ class PETTest extends TestCase {
                 $calculatedTemperatureOfClothes = $systemOutput[2];
                 $calculatedEvaporationOfSweat = $systemOutput[3];
                 $coreTemperatureDifference = abs($calculatedCoreTemperature - $coreTemperature);
-                $this->assertTrue(  $coreTemperatureDifference < $acceptedLimit,
+                $this->assertTrue(  $coreTemperatureDifference < $systemAcceptedLimit,
                                     sprintf('The core temperature is off by %f degrees.',
-                                            $coreTemperatureDifference - $acceptedLimit));
+                                            $coreTemperatureDifference - $systemAcceptedLimit));
                 $skinTemperatureDifference = abs($calculatedTemperatureOfSkin - $temperatureOfSkin);
-                $this->assertTrue(  $skinTemperatureDifference < $acceptedLimit,
+                $this->assertTrue(  $skinTemperatureDifference < $systemAcceptedLimit,
                                     sprintf('The skin temperature is off by %f degrees.',
-                                            $skinTemperatureDifference - $acceptedLimit));
+                                            $skinTemperatureDifference - $systemAcceptedLimit));
                 $clothesTemperatureDifference = abs($calculatedTemperatureOfClothes - $temperatureOfClothes);
-                $this->assertTrue(  $clothesTemperatureDifference < $acceptedLimit,
+                $this->assertTrue(  $clothesTemperatureDifference < $systemAcceptedLimit,
                                     sprintf('The clothes temperature is off by %f degrees.',
-                                            $clothesTemperatureDifference - $acceptedLimit));
+                                            $clothesTemperatureDifference - $systemAcceptedLimit));
                 $evaporationOfSweatDifference = abs($calculatedEvaporationOfSweat - $evaporationOfSweat);
-                $this->assertTrue(  $evaporationOfSweatDifference < $acceptedLimit,
+                $this->assertTrue(  $evaporationOfSweatDifference < $systemAcceptedLimit,
                                     sprintf('The evaporation of sweat is off by %f.',
-                                            $evaporationOfSweatDifference - $acceptedLimit));
+                                            $evaporationOfSweatDifference - $systemAcceptedLimit));
             }
             else {
                 $calculatedCoreTemperature = null;
@@ -332,9 +336,9 @@ class PETTest extends TestCase {
 
                 // Check if calculated PET value is within limits
                 $calculatedPETDifference = abs($calculatedPET - $PET);
-                $this->assertTrue(  $calculatedPETDifference < $acceptedLimit,
+                $this->assertTrue(  $calculatedPETDifference < $PETAcceptedLimit,
                                     sprintf('The calculated physiologically equivalent temperature is off by %f degrees.',
-                                            $calculatedPETDifference - $acceptedLimit));
+                                            $calculatedPETDifference - $PETAcceptedLimit));
             }
 
             // Calculate PET value with compute method
@@ -355,9 +359,9 @@ class PETTest extends TestCase {
 
                 // Check if the computed PET value is within acceptable limits
                 $computedPETDifference = abs($computedPET - $PET);
-                $this->assertTrue(  $computedPETDifference < $acceptedLimit,
+                $this->assertTrue(  $computedPETDifference < $PETAcceptedLimit,
                                     sprintf('The computed physiologically equivalent temperature is off by %f degrees.',
-                                            $computedPETDifference - $acceptedLimit));
+                                            $computedPETDifference - $PETAcceptedLimit));
             }
         }
     }
