@@ -37227,6 +37227,8 @@ module.exports = function(module) {
 
 __webpack_require__(/*! ./bootstrap */ "./resources/js/bootstrap.js");
 
+__webpack_require__(/*! ./datavis */ "./resources/js/datavis.js");
+
 /***/ }),
 
 /***/ "./resources/js/bootstrap.js":
@@ -37274,6 +37276,60 @@ window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 
 /***/ }),
 
+/***/ "./resources/js/datavis.js":
+/*!*********************************!*\
+  !*** ./resources/js/datavis.js ***!
+  \*********************************/
+/*! no exports provided */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var jquery__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! jquery */ "./node_modules/jquery/dist/jquery.js");
+/* harmony import */ var jquery__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(jquery__WEBPACK_IMPORTED_MODULE_0__);
+
+
+function datavis() {
+  var stations = ['HZ1'];
+  stations.forEach(function (station) {
+    var temps = [];
+    var dates = [];
+    jquery__WEBPACK_IMPORTED_MODULE_0__["ajax"]({
+      url: '/api/load/'.station,
+      dataType: 'json'
+    }).done(function (data) {
+      console.log(data);
+      data.measurements.forEach(function (measurement) {
+        if (temps.length < 10) {
+          temps.push(measurement.th_temp);
+        }
+
+        if (dates.length < 10) {
+          dates.push(measurement.created_at);
+        }
+      });
+      var ctx = document.getElementById(station).getContext('2d');
+      var myChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: dates,
+          datasets: [{
+            label: 'Station Data',
+            data: temps,
+            backgroundColor: ['rgba(255, 99, 132, 0.2)', 'rgba(54, 162, 235, 0.2)', 'rgba(255, 206, 86, 0.2)', 'rgba(75, 192, 192, 0.2)', 'rgba(153, 102, 255, 0.2)', 'rgba(255, 159, 64, 0.2)'],
+            borderColor: ['rgba(255, 99, 132, 1)', 'rgba(54, 162, 235, 1)', 'rgba(255, 206, 86, 1)', 'rgba(75, 192, 192, 1)', 'rgba(153, 102, 255, 1)', 'rgba(255, 159, 64, 1)'],
+            borderWidth: 3
+          }]
+        }
+      });
+    });
+  });
+}
+
+window.onload = datavis();
+
+/***/ }),
+
 /***/ "./resources/sass/app.scss":
 /*!*********************************!*\
   !*** ./resources/sass/app.scss ***!
@@ -37292,8 +37348,8 @@ window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(/*! /var/www/resources/js/app.js */"./resources/js/app.js");
-module.exports = __webpack_require__(/*! /var/www/resources/sass/app.scss */"./resources/sass/app.scss");
+__webpack_require__(/*! C:\Users\Koen\Desktop\HZProject\BPIKA\bpika\resources\js\app.js */"./resources/js/app.js");
+module.exports = __webpack_require__(/*! C:\Users\Koen\Desktop\HZProject\BPIKA\bpika\resources\sass\app.scss */"./resources/sass/app.scss");
 
 
 /***/ })

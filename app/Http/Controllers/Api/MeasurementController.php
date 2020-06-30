@@ -75,4 +75,17 @@ class MeasurementController extends Controller
 
         return false;
     }
+
+    //Loads measurement data from database
+    //Shows measurement data on webpage through JSON
+    public function load($station) {
+        $measurements = Measurement::where('station_name', '=', $station)->get();
+        
+        return response(json_encode(['measurements' => $measurements]))
+            ->header('Content-type', 'application/json');
+    }
+
+    public function datavis() {
+        return view('datavis');
+    }
 }

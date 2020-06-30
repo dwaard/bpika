@@ -21,3 +21,5 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 Route::get('ping', 'Api\PingController@handle');
 
 Route::get('store', 'Api\MeasurementController@store');
+
+Route::get('load/{station}', 'Api\MeasurementController@load');
