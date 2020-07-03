@@ -46,41 +46,32 @@ class MeasurementController extends Controller
         $from = DateTime::createFromFormat($format, $startDate);
         $to = DateTime::createFromFormat($format, $endDate);
         $now = date($format);
+        
         if (($from and $from->format($format) === $startDate) and ($to and $to->format($format) === $endDate)) {
-            if ($station === NULL) { 
-                $measurements = Measurement::whereBetween("created_at", [$from, $to])->get();
-            }
-            else {
-                $measurements = Measurement::whereBetween("created_at", [$from, $to])->where("station_name", "=", $station)->get();
-            }
+            $betweenStart = $from;
+            $betweenEnd = $to;
         }
-        // TODO check if $startDate is earlier than today or $endDate is later than today.
+
         else if (($from and $from->format($format) === $startDate) and ($from < $now)) {
-            if ($station === NULL) {
-                $measurements = Measurement::whereBetween("created_at", [$from, $now])->get();
-            }
-            else {
-                $measurements = Measurement::whereBetween("created_at", [$from, $now])->where("station_name", "=", $station)->get();
-            }
+            $betweenStart = $from;
+            $betweenEnd = $now;
         }
+
         else if (($to and $to->format($format) === $endDate) and ($to > $now)) {
-            if ($station === NULL) {
-                $measurements = Measurement::whereBetween("created_at", [$now, $to])->get();
-            }
-            else {
-                $measurements = Measurement::whereBetween("created_at", [$from, $to])->where("station_name", "=", $station)->get();
-            }
+            $betweenStart = $now;
+            $betweenEnd = $to;
         }
+
+        if ($station === NULL) {
+            $measurements = Measurement::whereBetween("created_at", [$betweenStart, $betweenEnd])->get();
+        }
+
         else {
-            if ($station === NULL) {
-                $measurements = Measurement::all();
-            }
-            else {
-                $measurements = Measurement::where("station_name", "=", $station)->get();
-            }
+            $measurements = Measurement::whereBetween("created_at", [$from, $betweenEnd])->where("station_name", "=", $station)->get();
         }
+        
         return response(json_encode(["data" => $measurements]))
-            ->header('Content-type', 'application/json');
+            ->header('Content-type', 'application/json');    
     }
     /**
      * Evaluates the input-collection and removes any invalid values.
