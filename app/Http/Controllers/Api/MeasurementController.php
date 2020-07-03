@@ -8,7 +8,7 @@ use App\Measurement;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-
+use DateTime;
 class MeasurementController extends Controller
 {
     /**
@@ -41,6 +41,47 @@ class MeasurementController extends Controller
 
     }
 
+    public function getJSON($startDate = NULL, $endDate = NULL, $format = "Y-m-d", $station = NULL)
+    {
+        $from = DateTime::createFromFormat($format, $startDate);
+        $to = DateTime::createFromFormat($format, $endDate);
+        $now = date($format);
+        if (($from and $from->format($format) === $startDate) and ($to and $to->format($format) === $endDate)) {
+            if ($station === NULL) { 
+                $measurements = Measurement::whereBetween("created_at", [$from, $to])->get();
+            }
+            else {
+                $measurements = Measurement::whereBetween("created_at", [$from, $to])->where("station_name", "=", $station)->get();
+            }
+        }
+        // TODO check if $startDate is earlier than today or $endDate is later than today.
+        else if (($from and $from->format($format) === $startDate) and ($from < $now)) {
+            if ($station === NULL) {
+                $measurements = Measurement::whereBetween("created_at", [$from, $now])->get();
+            }
+            else {
+                $measurements = Measurement::whereBetween("created_at", [$from, $now])->where("station_name", "=", $station)->get();
+            }
+        }
+        else if (($to and $to->format($format) === $endDate) and ($to > $now)) {
+            if ($station === NULL) {
+                $measurements = Measurement::whereBetween("created_at", [$now, $to])->get();
+            }
+            else {
+                $measurements = Measurement::whereBetween("created_at", [$from, $to])->where("station_name", "=", $station)->get();
+            }
+        }
+        else {
+            if ($station === NULL) {
+                $measurements = Measurement::all();
+            }
+            else {
+                $measurements = Measurement::where("station_name", "=", $station)->get();
+            }
+        }
+        return response(json_encode(["data" => $measurements]))
+            ->header('Content-type', 'application/json');
+    }
     /**
      * Evaluates the input-collection and removes any invalid values.
      *
@@ -74,15 +115,6 @@ class MeasurementController extends Controller
         }
 
         return false;
-    }
-
-    //Loads measurement data from database
-    //Shows measurement data on webpage through JSON
-    public function load($station) {
-        $measurements = Measurement::where('station_name', '=', $station)->get();
-        
-        return response(json_encode(['measurements' => $measurements]))
-            ->header('Content-type', 'application/json');
     }
 
     public function datavis() {

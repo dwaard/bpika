@@ -22,4 +22,5 @@ Route::get('ping', 'Api\PingController@handle');
 
 Route::get('store', 'Api\MeasurementController@store');
 
-Route::get('load/{station}', 'Api\MeasurementController@load');
+Route::get('getMeasurement/startdate={startDate?}&enddate={endDate?}&format={format?}&station={station?}', 'Api\MeasurementController@getJSON');
+

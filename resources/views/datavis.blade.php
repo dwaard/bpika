@@ -8,7 +8,7 @@
 </head>
 <body>
      <!--TODO FIX ID FOR EVERY STATION-->
-    <canvas id="HZ1" width="400" height="400"></canvas>
+    <canvas id="HZ1" width="1200" height="600"></canvas>
 
 </body>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
