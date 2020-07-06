@@ -1018,11 +1018,11 @@ class PETService {
      * @param float $longitude
      * @return float|null Physiologically Equivalent Temperature in Celsius
      */
-    public function computePETFromMeasurement(string $createdDateTime,
-                                              float $airTemperature,
-                                              float $solarRadiation,
-                                              float $humidity,
-                                              float $windSpeed,
+    public function computePETFromMeasurement(?string $createdDateTime,
+                                              ?float $airTemperature,
+                                              ?float $solarRadiation,
+                                              ?float $humidity,
+                                              ?float $windSpeed,
                                               float $latitude = 52.,
                                               float $longitude = 5.1) {
 

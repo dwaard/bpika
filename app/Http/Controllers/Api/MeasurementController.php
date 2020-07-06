@@ -3,12 +3,15 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Requests\StoreMeasurementRequest;
+use App\Services\PETService;
 use Illuminate\Routing\Controller;
 use App\Measurement;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use DateTime;
+use DateTimeZone;
+
 class MeasurementController extends Controller
 {
     /**
@@ -41,23 +44,27 @@ class MeasurementController extends Controller
 
     }
 
-    public function getJSON($startDate = NULL, $endDate = NULL, $format = "Y-m-d", $station = NULL)
+    public function getJSON($inputFormat = "Y-m-d", $startDate = NULL, $endDate = NULL, $station = NULL, $outputFormat = "Y-m-d", $columns = 'all', PETService $petservice)
     {
-        $from = DateTime::createFromFormat($format, $startDate);
-        $to = DateTime::createFromFormat($format, $endDate);
-        $now = date($format);
+        // Define output
+        $output = [];
+
+        // Get and filter measurements based on times and station given
+        $from = DateTime::createFromFormat($inputFormat, $startDate);
+        $to = DateTime::createFromFormat($inputFormat, $endDate);
+        $now = date($inputFormat);
         
-        if (($from and $from->format($format) === $startDate) and ($to and $to->format($format) === $endDate)) {
+        if (($from and $from->format($inputFormat) === $startDate) and ($to and $to->format($inputFormat) === $endDate)) {
             $betweenStart = $from;
             $betweenEnd = $to;
         }
 
-        else if (($from and $from->format($format) === $startDate) and ($from < $now)) {
+        else if (($from and $from->format($inputFormat) === $startDate) and ($from < $now)) {
             $betweenStart = $from;
             $betweenEnd = $now;
         }
 
-        else if (($to and $to->format($format) === $endDate) and ($to > $now)) {
+        else if (($to and $to->format($inputFormat) === $endDate) and ($to > $now)) {
             $betweenStart = $now;
             $betweenEnd = $to;
         }
@@ -69,8 +76,55 @@ class MeasurementController extends Controller
         else {
             $measurements = Measurement::whereBetween("created_at", [$from, $betweenEnd])->where("station_name", "=", $station)->get();
         }
+
+        // The database timezone should be in the UTC timezone
+        $databaseTimezone = new DateTimeZone('utc');
+
+        // Iterate through each measurement
+            foreach ($measurements as $measurement) {
+
+                // Define output for this measurement
+                $outputMeasurement = [];
+
+                // Calculate PET value
+                // TODO get longitude and latitude from station
+                if ($measurement['created_at'] !== null or
+                    $measurement['th_temp'] !== null or
+                    $measurement['sol_rad'] !== null or
+                    $measurement['th_hum'] !== null or
+                    $measurement['wind_avgwind'] !== null) {
+                    $measurement['PET'] = $petservice->computePETFromMeasurement(   $measurement['created_at'],
+                                                                                    $measurement['th_temp'],
+                                                                                    $measurement['sol_rad'],
+                                                                                    $measurement['th_hum'],
+                                                                                    $measurement['wind_avgwind'],
+                                                                                    52.,
+                                                                                    5.1);
+                }
+                else {
+                    $measurement['PET'] = null;
+                }
+
+                // Turn datetime string into object
+                $datetime = new DateTime($measurement['created_at'], $databaseTimezone);
+
+                // Apply timezone from station
+                // TODO get timezone from station
+                $targetTimeZone = new DateTimeZone('Europe/Amsterdam');
+                $datetime->setTimeZone($targetTimeZone);
+                $outputMeasurement['created_at'] = $datetime->format($outputFormat);
+
+                // add columns to output
+                $selectedColumns = explode(',', $columns);
+                if (in_array('all', $selectedColumns)) {
+                    foreach ($measurement as $key => $value) {
+                        $outputMeasurement[$key] = $value;
+                    }
+                }
+                array_push($output, $outputMeasurement);
+            }
         
-        return response(json_encode(["data" => $measurements]))
+        return response(json_encode(["data" => $output]))
             ->header('Content-type', 'application/json');    
     }
     /**
