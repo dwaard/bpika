@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use DateTime;
 use DateTimeZone;
+use Illuminate\Support\Facades\DB;
 
 class MeasurementController extends Controller
 {
@@ -44,88 +45,295 @@ class MeasurementController extends Controller
 
     }
 
-    public function getJSON($inputFormat = "Y-m-d", $startDate = NULL, $endDate = NULL, $station = NULL, $outputFormat = "Y-m-d", $columns = 'all', PETService $petservice)
-    {
-        // Define output
-        $output = [];
+    public function getJSON(PETService $petservice,
+                            $startDate = null,
+                            $endDate = null,
+                            $stations = 'all',
+                            $grouping = null,
+                            $aggregation = 'avg',
+                            $columns = 'all',
+                            $order = 'desc') {
 
-        // Get and filter measurements based on times and station given
-        $from = DateTime::createFromFormat($inputFormat, $startDate);
-        $to = DateTime::createFromFormat($inputFormat, $endDate);
-        $now = date($inputFormat);
-        
-        if (($from and $from->format($inputFormat) === $startDate) and ($to and $to->format($inputFormat) === $endDate)) {
+        // Define standard variables
+
+        // Year-Month-Day Hour(24 h format)-Minute-Second
+        $timeFormat = 'Y-m-d H:i:s';
+
+        $includePET = false;
+
+        // Collection that will contain all the values to insert into the SQL query
+        $bindings = collect();
+
+        // All of the known measurement columns
+        // PET isn't considered a valid column, but will be add in the output
+        $columnsWhitelist = collect([
+            'th_temp',
+            'th_hum',
+            'th_dew',
+            'th_heatindex',
+            'thb_temp',
+            'thb_hum',
+            'thb_dew',
+            'thb_press',
+            'thb_seapress',
+            'wind_wind',
+            'wind_avgwind',
+            'wind_dir',
+            'wind_chill',
+            'rain_rate',
+            'rain_total',
+            'uv_index',
+            'sol_rad',
+            'sol_evo',
+            'sun_total',
+        ]);
+        // All of the known weather stations
+        // TODO get stations from database
+        $stationsWhitelist = collect([
+            'HZ1',
+            'HZ2',
+            'HZ3',
+            'HZ4',
+            'VHL1',
+            'VHL2',
+            'HSR1',
+            'HSR2',
+            'HHG1'
+        ]);
+
+        // Get and filter measurements based on times and stations given
+        $from = DateTime::createFromFormat($timeFormat, $startDate);
+        $to = DateTime::createFromFormat($timeFormat, $endDate);
+        $now = date($timeFormat);
+
+        // If start and end date are given, search in between them
+        if (($from and $from->format($timeFormat) === $startDate) and ($to and $to->format($timeFormat) === $endDate)) {
             $betweenStart = $from;
             $betweenEnd = $to;
         }
-
-        else if (($from and $from->format($inputFormat) === $startDate) and ($from < $now)) {
+        // If only start date is given, search from then until now
+        else if (($from and $from->format($timeFormat) === $startDate) and ($from < $now)) {
             $betweenStart = $from;
             $betweenEnd = $now;
         }
-
-        else if (($to and $to->format($inputFormat) === $endDate) and ($to > $now)) {
+        // If only end date is given, search from now until then
+        else if (($to and $to->format($timeFormat) === $endDate) and ($to > $now)) {
             $betweenStart = $now;
             $betweenEnd = $to;
         }
-
-        if ($station === NULL) {
-            $measurements = Measurement::whereBetween("created_at", [$betweenStart, $betweenEnd])->get();
-        }
-
+        // If none are given, don't filter on date
         else {
-            $measurements = Measurement::whereBetween("created_at", [$from, $betweenEnd])->where("station_name", "=", $station)->get();
+            $betweenStart = null;
+            $betweenEnd = null;
         }
 
-        // The database timezone should be in the UTC timezone
-        $databaseTimezone = new DateTimeZone('utc');
+        // Add first part of select statement to query
+        if ($grouping === 'yearly') {
+            $timeSelection = 'YEAR(`created_at`)';
+        }
+        else if ($grouping === 'monthly') {
+            $timeSelection = 'YEAR(`created_at`), MONTH(`created_at`)';
+        }
+        else if ($grouping === 'weekly') {
+            $timeSelection = "YEAR(`created_at`), WEEK(`created_at`)";
+        }
+        else if ($grouping === 'daily') {
+            $timeSelection = 'YEAR(`created_at`), MONTH(`created_at`), DAY(`created_at`)';
+        }
+        else if ($grouping === 'hourly') {
+            $timeSelection = 'YEAR(`created_at`), MONTH(`created_at`), DAY(`created_at`), HOUR(`created_at`)';
+        }
+        else {
+            $grouping = null;
+            $aggregation = null;
+            $timeSelection = '`created_at`';
+        }
+        $query = 'SELECT `station_name`, ' . $timeSelection . ', ';
 
-        // Iterate through each measurement
-            foreach ($measurements as $measurement) {
-
-                // Define output for this measurement
-                $outputMeasurement = [];
-
-                // Calculate PET value
-                // TODO get longitude and latitude from station
-                if ($measurement['created_at'] !== null or
-                    $measurement['th_temp'] !== null or
-                    $measurement['sol_rad'] !== null or
-                    $measurement['th_hum'] !== null or
-                    $measurement['wind_avgwind'] !== null) {
-                    $measurement['PET'] = $petservice->computePETFromMeasurement(   $measurement['created_at'],
-                                                                                    $measurement['th_temp'],
-                                                                                    $measurement['sol_rad'],
-                                                                                    $measurement['th_hum'],
-                                                                                    $measurement['wind_avgwind'],
-                                                                                    52.,
-                                                                                    5.1);
+        // Add columns to query
+        $columns = collect(explode(',', $columns));
+        // If PET is included then set the flag and remove the value from the collection
+        if (in_array('PET', $columns->toArray())) {
+            $includePET = true;
+            $columns->reject(function ($value, $key) {
+                return $value === 'PET';
+            });
+        }
+        // If all is included then set columns to all of the allowed columns
+        if (in_array('all', $columns->toArray())) {
+            $columns = collect($columnsWhitelist);
+            $includePET = true;
+        }
+        // Remove any disallowed columns
+        $columns = $columns->intersect($columnsWhitelist);
+        // Add the columns to the query
+        foreach ($columns as $column) {
+            if ($aggregation === 'avg') {
+                $columnValue = $columns->last() === $column ? 'AVG(`' . $column . '`) ' : 'AVG(`' . $column . '`), ';
+            }
+            else if ($aggregation === 'min') {
+                $columnValue = $columns->last() === $column ? 'MIN(`' . $column . '`) ' : 'MIN(`' . $column . '`), ';
+            }
+            else if ($aggregation === 'max') {
+                $columnValue = $columns->last() === $column ? 'MAX(`' . $column . '`) ' : 'MAX(`' . $column . '`), ';
+            }
+            else {
+                if ($grouping !== null) {
+                    $columnValue = $columns->last() === $column ? 'AVG(`' . $column . '`) ' : 'AVG(`' . $column . '`), ';
                 }
                 else {
-                    $measurement['PET'] = null;
+                    $columnValue = $columns->last() === $column ? '`' . $column . '` ' : '`' . $column . '`, ';
                 }
-
-                // Turn datetime string into object
-                $datetime = new DateTime($measurement['created_at'], $databaseTimezone);
-
-                // Apply timezone from station
-                // TODO get timezone from station
-                $targetTimeZone = new DateTimeZone('Europe/Amsterdam');
-                $datetime->setTimeZone($targetTimeZone);
-                $outputMeasurement['created_at'] = $datetime->format($outputFormat);
-
-                // add columns to output
-                $selectedColumns = explode(',', $columns);
-                if (in_array('all', $selectedColumns)) {
-                    foreach ($measurement as $key => $value) {
-                        $outputMeasurement[$key] = $value;
-                    }
-                }
-                array_push($output, $outputMeasurement);
             }
-        
-        return response(json_encode(["data" => $output]))
-            ->header('Content-type', 'application/json');    
+            $query .= $columnValue;
+        }
+
+         // Add second part of select statement to query
+        $query .= 'FROM `measurements` WHERE ';
+
+        // Add date condition
+        if ($betweenStart !== null and $betweenEnd !== null) {
+            $bindings->add($betweenStart->format($timeFormat));
+            $bindings->add($betweenEnd->format($timeFormat));
+            $query .= '`created_at` BETWEEN DATE(?) AND DATE(?) AND ';
+        }
+
+        // Process stations parameter
+        $stations = collect(explode(',', $stations));
+        if (in_array('all', $stations->toArray())) {
+            $stations = $stationsWhitelist;
+        }
+        // Remove any disallowed stations
+        $stations = $stations->intersect($stationsWhitelist);
+        // Add stations to bindings
+        $bindings = $bindings->merge($stations);
+
+        // Add station condition
+        $query .= '`station_name` IN (';
+        foreach ($stations as $station) {
+            $query .= $stations->last() === $station ? '?' : '?, ';
+        }
+        $query .= ') ';
+
+        if ($grouping !== null) {
+            $query .= 'GROUP BY `station_name`, ' . $timeSelection;
+        }
+
+        // Add order by created_at to query
+        if ($order === 'asc') {
+            $order = 'ASC';
+        }
+        else {
+            $order = 'DESC';
+        }
+        $query .= 'ORDER BY ';
+        $timeSelectionCollection = collect(explode(', ', $timeSelection));
+        foreach ($timeSelectionCollection as $value) {
+            $query .= $timeSelectionCollection->last() === $value ? $value . ' ' . $order . ' ' : $value . ' ' . $order . ', ';
+        }
+
+        // Get measurements
+        $measurements = collect(DB::select($query, $bindings->toArray()));
+
+        // Rename measurement keys
+        foreach ($measurements as $measurementKey => $measurement) {
+
+            // Convert Measurement object into array
+            $measurement = collect($measurement);
+
+            foreach ($measurement as $key => $value) {
+
+                // Remove all unnecessary parts of the key
+                $newKey = str_replace('YEAR(`created_at`', 'year', $key);
+                $newKey = str_replace('MONTH(`created_at`', 'month', $newKey);
+                $newKey = str_replace('WEEK(`created_at`', 'week', $newKey);
+                $newKey = str_replace('DAY(`created_at`', 'day', $newKey);
+                $newKey = str_replace('HOUR(`created_at`', 'hour', $newKey);
+                $newKey = str_replace('AVG', '', $newKey);
+                $newKey = str_replace('MIN', '', $newKey);
+                $newKey = str_replace('MAX', '', $newKey);
+                $newKey = str_replace('(', '', $newKey);
+                $newKey = str_replace(')', '', $newKey);
+                $newKey = str_replace('`', '', $newKey);
+
+                // Set new key
+                $measurement->put($newKey, $value);
+
+                // Unset old key
+                if ($key !== $newKey) {
+                    $measurement->offsetUnset($key);
+                }
+            }
+
+            // Update measurements
+            $measurements[$measurementKey] = $measurement;
+        }
+
+        // Define database timezone, which should be utc
+        $databaseTimeZone = new DateTimeZone('utc');
+
+        foreach ($measurements as $measurement) {
+
+            // Construct date time object from string
+            if ($measurement->offsetExists('created_at')) {
+                $createdAtDateTime = new DateTime($measurement['created_at'], $databaseTimeZone);
+                $createdAtUTC = $createdAtDateTime->format($timeFormat);
+            }
+            else {
+                $created_at = '';
+                $created_at .= $measurement['year'] . '-';
+                // if key is not defined use the average value
+                $created_at .= $measurement->offsetExists('month') ? $measurement['month'] . '-' : '6-';
+                $created_at .= $measurement->offsetExists('day') ? $measurement['day'] . ' ' : '15 ';
+                $created_at .= $measurement->offsetExists('hour') ? $measurement['hour'] . ':00:00' : '12:00:00';
+                $createdAtDateTime = new DateTime($created_at, $databaseTimeZone);
+                $createdAtUTC = $createdAtDateTime->format($timeFormat);
+            }
+
+            // if PET is included, add the PET value
+            if ($includePET) {
+
+                // Get necessary values
+                $airTemperature = $measurement['th_temp'];
+                $solarRadiation = $measurement['sol_rad'];
+                $humidity = $measurement['th_hum'];
+                $windspeed = $measurement['wind_avgwind'];
+                // TODO get coordinates from station
+                $latitude = 52.;
+                $longitude = 5.1;
+
+                // Calculate and add the PET value
+                $pet = $petservice->computePETFromMeasurement(  $createdAtUTC,
+                                                                $airTemperature,
+                                                                $solarRadiation,
+                                                                $humidity,
+                                                                $windspeed,
+                                                                $latitude,
+                                                                $longitude);
+                $measurement->put('Physiologically Equivalent Temperature [°C]', $pet);
+            }
+
+            // Convert time from UTC to the timezone from the station
+            // TODO get timezone from station
+            $stationTimeZone = new DateTimeZone('Europe/Amsterdam');
+            $createdAtDateTime->setTimezone($stationTimeZone);
+
+            // Add new time to measurement
+            if ($measurement->offsetExists('created_at')) {
+                $measurement['created_at'] = $createdAtDateTime->format($timeFormat);
+            }
+            if ($measurement->offsetExists('hour')) {
+                $measurement['hour'] = intval($createdAtDateTime->format('H'));
+            }
+        }
+
+        // Return output
+        return response(json_encode([
+            'measurements' => $measurements,
+            'columns' => $columns,
+            'grouped' => $grouping === null ? 'not' : $grouping,
+            'aggregated' => $aggregation === null ? 'not' : $aggregation
+        ]))->header('Content-type', 'application/json');
     }
     /**
      * Evaluates the input-collection and removes any invalid values.

@@ -1087,6 +1087,10 @@ class PETService {
                                                 $solarRadiation,
                                                 $fractionOfDirectSolarRadiation,
                                                 $cosineOfZenithAngle);
+        // If calc_Tglobe returns NAN, then return null
+        if (is_nan($globeTemperature)) {
+            return null;
+        }
 
         // Get median radiant temperature
         $medianRadiantTemperature = $this->Tmrt($globeTemperature,
