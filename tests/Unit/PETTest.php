@@ -103,14 +103,14 @@ class PETTest extends TestCase {
             [
                 'name'      => 'Binnenstad',
                 'testFile'  => 'Binnenstad_TCPET.csv',
-                'longitude' => 3.75,
-                'latitude'  => 51.5
+                'latitude'  => 51.5,
+                'longitude' => 3.75
             ],
             [
                 'name'      => 'Stiens',
                 'testFile'  => 'Stiens_TCPET.csv',
-                'longitude' => 5.7666,
-                'latitude'  => 53.2575
+                'latitude'  => 53.2575,
+                'longitude' => 5.7666
             ]
         ];
         foreach ($stations as $station) {
@@ -217,10 +217,12 @@ class PETTest extends TestCase {
                 // Calculate and check intermediate values if they are within acceptable limits
                 // Currently, the general accepted limit is: 0,001
                 // The accepted limit for the system output is: 0,15
+                // The accepted limit for the evaporation of sweat is: 3.5
                 // The accepted limit for the PET value is: 0,01
                 $acceptedLimit = 0.001;
                 $systemAcceptedLimit = 0.15;
-                $PETAcceptedLimit = 0.01;
+                $evaporationOfSweatLimit = 3.5;
+                $PETAcceptedLimit = 0.015;
 
                 // Diffuse and Direct solar radiation
                 if ($screenedSolarRadiation !== null and
@@ -356,9 +358,9 @@ class PETTest extends TestCase {
                                         sprintf('The clothes temperature is off by %f degrees.',
                                                 $clothesTemperatureDifference - $systemAcceptedLimit));
                     $evaporationOfSweatDifference = abs($calculatedEvaporationOfSweat - $evaporationOfSweat);
-                    $this->assertTrue(  $evaporationOfSweatDifference < $systemAcceptedLimit,
+                    $this->assertTrue(  $evaporationOfSweatDifference < $evaporationOfSweatLimit,
                                         sprintf('The evaporation of sweat is off by %f.',
-                                                $evaporationOfSweatDifference - $systemAcceptedLimit));
+                                                $evaporationOfSweatDifference - $evaporationOfSweatLimit));
                 }
                 else {
                     $calculatedCoreTemperature = null;
