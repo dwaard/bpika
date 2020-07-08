@@ -1,2 +1,2 @@
 require('./bootstrap');
-require('./datavis');
+require('./dashboard');

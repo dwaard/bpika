@@ -37979,7 +37979,7 @@ module.exports = function(module) {
 
 __webpack_require__(/*! ./bootstrap */ "./resources/js/bootstrap.js");
 
-__webpack_require__(/*! ./datavis */ "./resources/js/datavis.js");
+__webpack_require__(/*! ./dashboard */ "./resources/js/dashboard.js");
 
 /***/ }),
 
@@ -38028,10 +38028,10 @@ window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 
 /***/ }),
 
-/***/ "./resources/js/datavis.js":
-/*!*********************************!*\
-  !*** ./resources/js/datavis.js ***!
-  \*********************************/
+/***/ "./resources/js/dashboard.js":
+/*!***********************************!*\
+  !*** ./resources/js/dashboard.js ***!
+  \***********************************/
 /*! no exports provided */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -38049,13 +38049,13 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
 
 
-function datavis() {
-  return _datavis.apply(this, arguments);
+function dashboard() {
+  return _dashboard.apply(this, arguments);
 }
 
-function _datavis() {
-  _datavis = _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee() {
-    var stations, temps, dates, ctx, myChart;
+function _dashboard() {
+  _dashboard = _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee() {
+    var stations, temps, dates, today, sevenDaysAgo, timeString, ctx, myChart;
     return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee$(_context) {
       while (1) {
         switch (_context.prev = _context.next) {
@@ -38063,15 +38063,18 @@ function _datavis() {
             stations = ['HZ1', 'HZ2', 'HZ3', 'HZ4', 'HSR1', 'HSR2', 'VHL1', 'VHL2'];
             temps = [];
             dates = [];
+            today = new Date();
+            sevenDaysAgo = new Date(today.setDate(today.getDate() - 7));
+            timeString = sevenDaysAgo.getFullYear() + '-' + (sevenDaysAgo.getMonth() + 1) + '-' + sevenDaysAgo.getDate() + ' ' + sevenDaysAgo.getHours() + ':' + sevenDaysAgo.getMinutes() + ':' + sevenDaysAgo.getSeconds();
             stations.forEach(function (station) {
               var temperatures = [];
               jquery__WEBPACK_IMPORTED_MODULE_1__["ajax"]({
-                url: '/api/getMeasurement/startdate=NULL&enddate=NULL&format=Y-m-d&station=' + station,
+                url: '/api/measurement/startDate=' + timeString + '&endDate=null&stations=' + station + '&grouping=null&aggregation=null&columns=all&order=desc',
                 dataType: 'json'
               }).done(function (response) {
-                response.data.forEach(function (measurement) {
+                response.measurements.forEach(function (measurement) {
                   if (temperatures.length < 10) {
-                    temperatures.push(measurement.th_temp);
+                    temperatures.push(measurement['Physiologically Equivalent Temperature [°C]']);
                   }
 
                   if (dates.length < 10) {
@@ -38133,17 +38136,17 @@ function _datavis() {
               }
             });
 
-          case 6:
+          case 9:
           case "end":
             return _context.stop();
         }
       }
     }, _callee);
   }));
-  return _datavis.apply(this, arguments);
+  return _dashboard.apply(this, arguments);
 }
 
-window.onload = datavis();
+window.onload = dashboard();
 
 /***/ }),
 

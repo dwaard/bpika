@@ -370,7 +370,7 @@ class MeasurementController extends Controller
         return false;
     }
 
-    public function datavis() {
-        return view('datavis');
+    public function dashboard() {
+        return view('dashboard');
     }
 }

@@ -1,6 +1,6 @@
 import * as $ from 'jquery';
 
-async function datavis() {
+async function dashboard() {
 
     let stations = [
         'HZ1',
@@ -14,14 +14,16 @@ async function datavis() {
     ];
     let temps = [];
     let dates = [];
-
+    let today = new Date();
+    let sevenDaysAgo = new Date(today.setDate(today.getDate()-7));
+    let timeString = sevenDaysAgo.getFullYear() + '-' + (sevenDaysAgo.getMonth() + 1) + '-' + sevenDaysAgo.getDate() + ' ' + sevenDaysAgo.getHours() + ':' + sevenDaysAgo.getMinutes() + ':' + sevenDaysAgo.getSeconds();
 
     stations.forEach(function(station) {
         let temperatures = [];
-        $.ajax({url:'/api/getMeasurement/startdate=NULL&enddate=NULL&format=Y-m-d&station=' + station, dataType: 'json'}).done((response) => {
-            response.data.forEach(measurement => {
+        $.ajax({url:'/api/measurement/startDate=' + timeString + '&endDate=null&stations=' + station + '&grouping=null&aggregation=null&columns=all&order=desc', dataType: 'json'}).done((response) => {
+            response.measurements.forEach(measurement => {
                 if (temperatures.length < 10) {
-                    temperatures.push(measurement.th_temp);                
+                    temperatures.push(measurement['Physiologically Equivalent Temperature [°C]']);
                 }
                 if (dates.length < 10) {
                     dates.push(measurement.created_at);
@@ -93,4 +95,4 @@ async function datavis() {
     });
 }
 
-window.onload = datavis();
+window.onload = dashboard();
