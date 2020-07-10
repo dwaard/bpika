@@ -1018,13 +1018,13 @@ class PETService {
      * @param float $longitude
      * @return float|null Physiologically Equivalent Temperature in Celsius
      */
-    public function computePETFromMeasurement(string $createdDateTime,
-                                              float $airTemperature,
-                                              float $solarRadiation,
-                                              float $humidity,
-                                              float $windSpeed,
-                                              float $latitude = 52.,
-                                              float $longitude = 5.1) {
+    public function computePETFromMeasurement(?string $createdDateTime,
+                                              ?float $airTemperature,
+                                              ?float $solarRadiation,
+                                              ?float $humidity,
+                                              ?float $windSpeed,
+                                              ?float $latitude = 52.,
+                                              ?float $longitude = 5.1) {
 
         /*
             Check if necessary parameters aren't null
@@ -1087,6 +1087,10 @@ class PETService {
                                                 $solarRadiation,
                                                 $fractionOfDirectSolarRadiation,
                                                 $cosineOfZenithAngle);
+        // If calc_Tglobe returns NAN, then return null
+        if (is_nan($globeTemperature)) {
+            return null;
+        }
 
         // Get median radiant temperature
         $medianRadiantTemperature = $this->Tmrt($globeTemperature,
