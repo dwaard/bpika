@@ -17,4 +17,4 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-
+Route::get('dashboard', 'Api\MeasurementController@dashboard');
