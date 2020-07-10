@@ -58548,7 +58548,7 @@ function dashboard() {
   stations.forEach(function (station) {
     var temperatures = [];
     jquery__WEBPACK_IMPORTED_MODULE_0__["ajax"]({
-      url: '/api/measurement/startDate=' + timeString + '&endDate=null&stations=' + station.name + '&grouping=hourly&aggregation=avg&columns=all&order=desc',
+      url: '/api/measurement/startDate=' + timeString + '&endDate=null&stations=' + station.name + '&grouping=hourly&aggregation=avg&columns=PET&order=desc',
       dataType: 'json'
     }).done(function (response) {
       response.measurements.forEach(function (measurement) {
