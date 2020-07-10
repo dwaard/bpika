@@ -78,7 +78,8 @@ function dashboard() {
         $.ajax({url:'/api/measurement/startDate=' + timeString + '&endDate=null&stations=' + station.name + '&grouping=hourly&aggregation=avg&columns=PET&order=desc', dataType: 'json'}).done((response) => {
             response.measurements.forEach(measurement => {
                 temperatures.push({
-                    x: new Date(measurement.year, measurement.month, measurement.day, measurement.hour),
+                    // Subtract 1 from month because of difference in javascript and php data objects
+                    x: new Date(measurement.year, (measurement.month - 1), measurement.day, measurement.hour),
                     y: measurement['Physiologically Equivalent Temperature [°C]']
                 });
             });
