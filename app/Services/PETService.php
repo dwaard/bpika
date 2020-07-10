@@ -1023,8 +1023,8 @@ class PETService {
                                               ?float $solarRadiation,
                                               ?float $humidity,
                                               ?float $windSpeed,
-                                              float $latitude = 52.,
-                                              float $longitude = 5.1) {
+                                              ?float $latitude = 52.,
+                                              ?float $longitude = 5.1) {
 
         /*
             Check if necessary parameters aren't null
