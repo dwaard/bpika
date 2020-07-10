@@ -101,6 +101,14 @@ class MeasurementController extends Controller
             'HHG1'
         ]);
 
+        // All of the columns necessary to calculate the PET value
+        $columnsNecessaryForPET = collect([
+            'th_temp',
+            'sol_rad',
+            'th_hum',
+            'wind_avgwind'
+        ]);
+
         // Get and filter measurements based on times and stations given
         $from = DateTime::createFromFormat($timeFormat, $startDate);
         $to = DateTime::createFromFormat($timeFormat, $endDate);
@@ -148,16 +156,19 @@ class MeasurementController extends Controller
             $aggregation = null;
             $timeSelection = '`created_at`';
         }
-        $query = 'SELECT `station_name`, ' . $timeSelection . ', ';
+        $query = 'SELECT `station_name`, ' . $timeSelection;
 
         // Add columns to query
         $columns = collect(explode(',', $columns));
         // If PET is included then set the flag and remove the value from the collection
         if (in_array('PET', $columns->toArray())) {
             $includePET = true;
-            $columns->reject(function ($value, $key) {
+            // Remove PET from columns because it isn't a value in the database
+            $columns = $columns->reject(function ($value, $key) {
                 return $value === 'PET';
             });
+            // Add necessary columns for calculation
+            $columns = $columns->merge($columnsNecessaryForPET);
         }
         // If all is included then set columns to all of the allowed columns
         if (in_array('all', $columns->toArray())) {
@@ -166,6 +177,13 @@ class MeasurementController extends Controller
         }
         // Remove any disallowed columns
         $columns = $columns->intersect($columnsWhitelist);
+        // Check if columns is empty
+        if (count($columns) < 1) {
+            $query .= ' ';
+        }
+        else {
+            $query .= ', ';
+        }
         // Add the columns to the query
         foreach ($columns as $column) {
             if ($aggregation === 'avg') {
