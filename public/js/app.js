@@ -58531,13 +58531,24 @@ function dashboard() {
     'color': "#F3EFF5"
   }];
   var today = new Date();
-  var sevenDaysAgo = new Date(today.setDate(today.getDate() - 7));
-  var timeString = sevenDaysAgo.getFullYear() + '-' + (sevenDaysAgo.getMonth() + 1) + '-' + sevenDaysAgo.getDate() + ' ' + sevenDaysAgo.getHours() + ':' + sevenDaysAgo.getMinutes() + ':' + sevenDaysAgo.getSeconds();
+  var sevenDaysAgo = new Date(today.setDate(today.getDate() - 7)); // Needs to be the full year
+
+  var year = sevenDaysAgo.getFullYear(); // Needs to range from 01 to 12
+
+  var month = sevenDaysAgo.getMonth() + 1 < 10 ? '0' + (sevenDaysAgo.getMonth() + 1) : sevenDaysAgo.getMonth() + 1; // Needs to range from 01 to 31
+
+  var day = sevenDaysAgo.getDate() < 10 ? '0' + sevenDaysAgo.getDate() : sevenDaysAgo.getDate(); // Needs to range from 00 to 23
+
+  var hour = sevenDaysAgo.getHours() < 10 ? '0' + sevenDaysAgo.getHours() : sevenDaysAgo.getHours(); // Needs to range from 00 to 59
+
+  var minute = sevenDaysAgo.getMinutes() < 10 ? '0' + sevenDaysAgo.getMinutes() : sevenDaysAgo.getMinutes(); // Needs to range from 00 to 59
+
+  var second = sevenDaysAgo.getSeconds() < 10 ? '0' + sevenDaysAgo.getSeconds() : sevenDaysAgo.getSeconds();
+  var timeString = year + '-' + month + '-' + day + ' ' + hour + ':' + minute + ':' + second;
   stations.forEach(function (station) {
     var temperatures = [];
-    var dates = [];
     jquery__WEBPACK_IMPORTED_MODULE_0__["ajax"]({
-      url: '/api/measurement/startDate=' + timeString + '&endDate=null&stations=' + station.name + '&grouping=hourly&aggregation=null&columns=all&order=desc',
+      url: '/api/measurement/startDate=' + timeString + '&endDate=null&stations=' + station.name + '&grouping=hourly&aggregation=avg&columns=all&order=desc',
       dataType: 'json'
     }).done(function (response) {
       response.measurements.forEach(function (measurement) {
@@ -58579,8 +58590,8 @@ window.onload = dashboard();
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(/*! C:\Users\Koen\Desktop\HZProject\BPIKA\bpika\resources\js\app.js */"./resources/js/app.js");
-module.exports = __webpack_require__(/*! C:\Users\Koen\Desktop\HZProject\BPIKA\bpika\resources\sass\app.scss */"./resources/sass/app.scss");
+__webpack_require__(/*! /home/julienmaster/projects/bpika/resources/js/app.js */"./resources/js/app.js");
+module.exports = __webpack_require__(/*! /home/julienmaster/projects/bpika/resources/sass/app.scss */"./resources/sass/app.scss");
 
 
 /***/ })

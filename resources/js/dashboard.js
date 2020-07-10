@@ -59,12 +59,23 @@ function dashboard() {
     ];
     let today = new Date();
     let sevenDaysAgo = new Date(today.setDate(today.getDate()-7));
-    let timeString = sevenDaysAgo.getFullYear() + '-' + (sevenDaysAgo.getMonth() + 1) + '-' + sevenDaysAgo.getDate() + ' ' + sevenDaysAgo.getHours() + ':' + sevenDaysAgo.getMinutes() + ':' + sevenDaysAgo.getSeconds();
+    // Needs to be the full year
+    let year = sevenDaysAgo.getFullYear();
+    // Needs to range from 01 to 12
+    let month = (sevenDaysAgo.getMonth() + 1) < 10 ? '0' + (sevenDaysAgo.getMonth() + 1) : (sevenDaysAgo.getMonth() + 1);
+    // Needs to range from 01 to 31
+    let day = sevenDaysAgo.getDate() < 10 ? '0' + sevenDaysAgo.getDate() : sevenDaysAgo.getDate();
+    // Needs to range from 00 to 23
+    let hour = sevenDaysAgo.getHours() < 10 ? '0' + sevenDaysAgo.getHours() : sevenDaysAgo.getHours();
+    // Needs to range from 00 to 59
+    let minute = sevenDaysAgo.getMinutes() < 10 ? '0' + sevenDaysAgo.getMinutes() : sevenDaysAgo.getMinutes();
+    // Needs to range from 00 to 59
+    let second = sevenDaysAgo.getSeconds() < 10 ? '0' + sevenDaysAgo.getSeconds() : sevenDaysAgo.getSeconds();
+    let timeString = year + '-' + month + '-' + day + ' ' + hour + ':' + minute + ':' + second;
 
     stations.forEach(function(station) {
         let temperatures = [];
-        let dates = [];
-        $.ajax({url:'/api/measurement/startDate=' + timeString + '&endDate=null&stations=' + station.name + '&grouping=hourly&aggregation=null&columns=all&order=desc', dataType: 'json'}).done((response) => {
+        $.ajax({url:'/api/measurement/startDate=' + timeString + '&endDate=null&stations=' + station.name + '&grouping=hourly&aggregation=avg&columns=all&order=desc', dataType: 'json'}).done((response) => {
             response.measurements.forEach(measurement => {
                 temperatures.push({
                     x: new Date(measurement.year, measurement.month, measurement.day, measurement.hour),

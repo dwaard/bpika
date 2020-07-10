@@ -104,7 +104,7 @@ class MeasurementController extends Controller
         // Get and filter measurements based on times and stations given
         $from = DateTime::createFromFormat($timeFormat, $startDate);
         $to = DateTime::createFromFormat($timeFormat, $endDate);
-        $now = date($timeFormat);
+        $now = new DateTime(date($timeFormat));
 
         // If start and end date are given, search in between them
         if (($from and $from->format($timeFormat) === $startDate) and ($to and $to->format($timeFormat) === $endDate)) {
