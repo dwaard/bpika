@@ -324,6 +324,7 @@ class MeasurementController extends Controller
             }
             if ($measurement->offsetExists('hour')) {
                 $measurement['hour'] = intval($createdAtDateTime->format('H'));
+                $measurement['day'] = intval($createdAtDateTime->format('d'));
             }
         }
 
