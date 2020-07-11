@@ -337,12 +337,23 @@ class MeasurementController extends Controller
             $createdAtDateTime->setTimezone($stationTimeZone);
 
             // Add new time to measurement
+            //If ungrouped replace the created_at value
             if ($measurement->offsetExists('created_at')) {
                 $measurement['created_at'] = $createdAtDateTime->format($timeFormat);
             }
+
+            // If grouped replace the time categories if they exist
+            if ($measurement->offsetExists('year')) {
+                $measurement['year'] = intval($createdAtDateTime->format('Y'));
+            }
+            if ($measurement->offsetExists('month')) {
+                $measurement['month'] = intval($createdAtDateTime->format('m'));
+            }
+            if ($measurement->offsetExists('day')) {
+                $measurement['day'] = intval($createdAtDateTime->format('d'));
+            }
             if ($measurement->offsetExists('hour')) {
                 $measurement['hour'] = intval($createdAtDateTime->format('H'));
-                $measurement['day'] = intval($createdAtDateTime->format('d'));
             }
         }
 
