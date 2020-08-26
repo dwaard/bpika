@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Requests\StoreMeasurementRequest;
 use App\Services\PETService;
+use DateTimeInterface;
 use Illuminate\Routing\Controller;
 use App\Measurement;
 use Carbon\Carbon;
@@ -56,9 +57,6 @@ class MeasurementController extends Controller
 
         // Define standard variables
 
-        // Year-Month-Day Hour(24 h format)-Minute-Second
-        $timeFormat = 'Y-m-d H:i:s';
-
         $includePET = false;
 
         // Collection that will contain all the values to insert into the SQL query
@@ -109,30 +107,17 @@ class MeasurementController extends Controller
             'wind_avgwind'
         ]);
 
-        // Get and filter measurements based on times and stations given
-        $from = DateTime::createFromFormat($timeFormat, $startDate);
-        $to = DateTime::createFromFormat($timeFormat, $endDate);
-        $now = new DateTime(date($timeFormat));
-
-        // If start and end date are given, search in between them
-        if (($from and $from->format($timeFormat) === $startDate) and ($to and $to->format($timeFormat) === $endDate)) {
-            $betweenStart = $from;
-            $betweenEnd = $to;
+        // Get and filter measurements based on start and end times
+        $timeFormat = DateTimeInterface::RFC3339_EXTENDED;
+        if($startDate!=null and $startDate!="null") {
+            $betweenStart = Carbon::createFromFormat($timeFormat, $startDate);
+        } else {
+            $betweenStart = Carbon::createFromTimestamp(0);
         }
-        // If only start date is given, search from then until now
-        else if (($from and $from->format($timeFormat) === $startDate) and ($from < $now)) {
-            $betweenStart = $from;
-            $betweenEnd = $now;
-        }
-        // If only end date is given, search from now until then
-        else if (($to and $to->format($timeFormat) === $endDate) and ($to > $now)) {
-            $betweenStart = $now;
-            $betweenEnd = $to;
-        }
-        // If none are given, don't filter on date
-        else {
-            $betweenStart = null;
-            $betweenEnd = null;
+        if($endDate!=null and $endDate!="null") {
+            $betweenEnd= Carbon::createFromFormat($timeFormat, $endDate);
+        } else {
+            $betweenEnd = Carbon::now();
         }
 
         // Add first part of select statement to query

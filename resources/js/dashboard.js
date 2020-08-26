@@ -58,20 +58,10 @@ function dashboard() {
         },
     ];
     let today = new Date();
-    let sevenDaysAgo = new Date(today.setDate(today.getDate()-7));
-    // Needs to be the full year
-    let year = sevenDaysAgo.getFullYear();
-    // Needs to range from 01 to 12
-    let month = (sevenDaysAgo.getMonth() + 1) < 10 ? '0' + (sevenDaysAgo.getMonth() + 1) : (sevenDaysAgo.getMonth() + 1);
-    // Needs to range from 01 to 31
-    let day = sevenDaysAgo.getDate() < 10 ? '0' + sevenDaysAgo.getDate() : sevenDaysAgo.getDate();
-    // Needs to range from 00 to 23
-    let hour = sevenDaysAgo.getHours() < 10 ? '0' + sevenDaysAgo.getHours() : sevenDaysAgo.getHours();
-    // Needs to range from 00 to 59
-    let minute = sevenDaysAgo.getMinutes() < 10 ? '0' + sevenDaysAgo.getMinutes() : sevenDaysAgo.getMinutes();
-    // Needs to range from 00 to 59
-    let second = sevenDaysAgo.getSeconds() < 10 ? '0' + sevenDaysAgo.getSeconds() : sevenDaysAgo.getSeconds();
-    let timeString = year + '-' + month + '-' + day + ' ' + hour + ':' + minute + ':' + second;
+    let sevenDaysAgo = new Date();
+    sevenDaysAgo.setDate(today.getDate()-7);
+    console.log(sevenDaysAgo);
+    let timeString = sevenDaysAgo.toISOString();
 
     stations.forEach(function(station) {
         let temperatures = [];
@@ -79,7 +69,7 @@ function dashboard() {
             response.measurements.forEach(measurement => {
                 temperatures.push({
                     // Subtract 1 from month because of difference in javascript and php data objects
-                    x: new Date(measurement.year, (measurement.month - 1), measurement.day, measurement.hour),
+                    x: new Date(measurement.year, (measurement.month-1), measurement.day, measurement.hour),
                     y: measurement['Physiologically Equivalent Temperature [°C]']
                 });
             });
