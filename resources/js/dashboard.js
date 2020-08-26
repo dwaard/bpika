@@ -58,16 +58,18 @@ function dashboard() {
         },
     ];
     let today = new Date();
-    let sevenDaysAgo = new Date(today.setDate(today.getDate()-7));
-    let timeString = sevenDaysAgo.getFullYear() + '-' + (sevenDaysAgo.getMonth() + 1) + '-' + sevenDaysAgo.getDate() + ' ' + sevenDaysAgo.getHours() + ':' + sevenDaysAgo.getMinutes() + ':' + sevenDaysAgo.getSeconds();
+    let sevenDaysAgo = new Date();
+    sevenDaysAgo.setDate(today.getDate()-7);
+    console.log(sevenDaysAgo);
+    let timeString = sevenDaysAgo.toISOString();
 
     stations.forEach(function(station) {
         let temperatures = [];
-        let dates = [];
-        $.ajax({url:'/api/measurement/startDate=' + timeString + '&endDate=null&stations=' + station.name + '&grouping=hourly&aggregation=null&columns=all&order=desc', dataType: 'json'}).done((response) => {
+        $.ajax({url:'/api/measurement/startDate=' + timeString + '&endDate=null&stations=' + station.name + '&grouping=hourly&aggregation=avg&columns=PET&order=desc', dataType: 'json'}).done((response) => {
             response.measurements.forEach(measurement => {
                 temperatures.push({
-                    x: new Date(measurement.year, measurement.month, measurement.day, measurement.hour),
+                    // Subtract 1 from month because of difference in javascript and php data objects
+                    x: new Date(measurement.year, (measurement.month-1), measurement.day, measurement.hour),
                     y: measurement['Physiologically Equivalent Temperature [°C]']
                 });
             });
