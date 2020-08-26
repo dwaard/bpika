@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Requests\StoreMeasurementRequest;
 use App\Services\PETService;
+use DateTimeInterface;
 use Illuminate\Routing\Controller;
 use App\Measurement;
 use Carbon\Carbon;
@@ -56,9 +57,6 @@ class MeasurementController extends Controller
 
         // Define standard variables
 
-        // Year-Month-Day Hour(24 h format)-Minute-Second
-        $timeFormat = 'Y-m-d H:i:s';
-
         $includePET = false;
 
         // Collection that will contain all the values to insert into the SQL query
@@ -101,30 +99,25 @@ class MeasurementController extends Controller
             'HHG1'
         ]);
 
-        // Get and filter measurements based on times and stations given
-        $from = DateTime::createFromFormat($timeFormat, $startDate);
-        $to = DateTime::createFromFormat($timeFormat, $endDate);
-        $now = date($timeFormat);
+        // All of the columns necessary to calculate the PET value
+        $columnsNecessaryForPET = collect([
+            'th_temp',
+            'sol_rad',
+            'th_hum',
+            'wind_avgwind'
+        ]);
 
-        // If start and end date are given, search in between them
-        if (($from and $from->format($timeFormat) === $startDate) and ($to and $to->format($timeFormat) === $endDate)) {
-            $betweenStart = $from;
-            $betweenEnd = $to;
+        // Get and filter measurements based on start and end times
+        $timeFormat = DateTimeInterface::RFC3339_EXTENDED;
+        if($startDate!=null and $startDate!="null") {
+            $betweenStart = Carbon::createFromFormat($timeFormat, $startDate);
+        } else {
+            $betweenStart = Carbon::createFromTimestamp(0);
         }
-        // If only start date is given, search from then until now
-        else if (($from and $from->format($timeFormat) === $startDate) and ($from < $now)) {
-            $betweenStart = $from;
-            $betweenEnd = $now;
-        }
-        // If only end date is given, search from now until then
-        else if (($to and $to->format($timeFormat) === $endDate) and ($to > $now)) {
-            $betweenStart = $now;
-            $betweenEnd = $to;
-        }
-        // If none are given, don't filter on date
-        else {
-            $betweenStart = null;
-            $betweenEnd = null;
+        if($endDate!=null and $endDate!="null") {
+            $betweenEnd= Carbon::createFromFormat($timeFormat, $endDate);
+        } else {
+            $betweenEnd = Carbon::now();
         }
 
         // Add first part of select statement to query
@@ -148,16 +141,19 @@ class MeasurementController extends Controller
             $aggregation = null;
             $timeSelection = '`created_at`';
         }
-        $query = 'SELECT `station_name`, ' . $timeSelection . ', ';
+        $query = 'SELECT `station_name`, ' . $timeSelection;
 
         // Add columns to query
         $columns = collect(explode(',', $columns));
         // If PET is included then set the flag and remove the value from the collection
         if (in_array('PET', $columns->toArray())) {
             $includePET = true;
-            $columns->reject(function ($value, $key) {
+            // Remove PET from columns because it isn't a value in the database
+            $columns = $columns->reject(function ($value, $key) {
                 return $value === 'PET';
             });
+            // Add necessary columns for calculation
+            $columns = $columns->merge($columnsNecessaryForPET);
         }
         // If all is included then set columns to all of the allowed columns
         if (in_array('all', $columns->toArray())) {
@@ -166,6 +162,13 @@ class MeasurementController extends Controller
         }
         // Remove any disallowed columns
         $columns = $columns->intersect($columnsWhitelist);
+        // Check if columns is empty
+        if (count($columns) < 1) {
+            $query .= ' ';
+        }
+        else {
+            $query .= ', ';
+        }
         // Add the columns to the query
         foreach ($columns as $column) {
             if ($aggregation === 'avg') {
@@ -319,12 +322,23 @@ class MeasurementController extends Controller
             $createdAtDateTime->setTimezone($stationTimeZone);
 
             // Add new time to measurement
+            //If ungrouped replace the created_at value
             if ($measurement->offsetExists('created_at')) {
                 $measurement['created_at'] = $createdAtDateTime->format($timeFormat);
             }
+
+            // If grouped replace the time categories if they exist
+            if ($measurement->offsetExists('year')) {
+                $measurement['year'] = intval($createdAtDateTime->format('Y'));
+            }
+            if ($measurement->offsetExists('month')) {
+                $measurement['month'] = intval($createdAtDateTime->format('m'));
+            }
+            if ($measurement->offsetExists('day')) {
+                $measurement['day'] = intval($createdAtDateTime->format('d'));
+            }
             if ($measurement->offsetExists('hour')) {
                 $measurement['hour'] = intval($createdAtDateTime->format('H'));
-                $measurement['day'] = intval($createdAtDateTime->format('d'));
             }
         }
 

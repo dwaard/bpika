@@ -34565,8 +34565,6 @@ var map = {
 	"./tg.js": "./node_modules/moment/locale/tg.js",
 	"./th": "./node_modules/moment/locale/th.js",
 	"./th.js": "./node_modules/moment/locale/th.js",
-	"./tk": "./node_modules/moment/locale/tk.js",
-	"./tk.js": "./node_modules/moment/locale/tk.js",
 	"./tl-ph": "./node_modules/moment/locale/tl-ph.js",
 	"./tl-ph.js": "./node_modules/moment/locale/tl-ph.js",
 	"./tlh": "./node_modules/moment/locale/tlh.js",
@@ -37340,7 +37338,6 @@ webpackContext.id = "./node_modules/moment/locale sync recursive ^\\.\\/.*$";
             h: ['eine Stunde', 'einer Stunde'],
             d: ['ein Tag', 'einem Tag'],
             dd: [number + ' Tage', number + ' Tagen'],
-            w: ['eine Woche', 'einer Woche'],
             M: ['ein Monat', 'einem Monat'],
             MM: [number + ' Monate', number + ' Monaten'],
             y: ['ein Jahr', 'einem Jahr'],
@@ -37390,8 +37387,6 @@ webpackContext.id = "./node_modules/moment/locale sync recursive ^\\.\\/.*$";
             hh: '%d Stunden',
             d: processRelativeTime,
             dd: processRelativeTime,
-            w: processRelativeTime,
-            ww: '%d Wochen',
             M: processRelativeTime,
             MM: processRelativeTime,
             y: processRelativeTime,
@@ -37436,7 +37431,6 @@ webpackContext.id = "./node_modules/moment/locale sync recursive ^\\.\\/.*$";
             h: ['eine Stunde', 'einer Stunde'],
             d: ['ein Tag', 'einem Tag'],
             dd: [number + ' Tage', number + ' Tagen'],
-            w: ['eine Woche', 'einer Woche'],
             M: ['ein Monat', 'einem Monat'],
             MM: [number + ' Monate', number + ' Monaten'],
             y: ['ein Jahr', 'einem Jahr'],
@@ -37486,8 +37480,6 @@ webpackContext.id = "./node_modules/moment/locale sync recursive ^\\.\\/.*$";
             hh: '%d Stunden',
             d: processRelativeTime,
             dd: processRelativeTime,
-            w: processRelativeTime,
-            ww: '%d Wochen',
             M: processRelativeTime,
             MM: processRelativeTime,
             y: processRelativeTime,
@@ -37534,7 +37526,6 @@ webpackContext.id = "./node_modules/moment/locale sync recursive ^\\.\\/.*$";
             h: ['eine Stunde', 'einer Stunde'],
             d: ['ein Tag', 'einem Tag'],
             dd: [number + ' Tage', number + ' Tagen'],
-            w: ['eine Woche', 'einer Woche'],
             M: ['ein Monat', 'einem Monat'],
             MM: [number + ' Monate', number + ' Monaten'],
             y: ['ein Jahr', 'einem Jahr'],
@@ -37584,8 +37575,6 @@ webpackContext.id = "./node_modules/moment/locale sync recursive ^\\.\\/.*$";
             hh: '%d Stunden',
             d: processRelativeTime,
             dd: processRelativeTime,
-            w: processRelativeTime,
-            ww: '%d Wochen',
             M: processRelativeTime,
             MM: processRelativeTime,
             y: processRelativeTime,
@@ -39344,8 +39333,7 @@ webpackContext.id = "./node_modules/moment/locale sync recursive ^\\.\\/.*$";
             case 's':
                 return isFuture ? 'muutaman sekunnin' : 'muutama sekunti';
             case 'ss':
-                result = isFuture ? 'sekunnin' : 'sekuntia';
-                break;
+                return isFuture ? 'sekunnin' : 'sekuntia';
             case 'm':
                 return isFuture ? 'minuutin' : 'minuutti';
             case 'mm':
@@ -39800,24 +39788,6 @@ webpackContext.id = "./node_modules/moment/locale sync recursive ^\\.\\/.*$";
 
     //! moment.js locale configuration
 
-    var monthsStrictRegex = /^(janvier|février|mars|avril|mai|juin|juillet|août|septembre|octobre|novembre|décembre)/i,
-        monthsShortStrictRegex = /(janv\.?|févr\.?|mars|avr\.?|mai|juin|juil\.?|août|sept\.?|oct\.?|nov\.?|déc\.?)/i,
-        monthsRegex = /(janv\.?|févr\.?|mars|avr\.?|mai|juin|juil\.?|août|sept\.?|oct\.?|nov\.?|déc\.?|janvier|février|mars|avril|mai|juin|juillet|août|septembre|octobre|novembre|décembre)/i,
-        monthsParse = [
-            /^janv/i,
-            /^févr/i,
-            /^mars/i,
-            /^avr/i,
-            /^mai/i,
-            /^juin/i,
-            /^juil/i,
-            /^août/i,
-            /^sept/i,
-            /^oct/i,
-            /^nov/i,
-            /^déc/i,
-        ];
-
     var fr = moment.defineLocale('fr', {
         months: 'janvier_février_mars_avril_mai_juin_juillet_août_septembre_octobre_novembre_décembre'.split(
             '_'
@@ -39825,13 +39795,7 @@ webpackContext.id = "./node_modules/moment/locale sync recursive ^\\.\\/.*$";
         monthsShort: 'janv._févr._mars_avr._mai_juin_juil._août_sept._oct._nov._déc.'.split(
             '_'
         ),
-        monthsRegex: monthsRegex,
-        monthsShortRegex: monthsRegex,
-        monthsStrictRegex: monthsStrictRegex,
-        monthsShortStrictRegex: monthsShortStrictRegex,
-        monthsParse: monthsParse,
-        longMonthsParse: monthsParse,
-        shortMonthsParse: monthsParse,
+        monthsParseExact: true,
         weekdays: 'dimanche_lundi_mardi_mercredi_jeudi_vendredi_samedi'.split('_'),
         weekdaysShort: 'dim._lun._mar._mer._jeu._ven._sam.'.split('_'),
         weekdaysMin: 'di_lu_ma_me_je_ve_sa'.split('_'),
@@ -40687,7 +40651,7 @@ webpackContext.id = "./node_modules/moment/locale sync recursive ^\\.\\/.*$";
         },
         relativeTime: {
             future: '%s મા',
-            past: '%s પહેલા',
+            past: '%s પેહલા',
             s: 'અમુક પળો',
             ss: '%d સેકંડ',
             m: 'એક મિનિટ',
@@ -41862,7 +41826,9 @@ webpackContext.id = "./node_modules/moment/locale sync recursive ^\\.\\/.*$";
             sameElse: 'L',
         },
         relativeTime: {
-            future: 'tra %s',
+            future: function (s) {
+                return (/^[0-9].+$/.test(s) ? 'tra' : 'in') + ' ' + s;
+            },
             past: '%s fa',
             s: 'alcuni secondi',
             ss: '%d secondi',
@@ -47212,7 +47178,7 @@ webpackContext.id = "./node_modules/moment/locale sync recursive ^\\.\\/.*$";
         weekdaysMin: 'J2_J3_J4_J5_Al_Ij_J1'.split('_'),
         weekdaysParseExact: true,
         longDateFormat: {
-            LT: 'hh:mm A',
+            LT: 'HH:mm',
             LTS: 'HH:mm:ss',
             L: 'DD.MM.YYYY',
             LL: 'D MMMM YYYY',
@@ -47806,117 +47772,6 @@ webpackContext.id = "./node_modules/moment/locale sync recursive ^\\.\\/.*$";
     });
 
     return th;
-
-})));
-
-
-/***/ }),
-
-/***/ "./node_modules/moment/locale/tk.js":
-/*!******************************************!*\
-  !*** ./node_modules/moment/locale/tk.js ***!
-  \******************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-//! moment.js locale configuration
-//! locale : Turkmen [trk]
-//! author : Atamyrat Abdyrahmanov : https://github.com/atamyratabdy
-
-;(function (global, factory) {
-    true ? factory(__webpack_require__(/*! ../moment */ "./node_modules/moment/moment.js")) :
-   undefined
-}(this, (function (moment) { 'use strict';
-
-    //! moment.js locale configuration
-
-    var suffixes = {
-        1: "'inji",
-        5: "'inji",
-        8: "'inji",
-        70: "'inji",
-        80: "'inji",
-        2: "'nji",
-        7: "'nji",
-        20: "'nji",
-        50: "'nji",
-        3: "'ünji",
-        4: "'ünji",
-        100: "'ünji",
-        6: "'njy",
-        9: "'unjy",
-        10: "'unjy",
-        30: "'unjy",
-        60: "'ynjy",
-        90: "'ynjy",
-    };
-
-    var tk = moment.defineLocale('tk', {
-        months: 'Ýanwar_Fewral_Mart_Aprel_Maý_Iýun_Iýul_Awgust_Sentýabr_Oktýabr_Noýabr_Dekabr'.split(
-            '_'
-        ),
-        monthsShort: 'Ýan_Few_Mar_Apr_Maý_Iýn_Iýl_Awg_Sen_Okt_Noý_Dek'.split('_'),
-        weekdays: 'Ýekşenbe_Duşenbe_Sişenbe_Çarşenbe_Penşenbe_Anna_Şenbe'.split(
-            '_'
-        ),
-        weekdaysShort: 'Ýek_Duş_Siş_Çar_Pen_Ann_Şen'.split('_'),
-        weekdaysMin: 'Ýk_Dş_Sş_Çr_Pn_An_Şn'.split('_'),
-        longDateFormat: {
-            LT: 'HH:mm',
-            LTS: 'HH:mm:ss',
-            L: 'DD.MM.YYYY',
-            LL: 'D MMMM YYYY',
-            LLL: 'D MMMM YYYY HH:mm',
-            LLLL: 'dddd, D MMMM YYYY HH:mm',
-        },
-        calendar: {
-            sameDay: '[bugün sagat] LT',
-            nextDay: '[ertir sagat] LT',
-            nextWeek: '[indiki] dddd [sagat] LT',
-            lastDay: '[düýn] LT',
-            lastWeek: '[geçen] dddd [sagat] LT',
-            sameElse: 'L',
-        },
-        relativeTime: {
-            future: '%s soň',
-            past: '%s öň',
-            s: 'birnäçe sekunt',
-            m: 'bir minut',
-            mm: '%d minut',
-            h: 'bir sagat',
-            hh: '%d sagat',
-            d: 'bir gün',
-            dd: '%d gün',
-            M: 'bir aý',
-            MM: '%d aý',
-            y: 'bir ýyl',
-            yy: '%d ýyl',
-        },
-        ordinal: function (number, period) {
-            switch (period) {
-                case 'd':
-                case 'D':
-                case 'Do':
-                case 'DD':
-                    return number;
-                default:
-                    if (number === 0) {
-                        // special case for zero
-                        return number + "'unjy";
-                    }
-                    var a = number % 10,
-                        b = (number % 100) - a,
-                        c = number >= 100 ? 100 : null;
-                    return number + (suffixes[a] || suffixes[b] || suffixes[c]);
-            }
-        },
-        week: {
-            dow: 1, // Monday is the first day of the week.
-            doy: 7, // The week that contains Jan 7th is the first week of the year.
-        },
-    });
-
-    return tk;
 
 })));
 
@@ -49106,7 +48961,7 @@ webpackContext.id = "./node_modules/moment/locale sync recursive ^\\.\\/.*$";
         months: 'tháng 1_tháng 2_tháng 3_tháng 4_tháng 5_tháng 6_tháng 7_tháng 8_tháng 9_tháng 10_tháng 11_tháng 12'.split(
             '_'
         ),
-        monthsShort: 'Thg 01_Thg 02_Thg 03_Thg 04_Thg 05_Thg 06_Thg 07_Thg 08_Thg 09_Thg 10_Thg 11_Thg 12'.split(
+        monthsShort: 'Th01_Th02_Th03_Th04_Th05_Th06_Th07_Th08_Th09_Th10_Th11_Th12'.split(
             '_'
         ),
         monthsParseExact: true,
@@ -49850,7 +49705,7 @@ webpackContext.id = "./node_modules/moment/locale sync recursive ^\\.\\/.*$";
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(module) {var require;//! moment.js
-//! version : 2.27.0
+//! version : 2.26.0
 //! authors : Tim Wood, Iskren Chernev, Moment.js contributors
 //! license : MIT
 //! momentjs.com
@@ -55468,7 +55323,7 @@ webpackContext.id = "./node_modules/moment/locale sync recursive ^\\.\\/.*$";
 
     //! moment.js
 
-    hooks.version = '2.27.0';
+    hooks.version = '2.26.0';
 
     setHookCallback(createLocal);
 
@@ -58531,18 +58386,20 @@ function dashboard() {
     'color': "#F3EFF5"
   }];
   var today = new Date();
-  var sevenDaysAgo = new Date(today.setDate(today.getDate() - 7));
-  var timeString = sevenDaysAgo.getFullYear() + '-' + (sevenDaysAgo.getMonth() + 1) + '-' + sevenDaysAgo.getDate() + ' ' + sevenDaysAgo.getHours() + ':' + sevenDaysAgo.getMinutes() + ':' + sevenDaysAgo.getSeconds();
+  var sevenDaysAgo = new Date();
+  sevenDaysAgo.setDate(today.getDate() - 7);
+  console.log(sevenDaysAgo);
+  var timeString = sevenDaysAgo.toISOString();
   stations.forEach(function (station) {
     var temperatures = [];
-    var dates = [];
     jquery__WEBPACK_IMPORTED_MODULE_0__["ajax"]({
-      url: '/api/measurement/startDate=' + timeString + '&endDate=null&stations=' + station.name + '&grouping=hourly&aggregation=null&columns=all&order=desc',
+      url: '/api/measurement/startDate=' + timeString + '&endDate=null&stations=' + station.name + '&grouping=hourly&aggregation=avg&columns=PET&order=desc',
       dataType: 'json'
     }).done(function (response) {
       response.measurements.forEach(function (measurement) {
         temperatures.push({
-          x: new Date(measurement.year, measurement.month, measurement.day, measurement.hour),
+          // Subtract 1 from month because of difference in javascript and php data objects
+          x: new Date(measurement.year, measurement.month - 1, measurement.day, measurement.hour),
           y: measurement['Physiologically Equivalent Temperature [°C]']
         });
       });
@@ -58579,8 +58436,8 @@ window.onload = dashboard();
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(/*! C:\Users\Koen\Desktop\HZProject\BPIKA\bpika\resources\js\app.js */"./resources/js/app.js");
-module.exports = __webpack_require__(/*! C:\Users\Koen\Desktop\HZProject\BPIKA\bpika\resources\sass\app.scss */"./resources/sass/app.scss");
+__webpack_require__(/*! /var/www/resources/js/app.js */"./resources/js/app.js");
+module.exports = __webpack_require__(/*! /var/www/resources/sass/app.scss */"./resources/sass/app.scss");
 
 
 /***/ })
