@@ -1,5 +1,4 @@
 import * as $ from 'jquery';
-import moment from 'moment';
 
 function createChart() {
     const ctx = document.getElementById('chart').getContext('2d');
@@ -13,8 +12,31 @@ function createChart() {
             spanGaps:true,
             scales: {
                 xAxes: [{
-                  type: 'time'
+                    type: 'time',
+                    time: {
+                        unit: 'hour',
+                        displayFormats: {
+                            hour: 'MMM D H:mm'
+                        }
+                        // unit: 'day',
+                        // displayFormats: {
+                        //     day: 'MMM D H:mm'
+                        // }
+                    },
+                    scaleLabel: {
+                        display: true,
+                        labelString: 'Tijd in uren'
+                    }
+                }],
+                yAxes: [{
+                    scaleLabel: {
+                        display: true,
+                        labelString: 'temperatuur in °C'
+                    }
                 }]
+            },
+            legend: {
+                position: 'right'
             }
         }
     });
@@ -25,47 +47,62 @@ function dashboard() {
     let myChart = createChart();
     let stations = [
         {
-            'name': 'HZ1',
-            'color': "#3e95cd"
+            'name': 'Vredehof-Zuid',
+            'code': 'HZ1',
+            'color': "#0000ff"
         },
         {
-            'name': 'HZ2',
-            'color': "#F2555E"
-        },
-        {
-            'name': 'HZ3',
-            'color': "#FFE45E"
-        },
-        {
-            'name': 'HZ4',
+            'name': 'OudeBinnenstad',
+            'code': 'HZ4',
             'color': "#41BEAE"
         },
+        // {
+        //     'name': 'Binnenstad',
+        //     'code': 'HZ2',
+        //     'color': "#ff6666"
+        // },
         {
-            'name': 'HSR1',
-            'color': "#363537"
+            'name': 'Magistraatwijk',
+            'code': 'HZ3',
+            'color': "#ff0000"
         },
         {
-            'name': 'HSR2',
-            'color': "#A882DD"
+            'name': 'Liskwartier',
+            'code': 'HSR1',
+            'color': "#f4730b"
         },
         {
-            'name': 'VHL1',
-            'color': "#72B01D"
+            'name': 'Bloemhof',
+            'code': 'HSR2',
+            'color': "#f8ab6d"
         },
         {
-            'name': 'VHL2',
-            'color': "#F3EFF5"
+            'name': 'Stiens',
+            'code': 'VHL1',
+            'color': "#00ff00"
+        },
+        {
+            'name': 'Cambuursterpad',
+            'code': 'VHL2',
+            'color': "#7aff7a"
+        },
+        {
+            'name': 'Paddepoel',
+            'code': 'HHG1',
+            'color': "#973f73"
         },
     ];
     let today = new Date();
     let sevenDaysAgo = new Date();
     sevenDaysAgo.setDate(today.getDate()-7);
-    console.log(sevenDaysAgo);
     let timeString = sevenDaysAgo.toISOString();
 
     stations.forEach(function(station) {
         let temperatures = [];
-        $.ajax({url:'/api/measurement/startDate=' + timeString + '&endDate=null&stations=' + station.name + '&grouping=hourly&aggregation=avg&columns=PET&order=desc', dataType: 'json'}).done((response) => {
+        $.ajax({
+            url:'/api/measurement/startDate=' + timeString + '&endDate=null&stations=' + station.code + '&grouping=hourly&aggregation=avg&columns=PET&order=desc',
+            dataType: 'json'
+        }).done((response) => {
             response.measurements.forEach(measurement => {
                 temperatures.push({
                     // Subtract 1 from month because of difference in javascript and php data objects
@@ -74,7 +111,7 @@ function dashboard() {
                 });
             });
             myChart.data.datasets.push({
-                label: 'Station: ' + station.name,
+                label: station.name,
                 data: temperatures,
                 borderColor: station.color,
                 fill: false,
