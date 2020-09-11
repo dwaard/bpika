@@ -1,5 +1,4 @@
 import * as $ from 'jquery';
-import moment from 'moment';
 
 function createChart() {
     const ctx = document.getElementById('chart').getContext('2d');
@@ -13,7 +12,27 @@ function createChart() {
             spanGaps:true,
             scales: {
                 xAxes: [{
-                  type: 'time'
+                    type: 'time',
+                    time: {
+                        unit: 'hour',
+                        displayFormats: {
+                            hour: 'MMM D H:mm'
+                        }
+                        // unit: 'day',
+                        // displayFormats: {
+                        //     day: 'MMM D H:mm'
+                        // }
+                    },
+                    scaleLabel: {
+                        display: true,
+                        labelString: 'Tijd in uren'
+                    }
+                }],
+                yAxes: [{
+                    scaleLabel: {
+                        display: true,
+                        labelString: 'temperatuur in °C'
+                    }
                 }]
             }
         }
@@ -73,7 +92,6 @@ function dashboard() {
     let today = new Date();
     let sevenDaysAgo = new Date();
     sevenDaysAgo.setDate(today.getDate()-7);
-    console.log(sevenDaysAgo);
     let timeString = sevenDaysAgo.toISOString();
 
     stations.forEach(function(station) {
