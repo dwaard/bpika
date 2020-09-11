@@ -58513,11 +58513,12 @@ function dashboard() {
     'name': 'OudeBinnenstad',
     'code': 'HZ4',
     'color': "#41BEAE"
-  }, {
-    'name': 'Binnenstad',
-    'code': 'HZ2',
-    'color': "#ff6666"
-  }, {
+  }, // {
+  //     'name': 'Binnenstad',
+  //     'code': 'HZ2',
+  //     'color': "#ff6666"
+  // },
+  {
     'name': 'Magistraatwijk',
     'code': 'HZ3',
     'color': "#ff0000"
