@@ -7,14 +7,22 @@
     <title>Data Visualisation Test</title>
 </head>
 <body>
-     <!--TODO FIX ID FOR EVERY STATION-->
 <div class="brand">PET waardes van de afgelopen 7 dagen</div>
 <div class="container">
     <div class="row">
-            <div class="box col-12">
-            <canvas id="chart"></canvas>
-            </div>
+        <div class="box col-12">
+            <canvas class="mb-3" id="chart"></canvas>
+            <h3 class="text-center">De kleuren van de lijnen komt overeen met de stad waar het station te vinden is:</h3>
+            <ul>
+                <li>Vlissingen: <span style="color:blue">blauw</span></li>
+                <li>Middelburg: <span style="color:red">rood</span></li>
+                <li>Rotterdam: <span style="color:orange">oranje</span></li>
+                <li>Leeuwaarden: <span style="color:green">groen</span></li>
+                <li>Groningen: <span style="color:purple">paars</span></li>
+            </ul>
+        </div>
     </div>
+</div>
 <footer>
     <div class="container">
         <div class="row">

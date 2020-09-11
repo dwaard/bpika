@@ -34,6 +34,9 @@ function createChart() {
                         labelString: 'temperatuur in °C'
                     }
                 }]
+            },
+            legend: {
+                position: 'right'
             }
         }
     });
