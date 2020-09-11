@@ -8,7 +8,7 @@
 </head>
 <body>
      <!--TODO FIX ID FOR EVERY STATION-->
-<div class="brand">PET waardes van de afgelope 7 dagen</div>
+<div class="brand">PET waardes van de afgelopen 7 dagen</div>
 <div class="container">
     <div class="row">
             <div class="box col-12">
