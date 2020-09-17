@@ -13,14 +13,27 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+/**
+ * Public routes.
+ */
+Route::get('/dashboard', 'DashboardController@index')->name('dashboard');
+
+
+/**
+ * Authentication routes.
+ * Users must not be allowed to register themselves.
+ */
 Auth::routes(['register' => false]);
 
-Route::get('/', function () {
-    return view('welcome');
+
+/**
+ * Route group for all routes that are only allowed to authenticated and
+ * verified users.
+ */
+Route::middleware(['auth', 'verified'])->group(function () {
+
+    Route::get('/home', 'HomeController@index')->name('home');
+
+    Route::get('/profile','AccountController@edit')->name('account.edit');
+    Route::patch('/profile', 'AccountController@update')->name('account.update');
 });
-
-
-
-Route::get('dashboard', 'DashboardController@index');
-
-Route::get('/home', 'HomeController@index')->name('home');
