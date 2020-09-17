@@ -1,97 +1,19 @@
-import * as $ from 'jquery';
 
-function createChart() {
-    const ctx = document.getElementById('chart').getContext('2d');
+function createChart(chartId, options) {
+    const ctx = document.getElementById(chartId).getContext('2d');
 
     const myChart = new Chart(ctx, {
         type: 'line',
         data: {
             datasets: []
         },
-        options: {
-            spanGaps:true,
-            scales: {
-                xAxes: [{
-                    type: 'time',
-                    time: {
-                        unit: 'hour',
-                        displayFormats: {
-                            hour: 'MMM D H:mm'
-                        }
-                        // unit: 'day',
-                        // displayFormats: {
-                        //     day: 'MMM D H:mm'
-                        // }
-                    },
-                    scaleLabel: {
-                        display: true,
-                        labelString: 'Tijd in uren'
-                    }
-                }],
-                yAxes: [{
-                    scaleLabel: {
-                        display: true,
-                        labelString: 'temperatuur in °C'
-                    }
-                }]
-            },
-            legend: {
-                position: 'right'
-            }
-        }
+        options: options
     });
     return myChart;
 }
 
-function dashboard() {
-    let myChart = createChart();
-    let stations = [
-        {
-            'name': 'Vredehof-Zuid',
-            'code': 'HZ1',
-            'color': "#0000ff"
-        },
-        {
-            'name': 'OudeBinnenstad',
-            'code': 'HZ4',
-            'color': "#41BEAE"
-        },
-        // {
-        //     'name': 'Binnenstad',
-        //     'code': 'HZ2',
-        //     'color': "#ff6666"
-        // },
-        {
-            'name': 'Magistraatwijk',
-            'code': 'HZ3',
-            'color': "#ff0000"
-        },
-        {
-            'name': 'Liskwartier',
-            'code': 'HSR1',
-            'color': "#f4730b"
-        },
-        {
-            'name': 'Bloemhof',
-            'code': 'HSR2',
-            'color': "#f8ab6d"
-        },
-        {
-            'name': 'Stiens',
-            'code': 'VHL1',
-            'color': "#00ff00"
-        },
-        {
-            'name': 'Cambuursterpad',
-            'code': 'VHL2',
-            'color': "#7aff7a"
-        },
-        {
-            'name': 'Paddepoel',
-            'code': 'HHG1',
-            'color': "#973f73"
-        },
-    ];
+function dashboard(chartId, stations, options) {
+    let myChart = createChart(chartId, options);
     let today = new Date();
     let sevenDaysAgo = new Date();
     sevenDaysAgo.setDate(today.getDate()-7);
@@ -100,7 +22,7 @@ function dashboard() {
     stations.forEach(function(station) {
         let temperatures = [];
         $.ajax({
-            url:'/api/measurement/startDate=' + timeString + '&endDate=null&stations=' + station.code + '&grouping=hourly&aggregation=avg&columns=PET&order=desc',
+            url:'/api/measurement/startDate=' + timeString + '&endDate=null&stations=' + station.name + '&grouping=hourly&aggregation=avg&columns=PET&order=desc',
             dataType: 'json'
         }).done((response) => {
             response.measurements.forEach(measurement => {
@@ -111,7 +33,7 @@ function dashboard() {
                 });
             });
             myChart.data.datasets.push({
-                label: station.name,
+                label: station.title,
                 data: temperatures,
                 borderColor: station.color,
                 fill: false,
@@ -119,8 +41,14 @@ function dashboard() {
             myChart.update();
         });
     });
+};
 
 
-}
+// In order to make this work, the variables below need to be declared in the
+// blade file
+window.onload = dashboard(chartId, stations, options);
 
-window.onload = dashboard();
+
+
+
+

@@ -385,7 +385,4 @@ class MeasurementController extends Controller
         return false;
     }
 
-    public function dashboard() {
-        return view('dashboard');
-    }
 }

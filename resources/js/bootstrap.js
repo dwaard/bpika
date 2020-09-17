@@ -10,7 +10,9 @@ try {
     window.Popper = require('popper.js').default;
     window.$ = window.jQuery = require('jquery');
 
-    require('bootstrap');
+    // Dependencies for the dashboard
+    require('chart.js');
+    require('moment');
 } catch (e) {}
 
 /**
