@@ -7,74 +7,99 @@
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ config('app.name', 'Laravel') }}</title>
-
-    <!-- Scripts -->
-    <script src="{{ asset('js/app.js') }}" defer></script>
-
-    <!-- Fonts -->
-    <link rel="dns-prefetch" href="//fonts.gstatic.com">
-    <link href="https://fonts.googleapis.com/css?family=Nunito" rel="stylesheet">
+    <title>{{ config('app.name', 'BPiKA') }}</title>
 
     <!-- Styles -->
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+    @stack('styles')
 </head>
 <body>
     <div id="app">
-        <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">
-            <div class="container">
-                <a class="navbar-brand" href="{{ url('/') }}">
-                    {{ config('app.name', 'Laravel') }}
-                </a>
-                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="{{ __('Toggle navigation') }}">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
+        <header>
+            <nav class="navbar">
+                <div class="container">
+                    <div class="navbar-brand">
+                        <a href="/" class="navbar-item">
+                            <i class="fas fa-hat-wizard"></i>&nbsp;BPIKA
+                        </a>
+                        <a role="button" class="navbar-burger burger" aria-label="menu" aria-expanded="false"
+                           data-target="navMenu">
+                            <span aria-hidden="true"></span>
+                            <span aria-hidden="true"></span>
+                            <span aria-hidden="true"></span>
+                        </a>
+                    </div>
+                    <div class="navbar-menu" id="navMenu">
+                        {{-- Display page title in header --}}
+                        <div class="navbar-start">
+                            <h1 class="navbar-item has-text-weight-bold has-text-primary">@yield('page_title')</h1>
+                        </div>
+                        <div class="navbar-end">
+                            @if(Route::has('login'))
+                                @guest
+                                    @if (Route::has('register'))
+                                        {{-- show a dropdown to choose between login and register --}}
+                                        <div class="navbar-item has-dropdown is-hoverable">
+                                            <a class="navbar-link">{{ __('Login') }}</a>
 
-                <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                    <!-- Left Side Of Navbar -->
-                    <ul class="navbar-nav mr-auto">
+                                            <div class="navbar-dropdown">
+                                                <a class="navbar-item" href="{{ route('login') }}">{{ __('Login') }}</a>
+                                                <a class="navbar-item" href="{{ route('register') }}">{{ __('Register') }}</a>
+                                            </div>
+                                        </div>
+                                    @else
+                                        {{-- show only login --}}
+                                        <a class="navbar-item" href="{{ route('login') }}">{{ __('Login') }}</a>
+                                    @endif
+                                @else
+                                    <div class="navbar-item">
+                                        <div class="navbar-item has-dropdown is-hoverable">
+                                            <a class="navbar-link">{{ $user->name }}</a>
 
-                    </ul>
-
-                    <!-- Right Side Of Navbar -->
-                    <ul class="navbar-nav ml-auto">
-                        <!-- Authentication Links -->
-                        @guest
-                            <li class="nav-item">
-                                <a class="nav-link" href="{{ route('login') }}">{{ __('Login') }}</a>
-                            </li>
-                            @if (Route::has('register'))
-                                <li class="nav-item">
-                                    <a class="nav-link" href="{{ route('register') }}">{{ __('Register') }}</a>
-                                </li>
+                                            <div class="navbar-dropdown">
+                                                @if($user->isAdmin)
+                                                    <a class="navbar-item" href="/admin">
+                                                        <span class="icon"><i class="fas fa-toolbox"></i></span>
+                                                        <span>{{__('Admin')}}</span>
+                                                    </a>
+                                                @endif
+                                                <a class="navbar-item" href="{{route('account.edit')}}">
+                                                    <span class="icon"><i class="fas fa-user-cog"></i></span>
+                                                    <span>{{__('Profile')}}</span>
+                                                </a>
+                                                <hr class="dropdown-divider">
+                                                <a class="navbar-item" href="{{ route('logout') }}"
+                                                   onclick="event.preventDefault(); document.getElementById('frm-logout').submit();">
+                                                    <span class="icon"><i class="fas fa-sign-out-alt"></i></span>
+                                                    <span>{{__('Logout')}}</span>
+                                                </a>
+                                                <form id="frm-logout" action="{{ route('logout') }}" method="POST"
+                                                      style="display: none;">
+                                                    @csrf
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endguest
                             @endif
-                        @else
-                            <li class="nav-item dropdown">
-                                <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
-                                    {{ Auth::user()->name }}
-                                </a>
-
-                                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
-                                    <a class="dropdown-item" href="{{ route('logout') }}"
-                                       onclick="event.preventDefault();
-                                                     document.getElementById('logout-form').submit();">
-                                        {{ __('Logout') }}
-                                    </a>
-
-                                    <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
-                                        @csrf
-                                    </form>
-                                </div>
-                            </li>
-                        @endguest
-                    </ul>
+                        </div>
+                    </div>
                 </div>
-            </div>
-        </nav>
-
-        <main class="py-4">
+            </nav>
+        </header>
+        <main>
             @yield('content')
         </main>
+        <footer class="footer">
+            <div class="container">
+                <div class="content is-small has-text-centered">
+                    <div class="copyright">Copyright &copy; Burger Participatie in Klimaat Adaptatie (BPIKA) 2020</div>
+                </div>
+            </div>
+        </footer>
+        <!-- Scripts -->
+        <script src="{{ asset('js/app.js') }}" defer></script>
+        @stack('scripts')
     </div>
 </body>
 </html>
