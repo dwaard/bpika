@@ -39,6 +39,7 @@
                                 @endif
                             @else
                                 <div class="navbar-item">
+                                    @php($user = Auth::user())
                                     <div class="navbar-item has-dropdown is-hoverable">
                                         <a class="navbar-link">{{ $user->name }}</a>
 
@@ -74,9 +75,14 @@
         </nav>
     </header>
     <main>
-        <article class="">
-            @yield('article')
-        </article>
+        <div class="container">
+            <aside class="mb-2">
+                @include('layouts.notifications')
+            </aside>
+            <article class="">
+                @yield('article')
+            </article>
+        </div>
     </main>
     <footer class="footer">
         <div class="container">
