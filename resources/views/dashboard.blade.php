@@ -1,6 +1,4 @@
-@extends('common.master')
-
-@section('page_title', '')
+@extends('layouts.app')
 
 @section('content')
     <article class="">

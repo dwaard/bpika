@@ -1,4 +1,4 @@
-@extends('common.master')
+@extends('layouts.app')
 
 @section('content')
     <section class="hero  is-medium  is-bold is-primary">
