@@ -83,7 +83,7 @@
                                 <td>Grote warmtestress</td>
                             </tr>
                             <tr>
-                                <td>&gt;41/td>
+                                <td>&gt;41</td>
                                 <td>Zeer heet</td>
                                 <td>Extreme warmtestress</td>
                             </tr>
