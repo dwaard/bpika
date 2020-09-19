@@ -87,7 +87,7 @@
     <footer class="footer">
         <div class="container">
             <div class="content is-small has-text-centered">
-                <div class="copyright">Copyright &copy; Burger Participatie in Klimaat Adaptatie (BPIKA) 2020</div>
+                <div class="copyright">{{ __('content.copyright') }}</div>
             </div>
         </div>
     </footer>
