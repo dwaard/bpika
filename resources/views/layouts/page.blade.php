@@ -19,6 +19,11 @@
                     {{-- Display page title in header --}}
                     <div class="navbar-start">
                         <h1 class="navbar-item has-text-weight-bold has-text-primary">@yield('page_title')</h1>
+                        @auth
+                            <a class="navbar-item" href="{{ route('users.index') }}">
+                                <i class="fas fa-users"></i>&nbsp;{{ __('Users') }}
+                            </a>
+                        @endauth
                     </div>
                     <div class="navbar-end">
                         @if(Route::has('login'))

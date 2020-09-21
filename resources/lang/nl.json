@@ -68,5 +68,6 @@
     "Your settings are updated": "Uw gegevens zijn aangepast.",
     "Profile": "Profiel",
     "Admin user :username is created": "Admin gebruiker :username is aangemaakt",
-    "Admin User not created. See error messages below:": "Admin gebruiker is niet aangemaakt. Zie de foutmeldingen hieronder:"
+    "Admin User not created. See error messages below:": "Admin gebruiker is niet aangemaakt. Zie de foutmeldingen hieronder:",
+    "Users": "Gebruikers"
 }
