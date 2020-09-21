@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use App\User;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
 
 class CreateAdminUser extends Command
 {
@@ -13,7 +14,7 @@ class CreateAdminUser extends Command
      *
      * @var string
      */
-    protected $signature = 'admin:create {email}';
+    protected $signature = 'admin:create';
 
     /**
      * The console command description.
@@ -39,38 +40,68 @@ class CreateAdminUser extends Command
      */
     public function handle()
     {
-        // email address is taken as an argument
-        $email = $this->argument('email');
-
-        // ask for the username
-        $name = $this->ask('What is your name?');
-
-        // ask for password and confirmation
-        $password = $this->secret('What is the password?');
-        $password_confirm = $this->secret('Confirm the password');
-
-        if ($password == $password_confirm) {
-            $this->createUser($email, $name, $password);
-        } else {
-            $this->error('Passwords do not match');
+        $data = $this->getUserData();
+        $validator = Validator::make(
+            $data,
+            $this->getValidationRules()
+        );
+        if ($validator->fails()) {
+            $this->info(__('Admin User not created. See error messages below:'));
+            foreach ($validator->errors()->all() as $error) {
+                $this->error($error);
+            }
+            return 1;
         }
+        $user = $this->createUser($data);
+        $this->info(__("Admin user :username is created", [ 'username' => $user->name]));
     }
 
     /**
-     * @param $email
-     * @param $name
-     * @param $password
+     * Get the data from the user
+     *
+     * @return array
      */
-    private function createUser($email, $name, $password): void
+    protected function getUserData(): array
     {
-        $user = User::create([
-            'email' => $email,
-            'name' => $name,
-            'password' => Hash::make($password)
-        ]);
-        // Do stuff here to make the user an admin user
-        $user->email_verified_at = now();
-        $user->save();
-        $this->info("Admin user $user->name is created");
+        return [
+            'name' => $this->ask(__('Name')),
+            'email' => $this->ask(__('E-Mail Address')),
+            'password' => $this->secret(__('Password')),
+            'password_confirmation' => $this->secret(__('Confirm Password')),
+        ];
     }
+
+    /**
+     * The rules to validate the user data.
+     *
+     * @return array
+     */
+    protected function getValidationRules(): array
+    {
+        return [
+            'name' => ['required'],
+            'email' => ['required', 'email', 'unique:users,email'],
+            'password' => ['required', 'min:8', 'confirmed'],
+        ];
+    }
+
+    /**
+     * Create the admin user.
+     *
+     * @param array $data
+     * @return mixed
+     */
+    protected function createUser(array $data): User
+    {
+        // Hash the password before creation
+        $data['password'] = Hash::make($data['password']);
+
+        $user = User::create($data);
+        // Do all the stuff here to make the user an admin user
+        $user->email_verified_at = now();
+
+        $user->save();
+        return $user;
+    }
+
 }

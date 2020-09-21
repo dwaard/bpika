@@ -66,5 +66,7 @@
     "This action is unauthorized.": "Deze actie is niet toegestaan.",
     "Update your account profile": "Wijzig uw accountprofiel",
     "Your settings are updated": "Uw gegevens zijn aangepast.",
-    "Profile": "Profiel"
+    "Profile": "Profiel",
+    "Admin user :username is created": "Admin gebruiker :username is aangemaakt",
+    "Admin User not created. See error messages below:": "Admin gebruiker is niet aangemaakt. Zie de foutmeldingen hieronder:"
 }
