@@ -1,6 +1,9 @@
 @extends('layouts.page')
 
 @section('article')
+    <a class="button is-primary" href="{{ route('users.create') }}">
+        <i class="fas fa-user-plus"></i>
+    </a>
     <table class="table">
         <thead>
         <tr>

@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Redirector;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
 
@@ -33,7 +34,7 @@ class UserController extends Controller
     /**
      * Show the form for creating a new resource.
      *
-     * @return void
+     * @return Application|Factory|View
      */
     public function create()
     {
@@ -53,11 +54,7 @@ class UserController extends Controller
             'email' => 'required|email|unique:users,email'
         ]);
 
-        $validated['password'] = Str::random(40);
-
-        $user = User::create($validated);
-
-        $user->sendEmailVerificationNotification();
+        Mail::to($validated['email'])->send(new UserInvited($validated));
 
         return redirect(route('users.index'))
             ->with('success', __('Email is sent to invited user'));

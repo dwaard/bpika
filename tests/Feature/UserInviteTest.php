@@ -2,26 +2,30 @@
 
 namespace Tests\Feature;
 
+use App\Mail\UserInvited;
 use App\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
+use Illuminate\Support\Facades\Mail;
 use Tests\TestCase;
 
 class UserInviteTest extends TestCase
 {
     use RefreshDatabase, WithFaker;
 
-    public function testUnauthorizedShouldResponse404()
+    public function testUnauthorizedShouldRedirectToLogin()
     {
         $response = $this->post('/users');
 
-        $response->assertUnauthorized();
+        $response->assertRedirect('login');
     }
 
     public function testStoreUserHappyPath()
     {
         // See exceptions in the console
         $this->withoutExceptionHandling();
+
+        Mail::fake();
 
         $user = factory(User::class)->create();
         $user->markEmailAsVerified();
@@ -39,12 +43,8 @@ class UserInviteTest extends TestCase
             'Response returned status code 500');
         $response->assertSessionHas('success');
         $response->assertRedirect('/users');
-        $this->assertDatabaseHas('users', [
-            'name' => $invitee->name,
-            'email' => $invitee->email,
-            'email_verified_at' => null
-        ]);
-        // Sending the verification notification mail is not tested.
+
+        Mail::assertSent(UserInvited::class);
     }
 
     public function testStoreUserWithoutEmailShouldHaveErrors()
