@@ -1,14 +1,14 @@
 @component('mail::message')
-# Introduction
+# @lang('Account invitation')
 
-You received this mail because you are invited for an account on {{ config('app.name') }}.
+@lang('You are receiving this email because we invited you for an account.')
 
-You have three days to accept the invitation.
+@lang('You have three days to accept the invitation.')
 
 @component('mail::button', ['url' => $url])
 {{__('Accept invitation and register your account now')}}
 @endcomponent
 
-Thanks,<br>
+@lang('Thanks'),<br>
 {{ config('app.name') }}
 @endcomponent

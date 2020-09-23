@@ -6,6 +6,24 @@
         <form method="POST" action="{{ route('register') }}" class="box">
             @csrf
             <div class="field">
+                <label for="email" class="label">{{ __('E-Mail Address') }}</label>
+                <div class="control has-icons-left has-icons-right">
+                    <input type="email" name="email" class="input is-static @error('email') is-danger @enderror"
+                           value="{{  $data['email'] ? $data['email'] : old('email') }}" readonly>
+                    <span class="icon is-small is-left">
+                    <i class="fas fa-envelope"></i>
+                </span>
+                    @error('email')
+                    <span class="icon is-small is-right">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </span>
+                    @enderror
+                </div>
+                @error('email')
+                <p class="help is-danger">{{ $message }}</p>
+                @enderror
+            </div>
+            <div class="field">
                 <label for="name" class="label">{{ __('Name') }}</label>
                 <div class="control has-icons-left has-icons-right">
                     <input type="name" name="name" placeholder="{{ __('e.g. John Doe') }}"
@@ -21,24 +39,6 @@
                     @enderror
                 </div>
                 @error('name')
-                <p class="help is-danger">{{ $message }}</p>
-                @enderror
-            </div>
-            <div class="field">
-                <label for="email" class="label">{{ __('E-Mail Address') }}</label>
-                <div class="control has-icons-left has-icons-right">
-                    <input type="email" name="email" class="input @error('email') is-danger @enderror"
-                           value="{{  $data['email'] ? $data['email'] : old('email') }}" readonly>
-                    <span class="icon is-small is-left">
-                    <i class="fas fa-envelope"></i>
-                </span>
-                    @error('email')
-                    <span class="icon is-small is-right">
-                    <i class="fas fa-exclamation-triangle"></i>
-                </span>
-                    @enderror
-                </div>
-                @error('email')
                 <p class="help is-danger">{{ $message }}</p>
                 @enderror
             </div>
