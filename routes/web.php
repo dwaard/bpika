@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -23,7 +24,7 @@ Route::get('/dashboard', 'DashboardController@index')->name('dashboard');
  * Authentication routes.
  * Users must not be allowed to register themselves.
  */
-Auth::routes(['register' => false]);
+Auth::routes(['register' => false, 'verify' => true]);
 
 
 /**
@@ -32,9 +33,9 @@ Auth::routes(['register' => false]);
  */
 Route::middleware(['auth', 'verified'])->group(function () {
 
-    Route::get('/home', 'HomeController@index')->name('home');
+    Route::get('home', 'HomeController@index')->name('home');
     Route::resource('users', 'UserController');
 
-    Route::get('/profile','AccountController@edit')->name('account.edit');
-    Route::patch('/profile', 'AccountController@update')->name('account.update');
+    Route::get('profile','AccountController@edit')->name('account.edit');
+    Route::patch('profile', 'AccountController@update')->name('account.update');
 });

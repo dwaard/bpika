@@ -2,11 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\UserInvited;
 use App\User;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Routing\Redirector;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Str;
 use Illuminate\View\View;
 
 class UserController extends Controller
@@ -32,18 +37,30 @@ class UserController extends Controller
      */
     public function create()
     {
-        //
+        return view('users.create');
     }
 
     /**
      * Store a newly created resource in storage.
      *
      * @param Request $request
-     * @return void
+     * @return Application|RedirectResponse|Redirector
      */
     public function store(Request $request)
     {
-        //
+        $validated = $request->validate([
+            'name' => 'required|string',
+            'email' => 'required|email|unique:users,email'
+        ]);
+
+        $validated['password'] = Str::random(40);
+
+        $user = User::create($validated);
+
+        $user->sendEmailVerificationNotification();
+
+        return redirect(route('users.index'))
+            ->with('success', __('Email is sent to invited user'));
     }
 
     /**
