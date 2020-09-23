@@ -24,8 +24,7 @@ Route::get('/dashboard', 'DashboardController@index')->name('dashboard');
  * Authentication routes.
  * Users must not be allowed to register themselves.
  */
-Auth::routes(['register' => false, 'verify' => true]);
-
+Auth::routes(['register' => true, 'verify' => false]);
 
 /**
  * Route group for all routes that are only allowed to authenticated and

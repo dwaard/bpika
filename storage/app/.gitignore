@@ -1,4 +1,3 @@
-/*
-!/public
-!/test
+*
+!public/
 !.gitignore
