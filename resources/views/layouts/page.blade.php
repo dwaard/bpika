@@ -6,7 +6,7 @@
             <div class="container">
                 <div class="navbar-brand">
                     <a href="/" class="navbar-item">
-                        <i class="fas fa-hat-wizard"></i>&nbsp;BPIKA
+                        <i class="fas fa-hat-wizard"></i>&nbsp;{{ __('content.navbar_home') }}
                     </a>
                     <a role="button" class="navbar-burger burger" aria-label="menu" aria-expanded="false"
                        data-target="navMenu">
@@ -98,11 +98,27 @@
             </article>
         </div>
     </main>
-    <footer class="footer">
-        <div class="container">
-            <div class="content is-small has-text-centered">
-                <div class="copyright">{{ __('content.copyright') }}</div>
+    <footer class="footer columns is-vcentered">
+            <div class="column columns is-vcentered">
+                <div class="column">
+                    <img class="img-fluid" src="{{ asset('img/HUISSTIJL_HZ_LOGO_960x593.jpg/') }}" alt="">
+                </div>
+                <div class="column">
+                    <img class="img-fluid" src="{{ asset('img/Hanzehogeschool.png/') }}" alt="">
+                </div>
             </div>
-        </div>
+            <div class="column">
+                <div class="content is-small has-text-centered">
+                    <div class="copyright">{{ __('content.copyright') }}</div>
+                </div>
+            </div>
+            <div class="column columns is-vcentered">
+                <div class="column">
+                    <img class="img-fluid" src="{{ asset('img/logo-hogeschool-rotterdam.png/') }}" alt="">
+                </div>
+                <div class="column">
+                    <img class="img-fluid" src="{{ asset('img/vhl_logo_kleur_rgb_voetje.jpg/') }}" alt="">
+                </div>
+            </div>
     </footer>
 @endsection
