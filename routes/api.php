@@ -14,7 +14,9 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:api')->get('/user', 'UserController@getCurrentUser');
+Route::middleware('auth:api')->group(function() {
+    Route::get('user', 'Api\UserController@user');
+});
 
 Route::get('ping', 'Api\PingController@handle');
 

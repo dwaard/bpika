@@ -32,7 +32,7 @@ class MeasurementController extends Controller
 
         if ($this->requestCameBeforeTimeout($validated)) {
 
-            $msg = 'Already added measurement less than '.env('REQUEST_TIMEOUT_IN_SECONDS').' seconds ago.';
+            $msg = 'Already added measurement less than ' . env('REQUEST_TIMEOUT_IN_SECONDS') . ' seconds ago.';
 
             return new Response(['error' => $msg],Response::HTTP_PRECONDITION_FAILED);
 
