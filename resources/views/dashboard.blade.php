@@ -9,10 +9,13 @@
                 <i>{{ __('content.PET_explanation_source') }}.</i>
             </p>
         </div>
-        <div class="column is-four-fifths-fullhd is-three-quarters-desktop is-full-tablet">
-            <h1>{{ __('content.chart_title') }}</h1>
+        <div class="column is-four-fifths-fullhd is-three-quarters-desktop is-full-tablet content">
+            <h1 class="is-medium has-text-centered">{{ __('content.chart_title') }}</h1>
             <canvas class="mb-3" id="PET_chart"></canvas>
             <section class="is-size-6">
+                <p class="mb-5">{{ __('content.chart_explanation') }}
+                    <a target="_blank" href="https://www.bpika.hz.nl/">{{ __('content.wiki_link') }}</a>
+                </p>
                 <table class="table table-bordered">
                     <tr>
                         <th>{{ __('content.temperature_stress.columns.PET') }}</th>

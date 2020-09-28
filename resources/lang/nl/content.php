@@ -14,6 +14,7 @@ return [
     'logged_in' => 'U bent ingelogd',
     'dashboard' => 'Dashboard',
     'copyright' => 'Copyright © Burger Participatie in Klimaat Adaptatie (BPIKA) 2020',
+    'navbar_home' => 'Burgerparticipatie in Klimaatadaptatie',
 
     // Dashboard
     'PET_explanation_title' => 'Gevoelstemperatuur volgens de PET-schaal',
@@ -39,6 +40,14 @@ return [
                         van het project BPiKA',
     'chart_x_axis' => 'Tijd in uren',
     'chart_y_axis' => 'PET in °C',
+    'chart_explanation' => 'In het project Burgerparticipatie in Klimaatadaptatie (BPiKA)
+                            doen vier hogescholen samen onderzoek naar (extreem) weer in stedelijk gebied.
+                            We meten onder meer hitte en neerslag. Bovenstaande grafiek toont de PET gevoelstemperatuur
+                            in twee wijken in Middelburg, Vlissingen, Rotterdam, Leeuwarden en Groningen.
+                            In iedere wijk hangt een weerstation. Met de weergegevens wordt
+                            de PET gevoelstemperatuur uitgerekend en de grafiek toont steeds de gevoelstemperatuur
+                            over een periode van zeven dagen. Meer informatie over BPiKA kunt u vinden op ',
+    'wiki_link' => 'BPiKA',
     'temperature_stress' => [
         'columns' => [
             'PET' => 'PET (ºC)',
