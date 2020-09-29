@@ -35,7 +35,8 @@
 
                                         <div class="navbar-dropdown">
                                             <a class="navbar-item" href="{{ route('login') }}">{{ __('Login') }}</a>
-                                            <a class="navbar-item" href="{{ route('register') }}">{{ __('Register') }}</a>
+                                            <a class="navbar-item"
+                                               href="{{ route('register') }}">{{ __('Register') }}</a>
                                         </div>
                                     </div>
                                 @else
@@ -80,12 +81,20 @@
         </nav>
     </header>
     <main>
-        <div class="container">
+        <div class="">
             <aside class="mb-2">
                 @include('layouts.notifications')
             </aside>
-            <article class="">
-                @yield('article')
+            <article class="container">
+                <section class="section">
+                    <div class="columns">
+
+                        <div class="column is-offset-3-desktop is-6-desktop is-12-tablet">
+
+                            <section class="content">@yield('article')</section>
+                        </div>
+                    </div>
+                </section>
             </article>
         </div>
     </main>

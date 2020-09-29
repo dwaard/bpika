@@ -98,10 +98,16 @@ class UserController extends Controller
      * Remove the specified resource from storage.
      *
      * @param  \App\User  $user
-     * @return Response
+     * @return Application|RedirectResponse|Response|Redirector
      */
     public function destroy(User $user)
     {
-        //
+        $user->delete();
+
+        return redirect(route('users.index'))->with(
+            'success', __('User :name is successfully deleted.', [
+                'name'=>$user->name
+            ])
+        );
     }
 }
