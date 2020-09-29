@@ -110,4 +110,13 @@ class UserController extends Controller
             ])
         );
     }
+
+    /**
+     * @param Request $request
+     * @return mixed
+     */
+    public function getCurrentUser(Request $request) {
+
+        return $request->user();
+    }
 }
