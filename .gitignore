@@ -1,5 +1,6 @@
-# Created by https://www.gitignore.io/api/laravel,phpstorm+all
-# Edit at https://www.gitignore.io/?templates=laravel,phpstorm+all
+
+# Created by https://www.gitignore.io/api/laravel,phpstorm,visualstudiocode
+# Edit at https://www.gitignore.io/?templates=laravel,phpstorm,visualstudiocode
 
 ### Laravel ###
 /vendor/
@@ -16,19 +17,16 @@ public/storage
 public/hot
 storage/*.key
 .env
-.env.backup
 Homestead.yaml
 Homestead.json
 /.vagrant
 .phpunit.result.cache
+public/js/app.js.LICENSE.txt
 
-# Laradock
-/laradock*
-
-### PhpStorm+all ###
+### PhpStorm ###
 # Covers JetBrains IDEs: IntelliJ, RubyMine, PhpStorm, AppCode, PyCharm, CLion, Android Studio and WebStorm
 # Reference: https://intellij-support.jetbrains.com/hc/en-us/articles/206544839
-
+.idea
 # User-specific stuff
 .idea/**/workspace.xml
 .idea/**/tasks.xml
@@ -95,20 +93,36 @@ fabric.properties
 # Android studio 3.1+ serialized cache file
 .idea/caches/build_file_checksums.ser
 
-### PhpStorm+all Patch ###
-# Ignores the whole .idea folder and all .iml files
-# See https://github.com/joeblau/gitignore.io/issues/186 and https://github.com/joeblau/gitignore.io/issues/360
+### PhpStorm Patch ###
+# Comment Reason: https://github.com/joeblau/gitignore.io/issues/186#issuecomment-215987721
 
-.idea/
-
-# Reason: https://github.com/joeblau/gitignore.io/issues/186#issuecomment-249601023
-
-*.iml
-modules.xml
-.idea/misc.xml
-*.ipr
+# *.iml
+# modules.xml
+# .idea/misc.xml
+# *.ipr
 
 # Sonarlint plugin
-.idea/sonarlint
+.idea/**/sonarlint/
 
-# End of https://www.gitignore.io/api/laravel,phpstorm+all
+# SonarQube Plugin
+.idea/**/sonarIssues.xml
+
+# Markdown Navigator plugin
+.idea/**/markdown-navigator.xml
+.idea/**/markdown-navigator/
+
+### VisualStudioCode ###
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+### VisualStudioCode Patch ###
+# Ignore all local history of files
+.history
+
+# End of https://www.gitignore.io/api/laravel,phpstorm,visualstudiocode
+
+### Laradock ###
+/laradock*
