@@ -14,7 +14,7 @@ class Station extends Model
      *
      * @var string
      */
-    protected $primaryKey = 'name';
+    protected $primaryKey = 'code';
 
     /**
      * The "type" of the auto-incrementing ID.
@@ -43,8 +43,13 @@ class Station extends Model
      * @var array
      */
     protected $fillable = [
-        'name'
+        'code',
+        'city',
+        'name',
+        'chart_color',
+        'latitude',
+        'longitude',
+        'timezone',
+        'enabled'
     ];
-
-
 }

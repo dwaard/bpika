@@ -4,7 +4,11 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Requests\StoreMeasurementRequest;
 use App\Services\PETService;
+use App\Station;
 use DateTimeInterface;
+use Exception;
+use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Routing\Controller;
 use App\Measurement;
 use Carbon\Carbon;
@@ -46,6 +50,18 @@ class MeasurementController extends Controller
 
     }
 
+    /**
+     * @param PETService $petservice
+     * @param null $startDate
+     * @param null $endDate
+     * @param string $stations
+     * @param null $grouping
+     * @param string $aggregation
+     * @param string $columns
+     * @param string $order
+     * @return Application|ResponseFactory|Response
+     * @throws Exception
+     */
     public function getJSON(PETService $petservice,
                             $startDate = null,
                             $endDate = null,
@@ -86,18 +102,11 @@ class MeasurementController extends Controller
             'sun_total',
         ]);
         // All of the known weather stations
-        // TODO get stations from database
-        $stationsWhitelist = collect([
-            'HZ1',
-            'HZ2',
-            'HZ3',
-            'HZ4',
-            'VHL1',
-            'VHL2',
-            'HSR1',
-            'HSR2',
-            'HHG1'
-        ]);
+        $allAvailableStations = Station::all();
+        $stationsWhitelist = collect([]);
+        foreach ($allAvailableStations as $station) {
+            $stationsWhitelist->add($station->code);
+        }
 
         // All of the columns necessary to calculate the PET value
         $columnsNecessaryForPET = collect([
@@ -293,6 +302,9 @@ class MeasurementController extends Controller
                 $createdAtUTC = $createdAtDateTime->format($timeFormat);
             }
 
+            // Get station object
+            $station = Station::find($measurement['station_name']);
+
             // if PET is included, add the PET value
             if ($includePET) {
 
@@ -301,9 +313,8 @@ class MeasurementController extends Controller
                 $solarRadiation = $measurement['sol_rad'];
                 $humidity = $measurement['th_hum'];
                 $windspeed = $measurement['wind_avgwind'];
-                // TODO get coordinates from station
-                $latitude = 52.;
-                $longitude = 5.1;
+                $latitude = $station->latitude;
+                $longitude = $station->longitude;
 
                 // Calculate and add the PET value
                 $pet = $petservice->computePETFromMeasurement(  $createdAtUTC,
@@ -317,8 +328,7 @@ class MeasurementController extends Controller
             }
 
             // Convert time from UTC to the timezone from the station
-            // TODO get timezone from station
-            $stationTimeZone = new DateTimeZone('Europe/Amsterdam');
+            $stationTimeZone = new DateTimeZone($station->timezone);
             $createdAtDateTime->setTimezone($stationTimeZone);
 
             // Add new time to measurement

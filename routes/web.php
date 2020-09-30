@@ -35,6 +35,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::get('/home', 'HomeController@index')->name('home');
 
+    Route::resource('stations', 'StationController');
+
     Route::get('/profile','AccountController@edit')->name('account.edit');
     Route::patch('/profile', 'AccountController@update')->name('account.update');
 });

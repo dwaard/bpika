@@ -31,7 +31,7 @@ function loadData(chartId, stations, options) {
                 $.ajax({
                     url: '/api/measurement/startDate=' + timeString + '&' +
                                             'endDate=null&' +
-                                            'stations=' + station.name + '&' +
+                                            'stations=' + station.code + '&' +
                                             'grouping=hourly&' +
                                             'aggregation=avg&' +
                                             'columns=PET&' +
@@ -51,9 +51,9 @@ function loadData(chartId, stations, options) {
 
                     // Push the data to graphs
                     graphs.push({
-                        'label': station.title,
+                        'label': station.city + ': ' + station.name,
                         'data': measurements,
-                        'borderColor': station.color,
+                        'borderColor': station.chart_color,
                         'fill': false
                     });
                 // Return resolve
