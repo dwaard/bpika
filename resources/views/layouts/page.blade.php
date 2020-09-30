@@ -20,6 +20,9 @@
                     <div class="navbar-start">
                         <h1 class="navbar-item has-text-weight-bold has-text-primary">@yield('page_title')</h1>
                         @auth
+                            <a class="navbar-item" href="{{ route('stations.index') }}">
+                                <i class="fas fa-home"></i>&nbsp;{{ __('Stations') }}
+                            </a>
                             <a class="navbar-item" href="{{ route('users.index') }}">
                                 <i class="fas fa-users"></i>&nbsp;{{ __('Users') }}
                             </a>
@@ -82,14 +85,16 @@
     </header>
     <main>
         <div class="">
-            <aside class="mb-2">
-                @include('layouts.notifications')
-            </aside>
             <article class="container">
                 <section class="section">
                     <div class="columns">
 
-                        <div class="column is-offset-3-desktop is-6-desktop is-12-tablet">
+                        <div class="column is-offset-2-widescreen is-8-widescreen
+                                           is-offset-1-desktop is-10-desktop
+                                           is-12-tablet">
+                            <aside class="mb-2">
+                                @include('layouts.notifications')
+                            </aside>
 
                             <section class="content">@yield('article')</section>
                         </div>
