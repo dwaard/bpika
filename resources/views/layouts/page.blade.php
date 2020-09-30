@@ -31,21 +31,8 @@
                     <div class="navbar-end">
                         @if(Route::has('login'))
                             @guest
-                                @if (Route::has('register'))
-                                    {{-- show a dropdown to choose between login and register --}}
-                                    <div class="navbar-item has-dropdown is-hoverable">
-                                        <a class="navbar-link">{{ __('Login') }}</a>
-
-                                        <div class="navbar-dropdown">
-                                            <a class="navbar-item" href="{{ route('login') }}">{{ __('Login') }}</a>
-                                            <a class="navbar-item"
-                                               href="{{ route('register') }}">{{ __('Register') }}</a>
-                                        </div>
-                                    </div>
-                                @else
-                                    {{-- show only login --}}
-                                    <a class="navbar-item" href="{{ route('login') }}">{{ __('Login') }}</a>
-                                @endif
+                                {{-- show only login --}}
+                                <a class="navbar-item" href="{{ route('login') }}">{{ __('Login') }}</a>
                             @else
                                 <div class="navbar-item">
                                     @php($user = Auth::user())
