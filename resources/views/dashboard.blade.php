@@ -1,15 +1,15 @@
 @extends('layouts.page')
 
 @section('main')
-    <div class="columns">
-        <div class="column is-one-fifth-fullhd is-one-quarter-desktop is-full-tablet is-size-6">
+    <div class="columns is-desktop">
+        <div class="column is-one-fifth-fullhd is-one-quarter-desktop">
             <h2 class="has-text-weight-bold">{{ __('content.PET_explanation_title') }}</h2>
             <p>{{ __('content.PET_explanation') }}</p>
             <p>
                 <i>{{ __('content.PET_explanation_source') }}.</i>
             </p>
         </div>
-        <div class="column is-four-fifths-fullhd is-three-quarters-desktop is-full-tablet content">
+        <div class="column is-four-fifths-fullhd is-three-quarters-desktop content">
             <h1 class="is-medium has-text-centered">{{ __('content.chart_title') }}</h1>
             <canvas class="mb-3" id="PET_chart"></canvas>
             <section class="is-size-6">
