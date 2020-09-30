@@ -14,7 +14,7 @@ class PageTest extends TestCase
     public function testHomePage()
     {
         $response = $this->get('/home');
-        $response->assertStatus(401);
+        $response->assertStatus(302);
     }
 
     public function testDashboardPage()

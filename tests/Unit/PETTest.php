@@ -7,10 +7,13 @@ use App\Services\PETService;
 use App\Station;
 use DateTime;
 use DateTimeZone;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
 class PETTest extends TestCase {
+
+    use RefreshDatabase;
 
     /**
      * @var PETService
