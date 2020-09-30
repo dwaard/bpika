@@ -13,7 +13,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - name: Copy .env.old
+    - name: Copy .env from .env.example
       run: php -r "file_exists('.env') || copy('.env.example', '.env');"
     - name: Install Dependencies
       run: composer install -q --no-ansi --no-interaction --no-scripts --no-suggest --no-progress --prefer-dist
@@ -33,4 +33,4 @@ jobs:
         DB_CONNECTION: sqlite
         DB_DATABASE: database/database.sqlite
         REQUEST_TIMEOUT_IN_SECONDS: 55
-      run: vendor/bin/phpunit
+      run: php ./vendor/bin/phpunit
