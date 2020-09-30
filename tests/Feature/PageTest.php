@@ -2,10 +2,13 @@
 
 namespace Tests\Feature;
 
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 class PageTest extends TestCase
 {
+    use RefreshDatabase;
+
     /**
      * A basic test example.
      *
