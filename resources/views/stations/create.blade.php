@@ -1,4 +1,4 @@
-@extends('layouts.page')
+@extends('layouts.backendpage')
 
 @section('article')
     <div class="column is-offset-3-desktop is-6-desktop is-12-tablet">

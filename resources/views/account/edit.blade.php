@@ -1,4 +1,4 @@
-@extends('layouts.page')
+@extends('layouts.backendpage')
 
 @section('article')
     <section class="hero  is-medium  is-bold is-primary">

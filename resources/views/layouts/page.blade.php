@@ -73,44 +73,31 @@
     <main>
         <div class="">
             <article class="container">
-                <section class="section">
-                    <div class="columns">
-
-                        <div class="column is-offset-2-widescreen is-8-widescreen
-                                           is-offset-1-desktop is-10-desktop
-                                           is-12-tablet">
-                            <aside class="mb-2">
-                                @include('layouts.notifications')
-                            </aside>
-
-                            <section class="content">@yield('article')</section>
-                        </div>
-                    </div>
-                </section>
+                @yield('main')
             </article>
         </div>
     </main>
     <footer class="footer columns is-vcentered">
-            <div class="column columns is-vcentered">
-                <div class="column">
-                    <img class="img-fluid" src="{{ asset('img/HUISSTIJL_HZ_LOGO_960x593.jpg/') }}" alt="">
-                </div>
-                <div class="column">
-                    <img class="img-fluid" src="{{ asset('img/Hanzehogeschool.png/') }}" alt="">
-                </div>
+        <div class="column columns is-vcentered">
+            <div class="column">
+                <img class="img-fluid" src="{{ asset('img/HUISSTIJL_HZ_LOGO_960x593.jpg/') }}" alt="">
             </div>
             <div class="column">
-                <div class="content is-small has-text-centered">
-                    <div class="copyright">{{ __('content.copyright') }}</div>
-                </div>
+                <img class="img-fluid" src="{{ asset('img/Hanzehogeschool.png/') }}" alt="">
             </div>
-            <div class="column columns is-vcentered">
-                <div class="column">
-                    <img class="img-fluid" src="{{ asset('img/logo-hogeschool-rotterdam.png/') }}" alt="">
-                </div>
-                <div class="column">
-                    <img class="img-fluid" src="{{ asset('img/vhl_logo_kleur_rgb_voetje.jpg/') }}" alt="">
-                </div>
+        </div>
+        <div class="column">
+            <div class="content is-small has-text-centered">
+                <div class="copyright">{{ __('content.copyright') }}</div>
             </div>
+        </div>
+        <div class="column columns is-vcentered">
+            <div class="column">
+                <img class="img-fluid" src="{{ asset('img/logo-hogeschool-rotterdam.png/') }}" alt="">
+            </div>
+            <div class="column">
+                <img class="img-fluid" src="{{ asset('img/vhl_logo_kleur_rgb_voetje.jpg/') }}" alt="">
+            </div>
+        </div>
     </footer>
 @endsection

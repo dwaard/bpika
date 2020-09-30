@@ -1,9 +1,9 @@
 @extends('layouts.page')
 
-@section('article')
+@section('main')
     <div class="columns">
         <div class="column is-one-fifth-fullhd is-one-quarter-desktop is-full-tablet is-size-6">
-            <h2>{{ __('content.PET_explanation_title') }}</h2>
+            <h2 class="has-text-weight-bold">{{ __('content.PET_explanation_title') }}</h2>
             <p>{{ __('content.PET_explanation') }}</p>
             <p>
                 <i>{{ __('content.PET_explanation_source') }}.</i>
