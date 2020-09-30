@@ -17,7 +17,14 @@ class ApiStoreTest extends TestCase
         parent::setUp();
         // Set up dummy weather station
         $this->station = factory(Station::class)->create([
-            'name' => "Bonaire.jibe_city"
+            'code' => 'BO1',
+            'city' => 'Bonaire',
+            'name' => 'Jibe city',
+            'chart_color' => '#00FF00',
+            'latitude' => 45,
+            'longitude' => 75,
+            'timezone' => 'Europe/Amsterdam',
+            'enabled' => true
         ]);
     }
 
@@ -25,7 +32,7 @@ class ApiStoreTest extends TestCase
     public function testAllParametersShouldSeeInDatabase()
     {
         $data = [
-            'station_name' => 'Bonaire.jibe_city',
+            'station_name' => 'Jibe city',
             'th_temp' => 23.4,
             'th_hum' => 65.0,
             'th_dew' => 12.3,
@@ -60,7 +67,7 @@ class ApiStoreTest extends TestCase
     public function testInvalidParameterShouldNotSeeInDatabase()
     {
         $data = [
-            'station_name' => 'Bonaire.jibe_city',
+            'station_name' => 'Jibe city',
             'th_temp' => '[tomskjfo sf]',
             'th_hum' => 65.0,
             'th_dew' => 12.3,
@@ -107,23 +114,23 @@ class ApiStoreTest extends TestCase
 
     public function testSimpleStoreShouldAddtoDatabase()
     {
-        $response = $this->get('/api/store?station_name=Bonaire.jibe_city');
+        $response = $this->get('/api/store?station_name=Jibe city');
 
         $response->assertOk();
 
         $this->assertDatabaseHas('measurements', [
-            'station_name' => 'Bonaire.jibe_city'
+            'station_name' => 'Jibe city'
         ]);
     }
 
 
     public function testTimeoutShouldReturn412()
     {
-        $response = $this->call('GET', '/api/store?station_name=Bonaire.jibe_city');
+        $response = $this->call('GET', '/api/store?station_name=Jibe city');
 
         $response->assertOk();
 
-        $response = $this->call('GET', '/api/store?station_name=Bonaire.jibe_city');
+        $response = $this->call('GET', '/api/store?station_name=Jibe city');
 
         $this->assertEquals(412, $response->status());
         $response->assertJson([
