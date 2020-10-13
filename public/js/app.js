@@ -71102,7 +71102,7 @@ function loadData(chartId, stations, options) {
                               }); // Push the data to graphs
 
                               graphs.push({
-                                'label': station.city + ': ' + station.name,
+                                'label': station.label,
                                 'data': measurements,
                                 'borderColor': station.chart_color,
                                 'fill': false

@@ -16,6 +16,7 @@ class DashboardController extends Controller
     public function index()
     {
         $stations = Station::where('enabled', 1)->get();
+
         return view('dashboard', [
             'stations' => $stations
         ]);

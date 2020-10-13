@@ -10,6 +10,13 @@ class Station extends Model
 {
 
     /**
+     * The accessors to append to the model's array form.
+     *
+     * @var array
+     */
+    protected $appends = ['label'];
+
+    /**
      * The primary key associated with the table.
      *
      * @var string
@@ -52,4 +59,13 @@ class Station extends Model
         'timezone',
         'enabled'
     ];
+
+    public function getLabelAttribute()
+    {
+        $result = $this->name;
+        if ($this->city) {
+            $result = $this->city.":".$result;
+        }
+        return $result;
+    }
 }
