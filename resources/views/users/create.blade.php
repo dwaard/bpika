@@ -1,4 +1,4 @@
-@extends('layouts.page')
+@extends('layouts.backendpage')
 
 @section('article')
     <form method="POST" action="{{ route('users.store') }}" class="box">

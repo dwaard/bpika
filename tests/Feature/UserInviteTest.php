@@ -28,7 +28,6 @@ class UserInviteTest extends TestCase
         Mail::fake();
 
         $user = factory(User::class)->create();
-        $user->markEmailAsVerified();
 
         $invitee = factory(User::class)->make();
 
@@ -50,7 +49,6 @@ class UserInviteTest extends TestCase
     public function testStoreUserWithoutEmailShouldHaveErrors()
     {
         $user = factory(User::class)->create();
-        $user->markEmailAsVerified();
 
         $response = $this->actingAs($user)
             ->post('/users', [

@@ -1,4 +1,4 @@
-@extends('layouts.page')
+@extends('layouts.backendpage')
 
 @section('article')
     <section class="hero  is-medium  is-bold is-primary">
@@ -16,7 +16,7 @@
             <div class="field">
                 <label for="name" class="label">{{ __('Name') }}</label>
                 <div class="control has-icons-left has-icons-right">
-                    <input type="name" name="name" placeholder="{{ $user->name }}"
+                    <input type="text" name="name" placeholder="{{ $user->name }}"
                            class="input @error('name') is-danger @enderror"
                            value="{{ $user->name }}" required autocomplete="name" autofocus>
                     <span class="icon is-small is-left">

@@ -10,9 +10,10 @@ class PingTest extends TestCase
 
     public function testPingShouldReturnHelloWorld()
     {
-        $now = Carbon::now()->format('Y-m-d H:i:s');
+        // Make the request then record the time,
+        // so time to process the request doesn't affect the test
         $response = $this->get('/api/ping');
-
+        $now = Carbon::now()->format('Y-m-d H:i:s');
 
         $response->assertJson([
             'message' => 'You sent us a request at ' . $now

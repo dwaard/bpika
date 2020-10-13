@@ -6,7 +6,7 @@
             <div class="container">
                 <div class="navbar-brand">
                     <a href="/" class="navbar-item">
-                        <i class="fas fa-hat-wizard"></i>&nbsp;BPIKA
+                        <i class="fas fa-hat-wizard"></i>&nbsp;{{ __('content.navbar_home') }}
                     </a>
                     <a role="button" class="navbar-burger burger" aria-label="menu" aria-expanded="false"
                        data-target="navMenu">
@@ -20,6 +20,9 @@
                     <div class="navbar-start">
                         <h1 class="navbar-item has-text-weight-bold has-text-primary">@yield('page_title')</h1>
                         @auth
+                            <a class="navbar-item" href="{{ route('stations.index') }}">
+                                <i class="fas fa-home"></i>&nbsp;{{ __('Stations') }}
+                            </a>
                             <a class="navbar-item" href="{{ route('users.index') }}">
                                 <i class="fas fa-users"></i>&nbsp;{{ __('Users') }}
                             </a>
@@ -28,21 +31,8 @@
                     <div class="navbar-end">
                         @if(Route::has('login'))
                             @guest
-                                @if (Route::has('register'))
-                                    {{-- show a dropdown to choose between login and register --}}
-                                    <div class="navbar-item has-dropdown is-hoverable">
-                                        <a class="navbar-link">{{ __('Login') }}</a>
-
-                                        <div class="navbar-dropdown">
-                                            <a class="navbar-item" href="{{ route('login') }}">{{ __('Login') }}</a>
-                                            <a class="navbar-item"
-                                               href="{{ route('register') }}">{{ __('Register') }}</a>
-                                        </div>
-                                    </div>
-                                @else
-                                    {{-- show only login --}}
-                                    <a class="navbar-item" href="{{ route('login') }}">{{ __('Login') }}</a>
-                                @endif
+                                {{-- show only login --}}
+                                <a class="navbar-item" href="{{ route('login') }}">{{ __('Login') }}</a>
                             @else
                                 <div class="navbar-item">
                                     @php($user = Auth::user())
@@ -82,26 +72,31 @@
     </header>
     <main>
         <div class="">
-            <aside class="mb-2">
-                @include('layouts.notifications')
-            </aside>
             <article class="container">
-                <section class="section">
-                    <div class="columns">
-
-                        <div class="column is-offset-3-desktop is-6-desktop is-12-tablet">
-
-                            <section class="content">@yield('article')</section>
-                        </div>
-                    </div>
-                </section>
+                @yield('main')
             </article>
         </div>
     </main>
-    <footer class="footer">
-        <div class="container">
+    <footer class="footer columns is-vcentered">
+        <div class="column columns is-vcentered">
+            <div class="column">
+                <img class="img-fluid" src="{{ asset('img/HUISSTIJL_HZ_LOGO_960x593.jpg/') }}" alt="">
+            </div>
+            <div class="column">
+                <img class="img-fluid" src="{{ asset('img/Hanzehogeschool.png/') }}" alt="">
+            </div>
+        </div>
+        <div class="column">
             <div class="content is-small has-text-centered">
                 <div class="copyright">{{ __('content.copyright') }}</div>
+            </div>
+        </div>
+        <div class="column columns is-vcentered">
+            <div class="column">
+                <img class="img-fluid" src="{{ asset('img/logo-hogeschool-rotterdam.png/') }}" alt="">
+            </div>
+            <div class="column">
+                <img class="img-fluid" src="{{ asset('img/vhl_logo_kleur_rgb_voetje.jpg/') }}" alt="">
             </div>
         </div>
     </footer>

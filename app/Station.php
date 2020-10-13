@@ -10,11 +10,18 @@ class Station extends Model
 {
 
     /**
+     * The accessors to append to the model's array form.
+     *
+     * @var array
+     */
+    protected $appends = ['label'];
+
+    /**
      * The primary key associated with the table.
      *
      * @var string
      */
-    protected $primaryKey = 'name';
+    protected $primaryKey = 'code';
 
     /**
      * The "type" of the auto-incrementing ID.
@@ -43,8 +50,22 @@ class Station extends Model
      * @var array
      */
     protected $fillable = [
-        'name'
+        'code',
+        'city',
+        'name',
+        'chart_color',
+        'latitude',
+        'longitude',
+        'timezone',
+        'enabled'
     ];
 
-
+    public function getLabelAttribute()
+    {
+        $result = $this->name;
+        if ($this->city) {
+            $result = $this->city.":".$result;
+        }
+        return $result;
+    }
 }
