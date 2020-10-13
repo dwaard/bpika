@@ -2,15 +2,15 @@
 
 @section('main')
     <div class="columns is-desktop">
-        <div class="column is-one-fifth-fullhd is-one-quarter-desktop">
-            <h2 class="has-text-weight-bold">{{ __('content.PET_explanation_title') }}</h2>
+        <div class="column is-one-fifth-fullhd is-one-quarter-desktop content">
+            <h5 class="has-text-weight-bold">{{ __('content.PET_explanation_title') }}</h5>
             <p>{{ __('content.PET_explanation') }}</p>
             <p>
                 <i>{{ __('content.PET_explanation_source') }}.</i>
             </p>
         </div>
         <div class="column is-four-fifths-fullhd is-three-quarters-desktop content">
-            <h1 class="is-medium has-text-centered">{{ __('content.chart_title') }}</h1>
+            <h5 class="has-text-centered">{{ __('content.chart_title') }}</h5>
             <canvas class="mb-3" id="PET_chart"></canvas>
             <section class="is-size-6">
                 <p class="mb-5">{{ __('content.chart_explanation') }}
