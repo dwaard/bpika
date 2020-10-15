@@ -26,7 +26,7 @@ class StoreMeasurementRequest extends FormRequest
     public function rules()
     {
         return [
-            'station_name' => 'required|exists:stations,name',
+            'station_name' => 'required|exists:stations,code',
             'th_temp' => 'sometimes',
             'th_hum' => 'sometimes',
             'th_dew' => 'sometimes',

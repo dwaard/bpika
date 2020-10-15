@@ -32,7 +32,7 @@ class ApiStoreTest extends TestCase
     public function testAllParametersShouldSeeInDatabase()
     {
         $data = [
-            'station_name' => 'Jibe city',
+            'station_name' => 'BO1',
             'th_temp' => 23.4,
             'th_hum' => 65.0,
             'th_dew' => 12.3,
@@ -67,7 +67,7 @@ class ApiStoreTest extends TestCase
     public function testInvalidParameterShouldNotSeeInDatabase()
     {
         $data = [
-            'station_name' => 'Jibe city',
+            'station_name' => 'BO1',
             'th_temp' => '[tomskjfo sf]',
             'th_hum' => 65.0,
             'th_dew' => 12.3,
@@ -114,23 +114,23 @@ class ApiStoreTest extends TestCase
 
     public function testSimpleStoreShouldAddtoDatabase()
     {
-        $response = $this->get('/api/store?station_name=Jibe city');
+        $response = $this->get('/api/store?station_name=BO1');
 
         $response->assertOk();
 
         $this->assertDatabaseHas('measurements', [
-            'station_name' => 'Jibe city'
+            'station_name' => 'BO1'
         ]);
     }
 
 
     public function testTimeoutShouldReturn412()
     {
-        $response = $this->call('GET', '/api/store?station_name=Jibe city');
+        $response = $this->call('GET', '/api/store?station_name=BO1');
 
         $response->assertOk();
 
-        $response = $this->call('GET', '/api/store?station_name=Jibe city');
+        $response = $this->call('GET', '/api/store?station_name=BO1');
 
         $this->assertEquals(412, $response->status());
         $response->assertJson([
