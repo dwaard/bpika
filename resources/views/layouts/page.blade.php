@@ -20,6 +20,9 @@
                     <div class="navbar-start">
                         <h1 class="navbar-item has-text-weight-bold has-text-primary">@yield('page_title')</h1>
                         @auth
+                            <a class="navbar-item" href="{{ route('dashboard') }}">
+                                <i class="fas fa-chart-line"></i>&nbsp;{{ __('Dashboard') }}
+                            </a>
                             <a class="navbar-item" href="{{ route('stations.index') }}">
                                 <i class="fas fa-home"></i>&nbsp;{{ __('Stations') }}
                             </a>
