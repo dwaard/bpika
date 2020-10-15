@@ -126,3 +126,6 @@ fabric.properties
 
 ### Laradock ###
 /laradock*
+
+### Composer ###
+composer.phar
