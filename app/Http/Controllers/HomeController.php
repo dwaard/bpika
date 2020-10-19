@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Contracts\Support\Renderable;
+use Illuminate\Http\RedirectResponse;
 
 class HomeController extends Controller
 {
@@ -24,5 +25,12 @@ class HomeController extends Controller
     public function index()
     {
         return view('home');
+    }
+
+    /**
+     * @return RedirectResponse
+     */
+    public function redirectToWiki() {
+        return redirect('https://www.projectenportfolio.nl/wiki/index.php/PR_00315');
     }
 }

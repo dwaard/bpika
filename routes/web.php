@@ -17,9 +17,7 @@ use Illuminate\Support\Facades\Route;
 /**
  * Public routes.
  */
-Route::get('/', function() {
-    return redirect('https://www.projectenportfolio.nl/wiki/index.php/PR_00315');
-})->name('home');
+Route::get('/', 'HomeController@redirectToWiki')->name('wiki');
 
 Route::get('/dashboard', 'DashboardController@index')->name('dashboard');
 
