@@ -126,14 +126,14 @@
                 <div class="control has-icons-left has-icons-right">
                     <select name="timezone" class="pl-5 mt-1 select @error('timezone') is-danger @enderror"
                             required id="timezone">
-                        @foreach($timezones as $continent => $cities)
+                        @foreach($timezones as $continent => $continent_timezones)
                             {{-- Add an option group for each continent --}}
                             <optgroup label="{{ __($continent) }}">
-                                @foreach($cities as $city => $timezone)
+                                @foreach($continent_timezones as $timezone_name => $timezone_value)
                                     {{-- Add an option for each city of a continent --}}
-                                    <option value="{{ $timezone }}"
-                                            @if($timezone === $station->timezone) selected @endif>
-                                        {{ __($city) }}
+                                    <option value="{{ $timezone_value }}"
+                                            @if($timezone_value === $station->timezone) selected @endif>
+                                        {{ __($timezone_name) }}
                                     </option>
                                 @endforeach
                             </optgroup>
