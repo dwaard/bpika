@@ -39,10 +39,10 @@
                         </a>
                     </td>
                     <td>
-                        <button class="button is-danger is-small modal-button" data-target="delete-{{ $station->id }}">
+                        <button class="button is-danger is-small modal-button" data-target="delete-{{ $station->code }}">
                             <i class="fas fa-trash-alt"></i>
                         </button>
-                        <div class="modal" id="delete-{{ $station->id }}">
+                        <div class="modal" id="delete-{{ $station->code }}">
                             <div class="modal-background"></div>
                             <div class="modal-card">
                                 <form action="{{ route('stations.destroy', $station) }}" method="POST">

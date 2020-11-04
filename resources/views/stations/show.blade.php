@@ -5,7 +5,7 @@
         <h2 class="has-text-centered is-large">{{ $station->name }}</h2>
         <p>{{ __('The station has the identifying code of: :code.',
                     ['code' => $station->code]) }}</p>
-        <p>{{ __('The station is in the city of: :city.',
+        <p>{{ __('The station is located in the city of: :city.',
                     ['city' => $station->city]) }}</p>
         <p>{{ __('The name of the station is: :name.',
                     ['name' => $station->name]) }}</p>

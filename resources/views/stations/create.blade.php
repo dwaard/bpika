@@ -87,7 +87,7 @@
                 <div class="control has-icons-left has-icons-right">
                     <input type=number name="latitude" placeholder="{{ __('e.g. 123') }}"
                            class="input @error('latitude') is-danger @enderror"
-                           required autocomplete="latitude" id="latitude">
+                           required autocomplete="latitude" id="latitude" step="any">
                     <span class="icon is-small is-left">
                     <i class="fas fa-map-marked-alt"></i>
                 </span>
@@ -106,7 +106,7 @@
                 <div class="control has-icons-left has-icons-right">
                     <input type=number name="longitude" placeholder="{{ __('e.g. 123') }}"
                            class="input @error('longitude') is-danger @enderror"
-                           required autocomplete="longitude" id="longitude">
+                           required autocomplete="longitude" id="longitude" step="any">
                     <span class="icon is-small is-left">
                     <i class="fas fa-map-marked-alt"></i>
                 </span>
@@ -123,9 +123,21 @@
             <div class="field">
                 <label for="timezone" class="label">{{ __('Timezone') }}</label>
                 <div class="control has-icons-left has-icons-right">
-                    <input type=text name="timezone" placeholder="{{ __('e.g. Europe/Amsterdam') }}"
-                           class="input @error('timezone') is-danger @enderror"
-                           required autocomplete="timezone" id="timezone">
+                    <select name="timezone" class="pl-5 mt-1 select @error('timezone') is-danger @enderror"
+                            required id="timezone">
+                        @foreach($timezones as $continent => $continent_timezones)
+                            {{-- Add an option group for each continent --}}
+                            <optgroup label="{{ __($continent) }}">
+                                @foreach($continent_timezones as $timezone_name => $timezone_value)
+                                    {{-- Add an option for each city of a continent --}}
+                                    <option value="{{ $timezone_value }}"
+                                        @if($timezone_value === 'Europe/Amsterdam') selected @endif>
+                                        {{ __($timezone_name) }}
+                                    </option>
+                                @endforeach
+                            </optgroup>
+                        @endforeach
+                    </select>
                     <span class="icon is-small is-left">
                         <i class="fas fa-globe"></i>
                     </span>
