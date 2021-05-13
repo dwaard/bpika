@@ -1047,15 +1047,19 @@ class PETService {
         $decimalTime =   floatval($createdDateTime->format('H')) +
                         (floatval($createdDateTime->format('i'))/60) +
                         (floatval($createdDateTime->format('s'))/3600);
-
+        $cza = $this->sin_solar_elev($longitude,
+                                        $latitude,
+                                        $dayOfTheYear,
+                                        $decimalTime);
         // Correct for incorrect values of solar radiation
         if ($solarRadiation < 0) {
             $solarRadiation = 0;
         }
-        else if ($solarRadiation > 75. + 1.2 * $this->solar_clear(  $longitude,
+        else if ($solarRadiation > 75. + 1.2 * $this->solar_clear (  $longitude,
                                                                     $latitude,
                                                                     $dayOfTheYear,
-                                                                    $decimalTime)) {
+                                                                    $decimalTime)
+        || ((-0.02 < $cza) && ($cza < 0.02))) {
             $solarRadiation = $this->solar_clear(   $longitude,
                                                     $latitude,
                                                     $dayOfTheYear,

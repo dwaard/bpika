@@ -3447,7 +3447,7 @@ function getAlpha(string) {
 // generators
 function hexString(rgba, a) {
    var a = (a !== undefined && rgba.length === 3) ? a : rgba[3];
-   return "#" + hexDouble(rgba[0]) 
+   return "#" + hexDouble(rgba[0])
               + hexDouble(rgba[1])
               + hexDouble(rgba[2])
               + (
@@ -71058,7 +71058,7 @@ function createChart(chartId, options) {
 
 function loadData(chartId, stations, options) {
   var myChart = createChart(chartId, options);
-  var today = new Date();
+  var today = new Date(2020,11,24);
   var sevenDaysAgo = new Date();
   sevenDaysAgo.setDate(today.getDate() - 7);
   var timeString = sevenDaysAgo.toISOString(); // Load the data for each graph and push it to graphs

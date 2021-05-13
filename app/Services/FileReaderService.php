@@ -41,7 +41,6 @@ class FileReaderService {
         $data = collect();
         foreach ($contents as $raw) {
             $row = explode($delimiter, $raw);
-
             // Get keys for the output
             if ($current_row === 0 and $includeHeader) {
                 $keyset = collect($row);
