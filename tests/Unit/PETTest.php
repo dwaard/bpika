@@ -36,8 +36,8 @@ class PETTest extends TestCase {
     public function testCanOpenTestFiles() {
         ini_set('memory_limit', '-1');
         // Check if files exist
-        $inputFileExists = Storage::disk('test')->exists('Binnenstad.csv');
-        $outputFileExists = Storage::disk('test')->exists('Binnenstad_TCPET.csv');
+        $inputFileExists = Storage::disk('test')->exists('Middelburg_Zuid.csv');
+        $outputFileExists = Storage::disk('test')->exists('Middelburg_Zuid_TCPET_3.1.csv');
         $notExistingFileExists = Storage::disk('test')->exists('notExisting.csv');
 
         // Assert whether the files exist
@@ -49,13 +49,13 @@ class PETTest extends TestCase {
                             'Binnenstad.csv is present in the storage/app/test directory, but it shouldn\'t.');
 
         // Try reading the files
-        $inputFile = $this->fileReaderService->readCsv( 'Binnenstad.csv',
+        $inputFile = $this->fileReaderService->readCsv( 'Middelburg_Zuid.csv',
                                                         'test',
                                                         ',',
                                                         true,
                                                         null,
                                                         1);
-        $outputFile = $this->fileReaderService->readCsv('Binnenstad_TCPET.csv',
+        $outputFile = $this->fileReaderService->readCsv('Middelburg_Zuid_TCPET_3.1.csv',
                                                         'test',
                                                         ',',
                                                         true,
@@ -460,7 +460,7 @@ class PETTest extends TestCase {
                 }
             }
             var_dump(Storage::disk('output')->path('/'));
-            $this->assertEquals('some arbitrary value', print_r(Storage::disk('output')->path('/'), TRUE));
+//            $this->assertEquals('some arbitrary value', print_r(Storage::disk('output')->path('/'), TRUE));
             // Write output to csv file
             Storage::disk('output')->put($station->name . '_output.csv', $outputAsString);
 

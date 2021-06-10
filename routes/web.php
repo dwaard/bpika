@@ -21,6 +21,9 @@ Route::get('/', 'HomeController@redirectToWiki')->name('wiki');
 
 Route::get('/dashboard', 'DashboardController@index')->name('dashboard');
 
+Route::get('/grafiek', 'GrafiekController@index');
+
+
 
 /**
  * Authentication routes.

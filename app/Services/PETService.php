@@ -265,10 +265,10 @@ class PETService {
 
         $diam = 150.0;
         $emis = 1.0;
+        $ua_min = 0.13;
         $a = ($Tglobe + 273.15) ** 4;
-        $b = 1.1 * 10 ** 8 * $Ua ** 0.6 / ($emis * $diam ** 0.4) * ($Tglobe - $Ta);
+        $b = 1.1 * 10 ** 8 * max($Ua, $ua_min) ** 0.6 / ($emis * $diam ** 0.4) * ($Tglobe - $Ta);
         $Tmrt = ($a + $b) ** 0.25 - 273.15;
-
         return($Tmrt);
     }
 
@@ -1047,8 +1047,9 @@ class PETService {
         $decimalTime =   floatval($createdDateTime->format('H')) +
                         (floatval($createdDateTime->format('i'))/60) +
                         (floatval($createdDateTime->format('s'))/3600);
-        $cza = $this->sin_solar_elev($longitude,
-                                        $latitude,
+
+        $cza = $this->sin_solar_elev($latitude,
+                                        $longitude,
                                         $dayOfTheYear,
                                         $decimalTime);
         // Correct for incorrect values of solar radiation
@@ -1064,10 +1065,11 @@ class PETService {
                                                     $latitude,
                                                     $dayOfTheYear,
                                                     $decimalTime);
+
         }
 
         // Currently no urban correction applied
-        // $urbanFactor = log(10/1.)/log(3.5/1.);
+//         $urbanFactor = log(10/1.)/log(3.5/1.);
         $urbanFactor = 1.;
 
         // Get fraction of diffuse and direct solar radiation

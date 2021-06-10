@@ -26,7 +26,6 @@ function loadData(chartId, stations, options) {
     let loadGraphs = async () => {
         for (let station of stations) {
             await new Promise(resolve => setTimeout(() => {
-
                 // Make the ajax call
                 $.ajax({
                     url: '/api/measurement/startDate=' + timeString + '&' +
@@ -62,7 +61,7 @@ function loadData(chartId, stations, options) {
                 });
             }, 0));
         }
-    }
+    };
 
     // Wait until graphs are loaded
     loadGraphs().then(() => {
