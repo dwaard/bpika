@@ -1,74 +1,135 @@
-@extends('layouts.backendpage')
+<x-app-layout>
+    <x-slot name="header">
+        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+            {{ __('Stations') }} > {{ $station->label }}
+        </h2>
+    </x-slot>
 
-@section('article')
-    <section class="box content">
-        <h2 class="has-text-centered is-large">{{ $station->name }}</h2>
-        <p>{{ __('The station has the identifying code of: :code.',
-                    ['code' => $station->code]) }}</p>
-        <p>{{ __('The station is located in the city of: :city.',
-                    ['city' => $station->city]) }}</p>
-        <p>{{ __('The name of the station is: :name.',
-                    ['name' => $station->name]) }}</p>
-        <p>{{ __('The station uses this color in charts: :color.',
-                    ['color' => $station->chart_color]) }}</p>
-        <p>{{ __('The station has the following coordinates: latitude: :latitude, longitude: :longitude.',
-                    ['latitude' => $station->latitude,
-                    'longitude' => $station->longitude]) }}</p>
-        <p>{{ __('The station is in the timezone of: :timezone.',
-                    ['timezone' => $station->timezone]) }}</p>
-        <p>{{ __('The station is visible in charts: :enabled.',
-                    ['enabled' => $station->enabled === 1 ? __('Yes') : __('No')]) }}</p>
-        <div class="is-grouped has-text-centered">
-            <a class="button is-primary" href="{{ route('stations.index') }}">
-                <i class="fas fa-list mr-2"></i>{{ __('Back to index') }}
-            </a>
-            <a class="button is-primary" href="{{ route('stations.edit', $station->code) }}">
-                <i class="fas fa-edit mr-2"></i>{{ __('Edit') }}
-            </a>
-            <button class="button is-danger modal-button" data-target="delete-{{ $station->id }}">
-                <i class="fas fa-trash-alt mr-2"></i>{{ __('Delete') }}
-            </button>
-            <div class="modal" id="delete-{{ $station->id }}">
-                <div class="modal-background"></div>
-                <div class="modal-card">
-                    <form action="{{ route('stations.destroy', $station) }}" method="POST">
-                        @csrf
-                        @method('DELETE')
-                        <header class="modal-card-head has-background-danger-dark">
-                            <p class="modal-card-title has-text-white">{{ __('Delete :name?', ['name'=> $station->name]) }}</p>
-                        </header>
-                        <section class="modal-card-body has-background-danger-light">
-                            <!-- Content ... -->
-                            <p>{{ __('This action cannot be undone.') }}</p>
-                        </section>
-                        <footer class="modal-card-foot has-background-danger-dark">
-                            <button class="button is-danger" type="submit">{{ __('Delete') }}</button>
-                            <button class="button modal-cancel" type="button">{{ __('Cancel') }}</button>
-                        </footer>
-                    </form>
-                </div>
-                <button class="delete modal-close" aria-label="close"></button>
+    <x-index-with-actions>
+        <x-slot name="actions">
+            <x-label>{{ __('Code') }}</x-label>{{ $station->code }}
+            <x-label>{{ __('Name') }}</x-label>{{ $station->name }}
+            <x-label>{{ __('City') }}</x-label>{{ $station->city }}
+            <x-label>{{ __('Timezone') }}</x-label>{{ $station->timezone }}
+            <x-label>{{ __('Amount of measurements') }}</x-label>{{ $station->measurements->count() }}
+            <x-label>{{ __('Last measurement') }}</x-label>{{ $station->measurements()->latest()->first()->created_at ?? '' }}
+            {{-- Divider --}}
+            <div class="border-t border-gray-100 w-full"></div>
+            <x-primary-button class="my-4"
+                onclick="location.href='{{ route('stations.edit', $station) }}';">
+                {{ __('Edit this station') }}
+            </x-primary-button>
+            <br class="pb-4"/>
+            @if($station->enabled)
+            <form method="POST" action="{{ route('stations.destroy', $station) }}">
+                @csrf
+                @method('DELETE')
+                <x-danger-button type="submit">
+                    {{ __('Disable in dashboard') }}
+                </x-danger-button>
+            </form>
+            @else
+                <form method="POST" action="{{ route('stations.enable', $station) }}">
+                    @csrf
+                    @method('PUT')
+                    <input type="hidden" name="enabled" value="1">
+                    <x-secondary-button type="submit">
+                        {{ __('Enable in dashboard') }}
+                    </x-secondary-button>
+                </form>
+            @endif
+        </x-slot>
+
+        <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+            <div class="p-6 text-gray-900">
+                <canvas class="mb-3" id="PET_chart"></canvas>
             </div>
         </div>
-    </section>
-@endsection
 
-@push('scripts')
-    <script>
-        for (let elem of document.querySelectorAll('.modal-button')) {
-            console.log(elem);
-            elem.addEventListener("click", function () {
-                let target = document.getElementById(elem.dataset.target);
-                document.documentElement.classList.add("is-clipped");
-                target.classList.add("is-active");
+
+    </x-index-with-actions>
+    @push('scripts')
+        <script src="https://cdn.jsdelivr.net/npm/chart.js@^3"></script>
+        <script src="https://cdn.jsdelivr.net/npm/luxon@^2"></script>
+        <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-luxon@^1"></script>
+        <script>
+
+            const chartId = 'PET_chart';
+            const station = @json($station);
+
+            const ctx = document.getElementById('PET_chart');
+
+            const config = {
+                type: 'line',
+                data: {},
+                options: {
+                    scales: {
+                        x: {
+                            type: 'time',
+                            time: {
+                                parser: 'M/dd/yyyy H:mm:ss',
+                                tooltipFormat: 'H:mm',
+                                unit: 'day'
+                            },
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'right',
+                            align: 'start'
+                        },
+                        tooltip: {
+                            callbacks: {
+                                title: function(tooltipItem) {
+                                    return tooltipItem[0].dataset.label;
+                                },
+                                label: function(tooltipItem) {
+                                    return tooltipItem.label + " : " + Math.round(tooltipItem.formattedValue * 10) / 10 + "°C";
+                                }
+                            }
+                        }
+                    }
+                }
+            };
+
+            const myChart = new Chart(ctx, config);
+
+            loadData = function(data) {
+                myChart.data.datasets.push({
+                    label: data.column,
+                    borderColor: data.column == 'pet' ? '#2ea8db' : '#064e6c',
+                    data: data.data
+                });
+                myChart.update();
+            }
+
+            addEventListener('load', function() {
+                try {
+                    let today = new Date();
+                    let sevenDaysAgo = new Date();
+                    sevenDaysAgo.setDate(today.getDate() - 7);
+                    let timeString = sevenDaysAgo.toISOString();
+                    let url = `/api/stations/${station.code}/measurements?startDate=${timeString}&grouping=hourly&column=th_temp`;
+
+                    fetch(url)
+                        .then(response => response.text())
+                        .then(text => loadData(JSON.parse(text)));
+                    url = `/api/stations/${station.code}/measurements?startDate=${timeString}&grouping=hourly&column=pet`;
+
+                    fetch(url)
+                        .then(response => response.text())
+                        .then(text => loadData(JSON.parse(text)));
+                } catch (error) {
+                    console.error(`Download error: ${error.message}`);
+                }
+
             });
-        }
-        for (let elem of document.querySelectorAll('.modal-close, .modal-cancel')) {
-            elem.addEventListener("click", function () {
-                let target = elem.closest(".modal");
-                document.documentElement.classList.remove("is-clipped");
-                target.classList.remove("is-active");
-            });
-        }
-    </script>
-@endpush
+
+            // In order to make this work, the variables below need to be declared in the
+            // blade file
+            // window.onload = loadData(chartId, stations, options);
+        </script>
+    @endpush
+
+</x-app-layout>

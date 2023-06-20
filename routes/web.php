@@ -1,45 +1,38 @@
 <?php
 
-use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\Dashboard;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\StationController;
+use App\Http\Livewire\Users\Index as UsersIndex;
 use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
-| Application Routes
+| Web Routes
 |--------------------------------------------------------------------------
 |
-| Here is where you can register all of the routes for an application.
-| It is a breeze. Simply tell Lumen the URIs it should respond to
-| and give it the Closure to call when that URI is requested.
+| Here is where you can register web routes for your application. These
+| routes are loaded by the RouteServiceProvider and all of them will
+| be assigned to the "web" middleware group. Make something great!
 |
 */
 
-/**
- * Public routes.
- */
-Route::get('/', 'HomeController@redirectToWiki')->name('wiki');
+Route::get('/', function () {
+    return redirect('https://www.projectenportfolio.nl/wiki/index.php/PR_00315');
+})->name('home');
 
-Route::get('/dashboard', 'DashboardController@index')->name('dashboard');
+Route::get('/dashboard', Dashboard::class)->name('dashboard');
 
+Route::middleware('auth')->group(function () {
+    Route::resource('stations', StationController::class);
+    Route::put('stations/{station}', [StationController::class, 'enable'])
+        ->name('stations.enable');
 
-/**
- * Authentication routes.
- * Users must not be allowed to register themselves.
- */
-Auth::routes(['register' => true]);
+    Route::get('users', UsersIndex::class)->name('users.index');
 
-
-/**
- * Route group for all routes that are only allowed to authenticated and
- * verified users.
- */
-Route::middleware(['auth', 'verified'])->group(function () {
-
-    Route::get('home', 'HomeController@index')->name('home');
-    Route::resource('users', 'UserController');
-
-    Route::resource('stations', 'StationController');
-
-    Route::get('profile','AccountController@edit')->name('account.edit');
-    Route::patch('profile', 'AccountController@update')->name('account.update');
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
+
+require __DIR__.'/auth.php';

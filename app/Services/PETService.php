@@ -14,21 +14,30 @@ namespace App\Services;
 
 use DateTime;
 use DateTimeZone;
-use test\Mockery\MockingNullableMethodsTest;
+//use test\Mockery\MockingNullableMethodsTest;
 
 /**
  * Class PETService
  * @package App\Services
  */
-class PETService {
-
+class PETService
+{
     #*************************************************************************************
     # Block 1:
     # Solar radiation functions for first-order estimates in practical applications
 
-    public function fr_diffuse($solar_down, float $lat = 52., float $lon = 5.1, int $DOY = 180, float $utc_dec = 11.66) {
-        /* Estimate fraction of diffuse solar radiation according to Erbs et al. (1982) */
-
+    /**
+     * Estimate fraction of diffuse solar radiation according to Erbs et al. (1982)
+     *
+     * @param $solar_down
+     * @param float $lat
+     * @param float $lon
+     * @param int $DOY
+     * @param float $utc_dec
+     * @return float|int
+     */
+    public function fr_diffuse($solar_down, float $lat = 52., float $lon = 5.1, int $DOY = 180, float $utc_dec = 11.66)
+    {
         $trans = $this->transmissivity($solar_down, $lat, $lon, $DOY, $utc_dec);
         if ($trans <= 0.22) {
             $frdif = 1. - 0.09 * $trans;
@@ -42,45 +51,74 @@ class PETService {
         return $frdif;
     }
 
-
-    public function transmissivity($solar_down, $lat = 52., $lon = 5.1, $DOY = 180, $utc_dec = 11.66) {
-        /* Estimate atmospheric transmissivity according to De Rooy and Holtslag (1999) */
-
+    /**
+     * Estimate atmospheric transmissivity according to De Rooy and Holtslag (1999)
+     *
+     * @param $solar_down
+     * @param $lat
+     * @param $lon
+     * @param $DOY
+     * @param $utc_dec
+     * @return float|int
+     */
+    private function transmissivity($solar_down, $lat = 52., $lon = 5.1, $DOY = 180, $utc_dec = 11.66)
+    {
         return $solar_down / (1367. * $this->sin_solar_elev($lat, $lon, $DOY, $utc_dec));
     }
 
-
-    public function sin_solar_elev(float $lat = 52., float $lon = 5.1, int $DOY = 171, float $utc_dec = 11.66) {
-        /*
-           Sine of solar elevation as well as cosine of zenith angle for a given
-           location (lat,lon) and time (UTC)
-           Note: functionault De Bilt (Netherlands), 11.66 UTC on day-of-year 171
-        */
-
+    /**
+     * Sine of solar elevation as well as cosine of zenith angle for a given
+     * location (lat,lon) and time (UTC)
+     * Note: functionault De Bilt (Netherlands), 11.66 UTC on day-of-year 171
+     *
+     * @param float $lat
+     * @param float $lon
+     * @param int $DOY
+     * @param float $utc_dec
+     * @return float|int
+     */
+    public function sin_solar_elev(float $lat = 52., float $lon = 5.1, int $DOY = 171, float $utc_dec = 11.66)
+    {
         $fac1 = sin($this->solar_decl($DOY)) * sin(pi() * $lat / 180.);
         $fac2 = cos($this->hour_angle($lon, $utc_dec)) * cos($this->solar_decl($DOY)) * cos(pi() * $lat / 180);
         return ($fac1 + $fac2);
     }
 
-    public function solar_decl(int $DOY = 180) {
-        /* Solar declination on a given day-of-year. */
-
+    /**
+     * Solar declination on a given day-of-year.
+     *
+     * @param int $DOY
+     * @return float
+     */
+    private function solar_decl(int $DOY = 180)
+    {
         return 0.409 * cos(2. * pi() * ($DOY - 171) / 365.25);
     }
 
-
-    public function hour_angle(float $lon = 5.1, float $utc_dec = 11.66) {
-        /* Approximate solar hour angle in radians */
-
+    /**
+     * Approximate solar hour angle in radians
+     *
+     * @param float $lon
+     * @param float $utc_dec
+     * @return float|int
+     */
+    private function hour_angle(float $lon = 5.1, float $utc_dec = 11.66)
+    {
         return pi() * ($utc_dec / 12. + $lon / 180. - 1.);
     }
 
-    public function solar_clear(float $lon = 5.1, float $lat = 52., int $DOY = 171, float $utc_dec = 11.66) {
-        /*
-            Expected solar radiation for clear weather conditions using
-            parameters fo De Bilt, NL, according to De Rooy and Holtslag (1999)
-        */
-
+    /**
+     * Expected solar radiation for clear weather conditions using  parameters fo De
+     * Bilt, NL, according to De Rooy and Holtslag (1999)
+     *
+     * @param float $lon
+     * @param float $lat
+     * @param int $DOY
+     * @param float $utc_dec
+     * @return mixed
+     */
+    private function solar_clear(float $lon = 5.1, float $lat = 52., int $DOY = 171, float $utc_dec = 11.66)
+    {
         return max(1041. * $this->sin_solar_elev($lat, $lon, $DOY, $utc_dec) - 69., 0.);
     }
 
@@ -88,54 +126,75 @@ class PETService {
     # Block 2:
     # Temperature and humidity related functions
 
-    public function T_Kel($Ta) {
-        /* Convert (air) temperature to absolute temperature in Kelvin */
-
+    /**
+     * Convert (air) temperature to absolute temperature in Kelvin
+     *
+     * @param $Ta
+     * @return float|mixed
+     */
+    private function T_Kel($Ta)
+    {
         if ($Ta <= 150.) {
             $Tk = $Ta + 273.15;
-        }
-        else {
+        } else {
             $Tk = $Ta;
         }
         return ($Tk);
     }
 
-    public function T_Cel($Ta) {
-        /* Convert (air) temperature to temperature in Celsius */
-
+    /**
+     * Convert (air) temperature to temperature in Celsius
+     *
+     * @param $Ta
+     * @return float|mixed
+     */
+    private function T_Cel($Ta)
+    {
         if ($Ta <= 150.) {
             $Tc = $Ta;
-        }
-        else {
+        } else {
             $Tc = $Ta - 273.15;
         }
         return ($Tc);
     }
 
-
-    public function Emis_atm($Ta, $RH) {
-        /* Estimate atmospheric emissivity */
-
+    /**
+     * Estimate atmospheric emissivity
+     *
+     * @param $Ta
+     * @param $RH
+     * @return float
+     */
+    private function Emis_atm($Ta, $RH)
+    {
         $ep = 0.01 * $RH * $this->es($Ta);
         $emis_atm = 0.575 * $ep ** 0.143;
         return ($emis_atm);
     }
 
-    public function Lvap($Ta) {
-        /* Latent heat of vaporisation */
-
+    /**
+     * Latent heat of vaporisation
+     *
+     * @param $Ta
+     * @return float|int
+     */
+    private function Lvap($Ta)
+    {
         $Lv = 2.46 * pow(10.0, 6.0) * $Ta / $Ta; # Fixed value for the time being
         return ($Lv);
     }
 
-    public function es($Ta) {
-        /*
-            Saturation vapour pressure of sweet water
-            Notes:
-            - Ta can be given in K (>150K) or °C (<150°C).
-            - Not valid over ice
-        */
-
+    /**
+     * Saturation vapour pressure of sweet water
+     * Notes:
+     * - Ta can be given in K (>150K) or °C (<150°C).
+     * - Not valid over ice
+     *
+     * @param $Ta
+     * @return float|int
+     */
+    private function es($Ta)
+    {
         $Tk = $this->T_Kel($Ta);
         $y = ($Tk - 273.15)/($Tk - 32.18);
         $es = 1.004 * 6.1121 * exp(17.502 * $y);
@@ -143,29 +202,36 @@ class PETService {
         return $es;
     }
 
-    public function T_dew1($ew) {
-        /*
-            Dewpoint temperature in °C from vapour pressure over sweet water
-            Notes:
-            - e must be given in hPa
-            - Not valid over ice
-        */
-
+    /**
+     * Dewpoint temperature in °C from vapour pressure over sweet water
+     * Notes:
+     * - e must be given in hPa
+     * - Not valid over ice
+     *
+     * @param $ew
+     * @return float|int
+     */
+    private function T_dew1($ew)
+    {
         $z = log($ew / (6.1121*1.004));
         $td = 240.97 * $z / (17.502 - $z);
 
         return $td;
     }
 
-    public function T_dew2($Ta, $RH) {
-        /*
-            Dewpoint temperature in °C from air temperature and relative humidity
-            Notes:
-            - Function depends on public function es
-            - Ta can be given in °C or K; RH in percentage (>1) or as a fraction (<=1)
-            - Not valid over ice
-        */
-
+    /**
+     * Dewpoint temperature in °C from air temperature and relative humidity
+     * Notes:
+     * - Function depends on public function es
+     * - Ta can be given in °C or K; RH in percentage (>1) or as a fraction (<=1)
+     * - Not valid over ice
+     *
+     * @param $Ta
+     * @param $RH
+     * @return float|int
+     */
+    private function T_dew2($Ta, $RH)
+    {
         if ($RH > 1) {
             $hfrac = $RH / 100.;
         }
@@ -181,15 +247,19 @@ class PETService {
         return $td;
     }
 
-    public function T_wb($Ta, $RH) {
-        /*
-            Estimation of Wetbulb temperature in °C from air temperature and relative humidity,
-            according to Stull (2011).
-            Notes:
-            - Ta can be given in °C or K; RH in percentage (>1) or as a fraction (<=1)
-            - See Stull (2011) for limitations
-        */
-
+    /**
+     * Estimation of Wetbulb temperature in °C from air temperature and relative humidity,
+     * according to Stull (2011).
+     * Notes:
+     * - Ta can be given in °C or K; RH in percentage (>1) or as a fraction (<=1)
+     * - See Stull (2011) for limitations
+     *
+     * @param $Ta
+     * @param $RH
+     * @return float|int
+     */
+    private function T_wb($Ta, $RH)
+    {
         $Tc = $this->T_Cel($Ta);
         if ($RH <= 1) {
             $RH = $RH * 100.;
@@ -207,14 +277,23 @@ class PETService {
     # Block 3:
     # Thermal comfort functions
 
-    public function calc_Tglobe($Ta, $RH, $Ua, $Solar, $fdir, $cza, $Pa = 1013.25) {
-        /*
-           Estimate globe temperature according to Liljegren et al. (2008)
-           Notes:
-               - Result is returned as temperature in °C
-               - Provide pressure Pa in hPa
-        */
-
+    /**
+     * Estimate globe temperature according to Liljegren et al. (2008)
+     * Notes:
+     * - Result is returned as temperature in °C
+     * - Provide pressure Pa in hPa
+     *
+     * @param $Ta
+     * @param $RH
+     * @param $Ua
+     * @param $Solar
+     * @param $fdir
+     * @param $cza
+     * @param $Pa
+     * @return float|mixed
+     */
+    public function calc_Tglobe($Ta, $RH, $Ua, $Solar, $fdir, $cza, $Pa = 1013.25)
+    {
         if ($cza < 0.) {
             if ($Solar > 0.) {
                 $Solar = 0.;
@@ -257,12 +336,12 @@ class PETService {
         return($Tglobe);
     }
 
-    public function Tmrt($Tglobe, $Ta, $Ua) {
-        /*
-            Approximate mean radiant temperature using the fit recommended
-            by Thorsson et al. (2007)
-        */
-
+    /**
+        Approximate mean radiant temperature using the fit recommended
+        by Thorsson et al. (2007)
+    */
+    public function Tmrt($Tglobe, $Ta, $Ua)
+    {
         $diam = 150.0;
         $emis = 1.0;
         $a = ($Tglobe + 273.15) ** 4;
@@ -272,22 +351,33 @@ class PETService {
         return($Tmrt);
     }
 
-    public function WBGT($Tglobe, $Ta, $Twb) {
-        /*
-            Web Bulb Globe Temperature
-            Note:
-            - Basically valid for outdoor conditions. When solar radiation can be neglected
-            use Ta = Tglobe (e.g. indoors)
-        */
-
-        $WBGT = 0.7 * $this->T_Cel($Twb) + 0.2 * $this->T_Cel($Tglobe) + 0.1 * $this->T_Cel($Ta);
-
-        return $WBGT;
+    /**
+     * Web Bulb Globe Temperature
+     * Note:
+     * - Basically valid for outdoor conditions. When solar radiation can be neglected
+     *   use Ta = Tglobe (e.g. indoors)
+     *
+     * @param $Tglobe
+     * @param $Ta
+     * @param $Twb
+     * @return float
+     */
+    private function WBGT($Tglobe, $Ta, $Twb)
+    {
+        return 0.7 * $this->T_Cel($Twb) + 0.2 * $this->T_Cel($Tglobe) + 0.1 * $this->T_Cel($Ta);
     }
 
-    public function UTCI(float $Ta, float $mrt, float $Ua = 0.5, float $RH = 60.) {
-        /* Approximate UTCI using the polynomial fit provided at www.UTCI.org */
-
+    /**
+     * Approximate UTCI using the polynomial fit provided at www.UTCI.org
+     *
+     * @param float $Ta
+     * @param float $mrt
+     * @param float $Ua
+     * @param float $RH
+     * @return float|int|null
+     */
+    private function UTCI(float $Ta, float $mrt, float $Ua = 0.5, float $RH = 60.)
+    {
         # Do a series of checks to be sure that the input values are within
         # the bounds accepted by the model.
         $check = ($Ta > -50.0 and $Ta < 50.0 and
@@ -532,16 +622,32 @@ class PETService {
         return $UTCI_approx;
     }
 
-    public function system($Ta, $mrt, $RH, $Ua, float $M = 80., float $Icl = 0.9, string $bodyPosition = "standing", string $sex = "male", float $mbody = 75., float $age = 35., float $ht = 1.8) {
-        /* Body system parameters for PET calculation */
-        # @authors: Edouard Walther and Quentin Goestschel
-        #     PET calculation after the LadyBug plugin (retrieved on Djordje Spasic's github :
-        #    https://github.com/stgeorges/ladybug/commit/b0c2ea970252b62d22bf0e35d739db7f385a3f26)
-        #
-        #    2017.11.10 by Edouard Walther and Quentin Goestschel:
-        #        - fixed the error on the reference environment (see paper)
-        #
-
+    /**
+     * Body system parameters for PET calculation
+     *
+     * @authors: Edouard Walther and Quentin Goestschel
+     * PET calculation after the LadyBug plugin (retrieved on Djordje Spasic's github :
+     * https://github.com/stgeorges/ladybug/commit/b0c2ea970252b62d22bf0e35d739db7f385a3f26)
+     *
+     * 2017.11.10 by Edouard Walther and Quentin Goestschel:
+     * - fixed the error on the reference environment (see paper)
+     *
+     * @param $Ta
+     * @param $mrt
+     * @param $RH
+     * @param $Ua
+     * @param float $M
+     * @param float $Icl
+     * @param string $bodyPosition
+     * @param string $sex
+     * @param float $mbody
+     * @param float $age
+     * @param float $ht
+     * @return array|void
+     */
+    public function system($Ta, $mrt, $RH, $Ua, float $M = 80., float $Icl = 0.9, string $bodyPosition = "standing",
+        string $sex = "male", float $mbody = 75., float $age = 35., float $ht = 1.8)
+    {
         # To avoid a lot of edits, translate variables from new to old names
         $ta = $Ta;
         $tmrt = $mrt;
@@ -658,14 +764,17 @@ class PETService {
         # clothed surface
         $Acl = $Adu * $facl + $Adu * ($fcl - 1.0);
         # skin temperatures
-        for ($j = 1; $j < 7; $j++) {
+        for ($j = 1; $j < 7; $j++)
+        {
             $tsk = $tsk_set;
             $count1 = 0;
             $tcl = ($ta + $tmrt + $tsk) / 3.0; # Average value between the temperatures to estimate Tclothes
             $enbal2 = 0.0;
             $isCalculatingSkinTemperatures = true;
-            while ($isCalculatingSkinTemperatures) {
-                for ($count2 = 1; $count2 < 100; $count2++) {
+            while ($isCalculatingSkinTemperatures)
+            {
+                for ($count2 = 1; $count2 < 100; $count2++)
+                {
                     # Estimation of the radiation losses
                     $rclo2 = $emcl * $sigm * (pow($tcl + 273.2, 4.0) - pow($tmrt + 273.2, 4.0)) * $feff;
                     # Calculation of the thermal resistance of the body:
@@ -678,12 +787,12 @@ class PETService {
                     $rbare = $Aeffr * (1.0 - $facl) * $emsk * $sigm * (pow($tmrt + 273.2, 4.0) - pow($tsk + 273.2, 4.0));
                     # For dressed area:
                     $rclo = $feff * $Acl * $emcl * $sigm * (pow($tmrt + 273.2, 4.0) - pow($tcl + 273.2, 4.0));
-                    $rsum = $rbare + $rclo; #[W]
+                    $rsum = $rbare + $rclo;
 
                     # Convection losses #
                     $cbare = $hc * ($ta - $tsk) * $Adu * (1.0 - $facl);
                     $cclo = $hc * ($ta - $tcl) * $Acl;
-                    $csum = $cbare + $cclo; #[W]
+                    $csum = $cbare + $cclo;
 
                     # Calculation of the Terms of the second order polynomial :
                     $K_blood = $Adu * $rob * $cb;
@@ -799,7 +908,8 @@ class PETService {
                     break;
                 }
             # end "While True" (using 'break' statements)
-            for ($k = 0; $k < 20; $k++) {
+            for ($k = 0; $k < 20; $k++)
+            {
                 $g100 = 0;
                 if ($count1 == 3.0 and ($j != 2 and $j != 5)) {
                     if ($j != 6 and $j != 1) {
@@ -877,10 +987,27 @@ class PETService {
             }
 
             return [$tcore[$index], $tsk, $tcl, $esw];
+            }
         }
     }
-}
 
+    /**
+     * Calculate PET
+     *
+     * @param $tc
+     * @param $tsk
+     * @param $tcl
+     * @param $ta_init
+     * @param $esw_real
+     * @param float $M
+     * @param $Icl
+     * @param string $bodyPosition
+     * @param string $sex
+     * @param float $mbody
+     * @param float $age
+     * @param float $ht
+     * @return float|mixed
+     */
     public function pet($tc, $tsk, $tcl, $ta_init, $esw_real, float $M = 80., $Icl = 0.9, string $bodyPosition = "standing", string $sex = "male", float $mbody = 75., float $age = 35., float $ht = 1.8) {
 
         $po = 1013.25; # atmospheric pressure [hPa]
@@ -1119,11 +1246,14 @@ class PETService {
     # Block 4:
     # Various functions
 
-    public function viscosity($Ta) {
-        /*
-           Viscosity of air, using Ta in Kelvin
-        */
-
+    /**
+     * Viscosity of air, using Ta in Kelvin
+     *
+     * @param $Ta
+     * @return float|int
+     */
+    private function viscosity($Ta)
+    {
         $mair = 28.97;
         $epskappa = 97.0;
         $sig = 3.617;
@@ -1135,11 +1265,14 @@ class PETService {
         return ($viscosity);
     }
 
-    public function thermal_cond($Ta) {
-        /*
-          Thermal conductivity
-        */
-
+    /**
+     * Thermal conductivity
+     *
+     * @param $Ta
+     * @return float|int
+     */
+    private function thermal_cond($Ta)
+    {
         $mair = 28.97;
         $rgas = 8314.34;
         $cp = 1003.5;
@@ -1149,12 +1282,18 @@ class PETService {
         return ($thermal_cond);
     }
 
-    public function h_sphere_in_air($diameter, $Ta, $Pa, $Ua) {
-        /*
-           Heat conduction of a sphere in air.
-           Note: Provide pressure Pa in hPa and temperature Ta in Kelvin
-        */
-
+    /**
+     * Heat conduction of a sphere in air.
+     * Note: Provide pressure Pa in hPa and temperature Ta in Kelvin
+     *
+     * @param $diameter
+     * @param $Ta
+     * @param $Pa
+     * @param $Ua
+     * @return float|int
+     */
+    private function h_sphere_in_air($diameter, $Ta, $Pa, $Ua)
+    {
         $mair = 28.97;
         $rgas = 8314.34;
         $rair = $rgas / $mair;
