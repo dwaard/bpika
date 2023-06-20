@@ -3,6 +3,9 @@
 namespace App\Http\Livewire\Users;
 
 use App\Models\User;
+use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Redirector;
@@ -21,9 +24,12 @@ class ListItem extends Component
      *
      * @var bool
      */
-    public $confirmingUserDeletion = false;
+    public bool $confirmingUserDeletion = false;
 
-    public function render()
+    /**
+     * @return Application|Factory|View|\Illuminate\Foundation\Application
+     */
+    public function render(): \Illuminate\Foundation\Application|View|Factory|Application
     {
         return view('livewire.users.list-item');
     }
@@ -56,6 +62,4 @@ class ListItem extends Component
         $this->emit('usersUpdated');
         $this->confirmingUserDeletion = false;
     }
-
-
 }

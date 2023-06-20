@@ -24,6 +24,7 @@ Route::get('ping', Ping::class);
 
 Route::get('store', [MeasurementController::class, 'store']);
 
-Route::get('stations/{station}/measurements',
-    [MeasurementController::class, 'getChartTimeSeries']);
-
+Route::get(
+    'stations/{station}/measurements',
+    [MeasurementController::class, 'getChartTimeSeries']
+);

@@ -39,14 +39,13 @@ class MeasurementController extends Controller
             ], ResponseAlias::HTTP_PRECONDITION_FAILED);
         }
 
-        $evaluated = collect($input)->filter(function($value, $key) {
+        $evaluated = collect($input)->filter(function ($value, $key) {
                 return $key == 'station_name' || is_numeric($value);
-            })->toArray();
+        })->toArray();
 
         $measurement = Measurement::create($evaluated);
 
         return json_encode(['measurement.created' => 'Measurement created with id ' . $measurement->id]);
-
     }
 
     /**
@@ -57,7 +56,7 @@ class MeasurementController extends Controller
      */
     public function evaluateInput(array $input) : array
     {
-        return collect($input)->filter(function($value, $key) {
+        return collect($input)->filter(function ($value, $key) {
 
             return $key == 'station_name' || is_numeric($value);
         })->toArray();
@@ -73,7 +72,7 @@ class MeasurementController extends Controller
      * @return array
      */
     #[ArrayShape(['label' => "mixed", 'column' => "mixed|string", 'chart_color' => "string", 'data' => "mixed"])]
-        public function getChartTimeSeries(Station $station, PETService $petservice, Request $request): array
+    public function getChartTimeSeries(Station $station, PETService $petservice, Request $request): array
     {
         // Build a query based on the request data, start with the measurements of the station
         $query = $station->measurements();
@@ -103,7 +102,8 @@ class MeasurementController extends Controller
                 $variable_select = "$aggr($column) AS y";
             } else {
                 // If PET, we need these columns to compute the PET value from
-                $variable_select = "$aggr(th_temp) AS th_temp, $aggr(sol_rad) AS sol_rad, $aggr(th_hum) AS th_hum, $aggr(wind_avgwind) AS wind_avgwind";
+                $variable_select = "$aggr(th_temp) AS th_temp, $aggr(sol_rad) AS sol_rad, $aggr(th_hum) AS th_hum, ".
+                    "$aggr(wind_avgwind) AS wind_avgwind";
             }
             // TODO support for other groupings than just hourly. Just change the date formatting accordingly
             $query->selectRaw("$variable_select, DATE_FORMAT(created_at, '%c/%d/%Y %H:00:00') AS x");
@@ -118,7 +118,7 @@ class MeasurementController extends Controller
         // Fetch the data
         $output = $query->get();
         // Map the data, if it's PET they want
-        if($column === 'pet') {
+        if ($column === 'pet') {
             $output = $output->map(fn($item) => [
                 'x' => $item->x,
                 'y' => $petservice->computePETFromMeasurement(
@@ -128,15 +128,16 @@ class MeasurementController extends Controller
                     $item->th_hum,
                     $item->wind_avgwind,
                     $station->latitude,
-                    $station->longitude)
+                    $station->longitude
+                )
             ]);
         }
         // Return a structure fit for ChartJS
         return [
-            'label' => $station->label,
-            'column' => $column,
-            'chart_color' => $station->chart_color,
-            'data' => $output
+        'label' => $station->label,
+        'column' => $column,
+        'chart_color' => $station->chart_color,
+        'data' => $output
         ];
     }
 }

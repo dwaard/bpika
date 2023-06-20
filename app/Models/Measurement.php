@@ -107,5 +107,4 @@ class Measurement extends Model
             'sun_total' => 'sometimes',
         ];
     }
-
 }

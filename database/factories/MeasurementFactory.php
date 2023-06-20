@@ -18,7 +18,7 @@ class MeasurementFactory extends Factory
     {
         return [
             'th_temp' => $this->faker->numberBetween(-5., 30.), // 23.4,
-            'th_hum' => $this->faker->numberBetween( 15, 99), // 65.0,
+            'th_hum' => $this->faker->numberBetween(15, 99), // 65.0,
             'th_dew' => $this->faker->numberBetween(0, 15), // 12.3,
             'th_heatindex' => $this->faker->numberBetween(-5., 30.), //21.9,
             'thb_temp' => $this->faker->numberBetween(-5., 30.), //22.1,

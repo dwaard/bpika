@@ -25,7 +25,8 @@ class PETTest extends TestCase
      */
     private $fileReaderService;
 
-    public function setUp(): void {
+    public function setUp(): void
+    {
 
         parent::setUp();
 
@@ -33,7 +34,8 @@ class PETTest extends TestCase
         $this->fileReaderService = $this->app->make('App\Services\FileReaderService');
     }
 
-    public function testCanOpenTestFiles() {
+    public function testCanOpenTestFiles()
+    {
 
         // Check if files exist
         $inputFileExists = Storage::disk('test')->exists('Binnenstad.csv');
@@ -41,33 +43,44 @@ class PETTest extends TestCase
         $notExistingFileExists = Storage::disk('test')->exists('notExisting.csv');
 
         // Assert whether the files exist
-        $this->assertTrue(  $inputFileExists,
-            'Binnenstad.csv is not present in the storage/app/test directory, but it should.');
-        $this->assertTrue(  $outputFileExists,
-            'Binnenstad_TCPET.csv is not present in the storage/app/test directory, but it should.');
-        $this->assertFalse( $notExistingFileExists,
-            'Binnenstad.csv is present in the storage/app/test directory, but it shouldn\'t.');
+        $this->assertTrue(
+            $inputFileExists,
+            'Binnenstad.csv is not present in the storage/app/test directory, but it should.'
+        );
+        $this->assertTrue(
+            $outputFileExists,
+            'Binnenstad_TCPET.csv is not present in the storage/app/test directory, but it should.'
+        );
+        $this->assertFalse(
+            $notExistingFileExists,
+            'Binnenstad.csv is present in the storage/app/test directory, but it shouldn\'t.'
+        );
 
         // Try reading the files
-        $inputFile = $this->fileReaderService->readCsv( 'Binnenstad.csv',
+        $inputFile = $this->fileReaderService->readCsv(
+            'Binnenstad.csv',
             'test',
             ',',
             true,
             null,
-            1);
-        $outputFile = $this->fileReaderService->readCsv('Binnenstad_TCPET.csv',
+            1
+        );
+        $outputFile = $this->fileReaderService->readCsv(
+            'Binnenstad_TCPET.csv',
             'test',
             ',',
             true,
             null,
-            1);
+            1
+        );
 
         // Assert that the files don't contain unreadable rows
         $this->assertFalse($inputFile->contains(false));
         $this->assertFalse($outputFile->contains(false));
     }
 
-    public function testInputShouldBeEqualToOutput() {
+    public function testInputShouldBeEqualToOutput()
+    {
 
         /*
          * This file will be the input to test the PET calculation
@@ -80,7 +93,8 @@ class PETTest extends TestCase
          * Hour (The hour of the measurement),
          * Minute (The minute of the measurement),
          * Decimal Time [H] (Combined time of the day in hours as a decimal number, ranges from 0 to below 24),
-         * Decimal Time Year[D] (Combined time of the year in days as a decimal number, ranges from 0 to below 365 or 366, depending on if the year is a leap year or not),
+         * Decimal Time Year[D] (Combined time of the year in days as a decimal number, ranges from 0 to below 365 or
+         *     366, depending on if the year is a leap year or not),
          * Air Pressure [hPa] (Air pressure in hectoPascal),
          * Precipitation [mm] (Amount of precipitation in millimeters),
          * Air Temperature [°C] (Air temperature in Celsius),
@@ -116,19 +130,19 @@ class PETTest extends TestCase
         }
 
         foreach ($availableStations as $station) {
-
             // Define standard values
             $outputAsString = '';
             $calculatedValues = collect();
 
-            $testFile = $this->fileReaderService->readCsv(  $station->name . '_TCPET.csv',
+            $testFile = $this->fileReaderService->readCsv(
+                $station->name . '_TCPET.csv',
                 'test',
                 ',',
                 true,
                 null,
-                1);
+                1
+            );
             foreach ($testFile as $row) {
-
                 // Replace any '#N/A' values with null value
                 foreach ($row as $key => $value) {
                     if ($value === '#N/A') {
@@ -139,34 +153,34 @@ class PETTest extends TestCase
                 // Assign the values to local variables for readability
                 // The values are currently all strings, so we need to get the right value,
                 // because null will be interpreted as 0, check if value is null first
-                $year                               = $row['Year'] === null                                         ? null : intval($row['Year']);
-                $month                              = $row['Month'] === null                                        ? null : intval($row['Month']);
-                $day                                = $row['Day'] === null                                          ? null : intval($row['Day']);
-                $DOY                                = $row['DOY'] === null                                          ? null : intval($row['DOY']);
-                $hour                               = $row['Hour'] === null                                         ? null : intval($row['Hour']);
-                $minute                             = $row['Minute'] === null                                       ? null : intval($row['Minute']);
-                $decimalTime                        = $row['Decimal Time [H]'] === null                             ? null : floatval($row['Decimal Time [H]']);
-                $decimalYear                        = $row['Decimal Time Year [D]'] === null                        ? null : floatval($row['Decimal Time Year [D]']);
-                $airPressure                        = $row['Air Pressure [hPa]'] === null                           ? null : floatval($row['Air Pressure [hPa]']);
-                $precipitation                      = $row['Precipitation [mm]'] === null                           ? null : floatval($row['Precipitation [mm]']);
-                $airTemperature                     = $row['Air Temperature [°C]'] === null                         ? null : floatval($row['Air Temperature [°C]']);
-                $humidity                           = $row['Relative Humidity [%]'] === null                        ? null : floatval($row['Relative Humidity [%]']);
-                $dewPoint                           = $row['Dew Point [°C]'] === null                               ? null : floatval($row['Dew Point [°C]']);
-                $windSpeed                          = $row['Wind Speed [m/s]'] === null                             ? null : floatval($row['Wind Speed [m/s]']);
-                $unscreenedSolarRadiation           = $row['Unscreened Solar Radiation [W/m2]'] === null            ? null : floatval($row['Unscreened Solar Radiation [W/m2]']);
-                $screenedSolarRadiation             = $row['Screened Solar Radiation [W/m2]'] === null              ? null : floatval($row['Screened Solar Radiation [W/m2]']);
-                $fractionOfDirectSolarRadiation     = $row['Fraction of Direct Solar Radiation'] === null           ? null : floatval($row['Fraction of Direct Solar Radiation']);
-                $fractionOfDiffuseSolarRadiation    = $row['Fraction of Diffuse Solar Radiation'] === null          ? null : floatval($row['Fraction of Diffuse Solar Radiation']);
-                $wetBulbTemperature                 = $row['Wet Bulb Temperature [°C]'] === null                    ? null : floatval($row['Wet Bulb Temperature [°C]']);
-                $globeTemperature                   = $row['Globe Temperature [°C]'] === null                       ? null : floatval($row['Globe Temperature [°C]']);
-                $meanRadiantTemperature             = $row['Mean Radiant Temperature [°C]'] === null                ? null : floatval($row['Mean Radiant Temperature [°C]']);
-                $wetBulbGlobeTemperature            = $row['Wet Bulb Globe Temperature [°C]'] === null              ? null : floatval($row['Wet Bulb Globe Temperature [°C]']);
-                $cosineOfZenithAngle                = $row['Cosine Of Zenith Angle'] === null                       ? null : floatval($row['Cosine Of Zenith Angle']);
-                $coreTemperature                    = $row['Core Temperature [°C]'] === null                        ? null : floatval($row['Core Temperature [°C]']);
-                $temperatureOfSkin                  = $row['Skin Temperature [°C]'] === null                        ? null : floatval($row['Skin Temperature [°C]']);
-                $temperatureOfClothes               = $row['Clothes Temperature [°C]'] === null                     ? null : floatval($row['Clothes Temperature [°C]']);
-                $evaporationOfSweat                 = $row['Evaporation Of Sweat'] === null                         ? null : floatval($row['Evaporation Of Sweat']);
-                $PET                                = $row['Physiologically Equivalent Temperature [°C]'] === null  ? null : floatval($row['Physiologically Equivalent Temperature [°C]']);
+                $year                            = $row['Year'] === null                                ? null : intval($row['Year']);
+                $month                           = $row['Month'] === null                               ? null : intval($row['Month']);
+                $day                             = $row['Day'] === null                                 ? null : intval($row['Day']);
+                $DOY                             = $row['DOY'] === null                                 ? null : intval($row['DOY']);
+                $hour                            = $row['Hour'] === null                                ? null : intval($row['Hour']);
+                $minute                          = $row['Minute'] === null                              ? null : intval($row['Minute']);
+                $decimalTime                     = $row['Decimal Time [H]'] === null                    ? null : floatval($row['Decimal Time [H]']);
+                $decimalYear                     = $row['Decimal Time Year [D]'] === null               ? null : floatval($row['Decimal Time Year [D]']);
+                $airPressure                     = $row['Air Pressure [hPa]'] === null                  ? null : floatval($row['Air Pressure [hPa]']);
+                $precipitation                   = $row['Precipitation [mm]'] === null                  ? null : floatval($row['Precipitation [mm]']);
+                $airTemperature                  = $row['Air Temperature [°C]'] === null                ? null : floatval($row['Air Temperature [°C]']);
+                $humidity                        = $row['Relative Humidity [%]'] === null               ? null : floatval($row['Relative Humidity [%]']);
+                $dewPoint                        = $row['Dew Point [°C]'] === null                      ? null : floatval($row['Dew Point [°C]']);
+                $windSpeed                       = $row['Wind Speed [m/s]'] === null                    ? null : floatval($row['Wind Speed [m/s]']);
+                $unscreenedSolarRadiation        = $row['Unscreened Solar Radiation [W/m2]'] === null   ? null : floatval($row['Unscreened Solar Radiation [W/m2]']);
+                $screenedSolarRadiation          = $row['Screened Solar Radiation [W/m2]'] === null     ? null : floatval($row['Screened Solar Radiation [W/m2]']);
+                $fractionOfDirectSolarRadiation  = $row['Fraction of Direct Solar Radiation'] === null  ? null : floatval($row['Fraction of Direct Solar Radiation']);
+                $fractionOfDiffuseSolarRadiation = $row['Fraction of Diffuse Solar Radiation'] === null ? null : floatval($row['Fraction of Diffuse Solar Radiation']);
+                $wetBulbTemperature              = $row['Wet Bulb Temperature [°C]'] === null           ? null : floatval($row['Wet Bulb Temperature [°C]']);
+                $globeTemperature                = $row['Globe Temperature [°C]'] === null              ? null : floatval($row['Globe Temperature [°C]']);
+                $meanRadiantTemperature          = $row['Mean Radiant Temperature [°C]'] === null       ? null : floatval($row['Mean Radiant Temperature [°C]']);
+                $wetBulbGlobeTemperature         = $row['Wet Bulb Globe Temperature [°C]'] === null     ? null : floatval($row['Wet Bulb Globe Temperature [°C]']);
+                $cosineOfZenithAngle             = $row['Cosine Of Zenith Angle'] === null              ? null : floatval($row['Cosine Of Zenith Angle']);
+                $coreTemperature                 = $row['Core Temperature [°C]'] === null               ? null : floatval($row['Core Temperature [°C]']);
+                $temperatureOfSkin               = $row['Skin Temperature [°C]'] === null               ? null : floatval($row['Skin Temperature [°C]']);
+                $temperatureOfClothes            = $row['Clothes Temperature [°C]'] === null            ? null : floatval($row['Clothes Temperature [°C]']);
+                $evaporationOfSweat              = $row['Evaporation Of Sweat'] === null                ? null : floatval($row['Evaporation Of Sweat']);
+                $PET                             = $row['Physiologically Equivalent Temperature [°C]'] === null ? null : floatval($row['Physiologically Equivalent Temperature [°C]']);
 
                 // Add useful values to the calculated values array
                 // Even though these are not calculated values we want to include them in the output file
@@ -187,26 +201,38 @@ class PETTest extends TestCase
                     $year !== null and
                     $hour !== null and
                     $minute !== null) {
-
-                    $createdDateTimeString = sprintf('%u-%u-20%u %u:%u',
-                        $day, $month, $year, $hour, $minute);
+                    $createdDateTimeString = sprintf(
+                        '%u-%u-20%u %u:%u',
+                        $day,
+                        $month,
+                        $year,
+                        $hour,
+                        $minute
+                    );
                     $createdDateTime = new DateTime($createdDateTimeString);
                     $createdDateTime->setTimezone(new DateTimeZone('UTC'));
 
                     // Check DOY and Decimal time
                     // Add one to DOY because date starts at 0, and DOY at 1
                     $calculatedDOY = date('z', $createdDateTime->getTimestamp()) + 1;
-                    $this->assertTrue(  $calculatedDOY === $DOY,
-                        sprintf('The day of year calculation is off by %u days.',
-                            abs($calculatedDOY - $DOY)));
+                    $this->assertTrue(
+                        $calculatedDOY === $DOY,
+                        sprintf(
+                            'The day of year calculation is off by %u days.',
+                            abs($calculatedDOY - $DOY)
+                        )
+                    );
                     $calculatedDecimalTime =    floatval($createdDateTime->format('H')) +
                         (floatval($createdDateTime->format('i')) / 60) +
                         (floatval($createdDateTime->format('s')) / 3600);
-                    $this->assertTrue(  $calculatedDecimalTime === $decimalTime,
-                        sprintf('The decimal time calculation is off by %u days.',
-                            abs($calculatedDecimalTime - $decimalTime)));
-                }
-                else {
+                    $this->assertTrue(
+                        $calculatedDecimalTime === $decimalTime,
+                        sprintf(
+                            'The decimal time calculation is off by %u days.',
+                            abs($calculatedDecimalTime - $decimalTime)
+                        )
+                    );
+                } else {
                     $createdDateTimeString = null;
                     $calculatedDOY = null;
                     $calculatedDecimalTime = null;
@@ -232,24 +258,33 @@ class PETTest extends TestCase
                     $decimalTime !== null and
                     $fractionOfDiffuseSolarRadiation !== null and
                     $fractionOfDirectSolarRadiation !== null) {
-
-                    $calculatedFractionOfDiffuseSolarRadiation = $this->PETService->fr_diffuse( $screenedSolarRadiation,
+                    $calculatedFractionOfDiffuseSolarRadiation = $this->PETService->fr_diffuse(
+                        $screenedSolarRadiation,
                         $station->latitude,
                         $station->longitude,
                         $calculatedDOY,
                         $calculatedDecimalTime
                     );
                     $calculatedFractionOfDirectSolarRadiation = 1. - $calculatedFractionOfDiffuseSolarRadiation;
-                    $diffuseDifference = abs($calculatedFractionOfDiffuseSolarRadiation - $fractionOfDiffuseSolarRadiation);
-                    $this->assertTrue(  $diffuseDifference < $acceptedLimit,
-                        sprintf('The fraction of diffuse solar radiation is off by %f Watts per m².',
-                            $diffuseDifference - $acceptedLimit));
-                    $directDifference = abs($calculatedFractionOfDirectSolarRadiation - $fractionOfDirectSolarRadiation);
-                    $this->assertTrue(  $directDifference < $acceptedLimit,
-                        sprintf('The fraction of diffuse solar radiation is off by %f Watts per m².',
-                            $directDifference - $acceptedLimit));
-                }
-                else {
+                    $diffuseDifference = abs($calculatedFractionOfDiffuseSolarRadiation
+                        - $fractionOfDiffuseSolarRadiation);
+                    $this->assertTrue(
+                        $diffuseDifference < $acceptedLimit,
+                        sprintf(
+                            'The fraction of diffuse solar radiation is off by %f Watts per m².',
+                            $diffuseDifference - $acceptedLimit
+                        )
+                    );
+                    $directDifference = abs($calculatedFractionOfDirectSolarRadiation
+                        - $fractionOfDirectSolarRadiation);
+                    $this->assertTrue(
+                        $directDifference < $acceptedLimit,
+                        sprintf(
+                            'The fraction of diffuse solar radiation is off by %f Watts per m².',
+                            $directDifference - $acceptedLimit
+                        )
+                    );
+                } else {
                     $calculatedFractionOfDiffuseSolarRadiation = null;
                     $calculatedFractionOfDirectSolarRadiation = null;
                 }
@@ -262,17 +297,21 @@ class PETTest extends TestCase
                 if ($DOY !== null and
                     $decimalTime !== null and
                     $cosineOfZenithAngle !== null) {
-
-                    $calculatedCosineOfZenithAngle = $this->PETService->sin_solar_elev( $station->latitude,
+                    $calculatedCosineOfZenithAngle = $this->PETService->sin_solar_elev(
+                        $station->latitude,
                         $station->longitude,
                         $DOY,
-                        $decimalTime);
+                        $decimalTime
+                    );
                     $czaDifference = abs($calculatedCosineOfZenithAngle - $cosineOfZenithAngle);
-                    $this->assertTrue(  $czaDifference < $acceptedLimit,
-                        sprintf('The cosine of the zenith angle is off by %f.',
-                            $czaDifference - $acceptedLimit));
-                }
-                else {
+                    $this->assertTrue(
+                        $czaDifference < $acceptedLimit,
+                        sprintf(
+                            'The cosine of the zenith angle is off by %f.',
+                            $czaDifference - $acceptedLimit
+                        )
+                    );
+                } else {
                     $calculatedCosineOfZenithAngle = null;
                 }
 
@@ -288,26 +327,29 @@ class PETTest extends TestCase
                     $calculatedFractionOfDirectSolarRadiation !== null and
                     $calculatedCosineOfZenithAngle !== null and
                     $globeTemperature !== null) {
-
                     $urbanFactor = 1.;
-                    $calculatedGlobeTemperature = $this->PETService->calc_Tglobe(   $airTemperature,
+                    $calculatedGlobeTemperature = $this->PETService->calc_Tglobe(
+                        $airTemperature,
                         $humidity,
                         $urbanFactor * $windSpeed,
                         $screenedSolarRadiation,
                         $calculatedFractionOfDirectSolarRadiation,
-                        $calculatedCosineOfZenithAngle);
+                        $calculatedCosineOfZenithAngle
+                    );
                     // If calc_Tglobe returns NAN, then set it to null
                     if (is_nan($calculatedGlobeTemperature)) {
                         $calculatedGlobeTemperature = null;
-                    }
-                    else {
+                    } else {
                         $globeTemperatureDifference = abs($calculatedGlobeTemperature - $globeTemperature);
-                        $this->assertTrue(  $globeTemperatureDifference < $acceptedLimit,
-                            sprintf('The globe temperature is off by %f degrees.',
-                                $globeTemperatureDifference - $acceptedLimit));
+                        $this->assertTrue(
+                            $globeTemperatureDifference < $acceptedLimit,
+                            sprintf(
+                                'The globe temperature is off by %f degrees.',
+                                $globeTemperatureDifference - $acceptedLimit
+                            )
+                        );
                     }
-                }
-                else {
+                } else {
                     $calculatedGlobeTemperature = null;
                 }
 
@@ -319,16 +361,21 @@ class PETTest extends TestCase
                     $airTemperature !== null and
                     $windSpeed !== null and
                     $meanRadiantTemperature !== null) {
-
-                    $calculatedMeanRadiantTemperature = $this->PETService->Tmrt($calculatedGlobeTemperature,
+                    $calculatedMeanRadiantTemperature = $this->PETService->Tmrt(
+                        $calculatedGlobeTemperature,
                         $airTemperature,
-                        $windSpeed);
-                    $meanRadiantTemperatureDifference = abs($calculatedMeanRadiantTemperature - $meanRadiantTemperature);
-                    $this->assertTrue(  $meanRadiantTemperatureDifference < $acceptedLimit,
-                        sprintf('The mean radiant temperature is off by %f degrees.',
-                            $meanRadiantTemperatureDifference - $acceptedLimit));
-                }
-                else {
+                        $windSpeed
+                    );
+                    $meanRadiantTemperatureDifference = abs($calculatedMeanRadiantTemperature
+                        - $meanRadiantTemperature);
+                    $this->assertTrue(
+                        $meanRadiantTemperatureDifference < $acceptedLimit,
+                        sprintf(
+                            'The mean radiant temperature is off by %f degrees.',
+                            $meanRadiantTemperatureDifference - $acceptedLimit
+                        )
+                    );
+                } else {
                     $calculatedMeanRadiantTemperature = null;
                 }
 
@@ -344,33 +391,49 @@ class PETTest extends TestCase
                     $temperatureOfSkin !== null and
                     $temperatureOfClothes !== null and
                     $evaporationOfSweat !== null) {
-
-                    $systemOutput = $this->PETService->system(  $airTemperature,
+                    $systemOutput = $this->PETService->system(
+                        $airTemperature,
                         $calculatedMeanRadiantTemperature,
                         $humidity,
-                        $windSpeed);
+                        $windSpeed
+                    );
                     $calculatedCoreTemperature = $systemOutput[0];
                     $calculatedTemperatureOfSkin = $systemOutput[1];
                     $calculatedTemperatureOfClothes = $systemOutput[2];
                     $calculatedEvaporationOfSweat = $systemOutput[3];
                     $coreTemperatureDifference = abs($calculatedCoreTemperature - $coreTemperature);
-                    $this->assertTrue(  $coreTemperatureDifference < $systemAcceptedLimit,
-                        sprintf('The core temperature is off by %f degrees.',
-                            $coreTemperatureDifference - $systemAcceptedLimit));
+                    $this->assertTrue(
+                        $coreTemperatureDifference < $systemAcceptedLimit,
+                        sprintf(
+                            'The core temperature is off by %f degrees.',
+                            $coreTemperatureDifference - $systemAcceptedLimit
+                        )
+                    );
                     $skinTemperatureDifference = abs($calculatedTemperatureOfSkin - $temperatureOfSkin);
-                    $this->assertTrue(  $skinTemperatureDifference < $systemAcceptedLimit,
-                        sprintf('The skin temperature is off by %f degrees.',
-                            $skinTemperatureDifference - $systemAcceptedLimit));
+                    $this->assertTrue(
+                        $skinTemperatureDifference < $systemAcceptedLimit,
+                        sprintf(
+                            'The skin temperature is off by %f degrees.',
+                            $skinTemperatureDifference - $systemAcceptedLimit
+                        )
+                    );
                     $clothesTemperatureDifference = abs($calculatedTemperatureOfClothes - $temperatureOfClothes);
-                    $this->assertTrue(  $clothesTemperatureDifference < $systemAcceptedLimit,
-                        sprintf('The clothes temperature is off by %f degrees.',
-                            $clothesTemperatureDifference - $systemAcceptedLimit));
+                    $this->assertTrue(
+                        $clothesTemperatureDifference < $systemAcceptedLimit,
+                        sprintf(
+                            'The clothes temperature is off by %f degrees.',
+                            $clothesTemperatureDifference - $systemAcceptedLimit
+                        )
+                    );
                     $evaporationOfSweatDifference = abs($calculatedEvaporationOfSweat - $evaporationOfSweat);
-                    $this->assertTrue(  $evaporationOfSweatDifference < $evaporationOfSweatLimit,
-                        sprintf('The evaporation of sweat is off by %f.',
-                            $evaporationOfSweatDifference - $evaporationOfSweatLimit));
-                }
-                else {
+                    $this->assertTrue(
+                        $evaporationOfSweatDifference < $evaporationOfSweatLimit,
+                        sprintf(
+                            'The evaporation of sweat is off by %f.',
+                            $evaporationOfSweatDifference - $evaporationOfSweatLimit
+                        )
+                    );
+                } else {
                     $calculatedCoreTemperature = null;
                     $calculatedTemperatureOfSkin = null;
                     $calculatedTemperatureOfClothes = null;
@@ -390,20 +453,24 @@ class PETTest extends TestCase
                     $airTemperature !== null and
                     $calculatedEvaporationOfSweat !== null and
                     $PET !== null) {
-
-                    $calculatedPET = $this->PETService->pet($calculatedCoreTemperature,
+                    $calculatedPET = $this->PETService->pet(
+                        $calculatedCoreTemperature,
                         $calculatedTemperatureOfSkin,
                         $calculatedTemperatureOfClothes,
                         $airTemperature,
-                        $calculatedEvaporationOfSweat);
+                        $calculatedEvaporationOfSweat
+                    );
 
                     // Check if calculated PET value is within limits
                     $calculatedPETDifference = abs($calculatedPET - $PET);
-                    $this->assertTrue(  $calculatedPETDifference < $PETAcceptedLimit,
-                        sprintf('The calculated physiologically equivalent temperature is off by %f degrees.',
-                            $calculatedPETDifference - $PETAcceptedLimit));
-                }
-                else {
+                    $this->assertTrue(
+                        $calculatedPETDifference < $PETAcceptedLimit,
+                        sprintf(
+                            'The calculated physiologically equivalent temperature is off by %f degrees.',
+                            $calculatedPETDifference - $PETAcceptedLimit
+                        )
+                    );
+                } else {
                     $calculatedPET = null;
                 }
 
@@ -414,22 +481,26 @@ class PETTest extends TestCase
                     $humidity !== null and
                     $windSpeed !== null and
                     $PET !== null) {
-
-                    $computedPET = $this->PETService->computePETFromMeasurement($createdDateTimeString,
+                    $computedPET = $this->PETService->computePETFromMeasurement(
+                        $createdDateTimeString,
                         $airTemperature,
                         $screenedSolarRadiation,
                         $humidity,
                         $windSpeed,
                         $station->latitude,
-                        $station->longitude);
+                        $station->longitude
+                    );
 
                     // Check if the computed PET value is within acceptable limits
                     $computedPETDifference = abs($computedPET - $PET);
-                    $this->assertTrue(  $computedPETDifference < $PETAcceptedLimit,
-                        sprintf('The computed physiologically equivalent temperature is off by %f degrees.',
-                            $computedPETDifference - $PETAcceptedLimit));
-                }
-                else {
+                    $this->assertTrue(
+                        $computedPETDifference < $PETAcceptedLimit,
+                        sprintf(
+                            'The computed physiologically equivalent temperature is off by %f degrees.',
+                            $computedPETDifference - $PETAcceptedLimit
+                        )
+                    );
+                } else {
                     $computedPET = null;
                 }
 
@@ -463,9 +534,13 @@ class PETTest extends TestCase
             Storage::disk('output')->put($station->name . '_output.csv', $outputAsString);
 
             // Check if output file has been successfully created
-            $this->assertTrue(  Storage::disk('output')->exists($station['name'] . '_output.csv'),
-                sprintf('The output of %s could not be written to the output file',
-                    $station->name));
+            $this->assertTrue(
+                Storage::disk('output')->exists($station['name'] . '_output.csv'),
+                sprintf(
+                    'The output of %s could not be written to the output file',
+                    $station->name
+                )
+            );
         }
     }
 }

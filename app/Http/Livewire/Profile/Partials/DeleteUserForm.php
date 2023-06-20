@@ -76,6 +76,11 @@ class DeleteUserForm extends Component
         return redirect('/');
     }
 
+    /**
+     * Render this component
+     *
+     * @return Factory|Application|View
+     */
     public function render(): Factory|Application|View
     {
         return view('livewire.profile.partials.delete-user-form');

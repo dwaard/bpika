@@ -33,7 +33,7 @@ class MeasurementSeeder extends Seeder
                 unset($data['id']);
 //                unset($data['created_at']);
 //                unset($data['updated_at']);
-                foreach($data as $key => $value) {
+                foreach ($data as $key => $value) {
                     if ($value === 'NULL') {
                         unset($data[$key]);
                     }

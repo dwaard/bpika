@@ -39,9 +39,10 @@ class UserInvited extends Mailable
             ->with([
                 'name' => $this->data['name'],
                 'url' => URL::temporarySignedRoute(
-                    'register', now()->addDays(3), $this->data
+                    'register',
+                    now()->addDays(3),
+                    $this->data
                 )
             ]);
     }
-
 }

@@ -4,6 +4,9 @@ namespace App\Http\Livewire\Users;
 
 use App\Mail\UserInvited;
 use App\Models\User;
+use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\Mail;
 use Livewire\Component;
@@ -54,6 +57,11 @@ class Index extends Component
 
     public $listeners = ['usersUpdated' => 'render'];
 
+    /**
+     * Trigger the user invite modal.
+     *
+     * @return void
+     */
     public function triggerUserInviteModal()
     {
         $this->invitingUser = true;
@@ -77,7 +85,12 @@ class Index extends Component
         $this->reset(['name', 'email']);
     }
 
-    public function render()
+    /**
+     * Render this component.
+     *
+     * @return Application|Factory|View|\Illuminate\Foundation\Application
+     */
+    public function render(): \Illuminate\Foundation\Application|View|Factory|Application
     {
         return view('livewire.users.index', [
           'users' => User::all()

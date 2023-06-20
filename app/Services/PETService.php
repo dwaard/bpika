@@ -14,6 +14,7 @@ namespace App\Services;
 
 use DateTime;
 use DateTimeZone;
+
 //use test\Mockery\MockingNullableMethodsTest;
 
 /**
@@ -41,11 +42,9 @@ class PETService
         $trans = $this->transmissivity($solar_down, $lat, $lon, $DOY, $utc_dec);
         if ($trans <= 0.22) {
             $frdif = 1. - 0.09 * $trans;
-        }
-        else if ($trans <= 0.80) {
+        } elseif ($trans <= 0.80) {
             $frdif = 0.9511 - 0.1604 * $trans + 4.388 * $trans ** 2 - 16.638 * $trans ** 3 + 12.336 * $trans ** 4;
-        }
-        else {
+        } else {
             $frdif = 0.165;
         }
         return $frdif;
@@ -234,8 +233,7 @@ class PETService
     {
         if ($RH > 1) {
             $hfrac = $RH / 100.;
-        }
-        else {
+        } else {
             $hfrac = $RH;
         }
 
@@ -312,7 +310,7 @@ class PETService
         $max_iter = 50;
         $Tsfc = $Tair;
         $Tglobe_prev = $Tair;
-        $Converged = False;
+        $Converged = false;
         $iter = 0;
         while (!$Converged and $iter <= $max_iter) {
             $iter = $iter + 1;
@@ -320,7 +318,7 @@ class PETService
             $h = $this->h_sphere_in_air($d_globe, $Tref, $Pa, $Ua);
             $Tglobe = (0.5 * ($emis_air * $Tair ** 4 + $emis_sfc * $Tsfc ** 4) - $h / ($emis_globe * $sigma) * ($Tglobe_prev - $Tair) + $Solar / (2 * $emis_globe * $sigma) * (1. - $alb_globe) * ($fdir * (1. / (2. * $cza) - 1.) + 1. + $alb_sfc)) ** 0.25;
             if (abs($Tglobe - $Tglobe_prev) < $convergence) {
-                $Converged = True;
+                $Converged = true;
             } else {
                 $Tglobe_prev = (0.9 * $Tglobe_prev + 0.1 * $Tglobe);
             }
@@ -328,8 +326,7 @@ class PETService
 
         if ($Converged) {
             $Tglobe = $this->T_Cel($Tglobe);
-        }
-        else {
+        } else {
             $Tglobe = NAN;
         }
 
@@ -384,8 +381,7 @@ class PETService
             $mrt - $Ta > -30.0 and $mrt - $Ta < 70.0);
         if ($Ua < 0.5) {
             $Ua = 0.5;
-        }
-        else if ($Ua > 17) {
+        } elseif ($Ua > 17) {
             $Ua = 17;
         }
 
@@ -614,8 +610,7 @@ class PETService
                 (0.00104452989) * $Ua * $Pa * $Pa * $Pa * $Pa * $Pa +
                 (2.47090539 * (10 ** (-4))) * $D_Tmrt * $Pa * $Pa * $Pa * $Pa * $Pa +
                 (0.00148348065) * $Pa * $Pa * $Pa * $Pa * $Pa * $Pa);
-        }
-        else {
+        } else {
             $UTCI_approx = null;
         }
 
@@ -645,9 +640,19 @@ class PETService
      * @param float $ht
      * @return array|void
      */
-    public function system($Ta, $mrt, $RH, $Ua, float $M = 80., float $Icl = 0.9, string $bodyPosition = "standing",
-        string $sex = "male", float $mbody = 75., float $age = 35., float $ht = 1.8)
-    {
+    public function system(
+        $Ta,
+        $mrt,
+        $RH,
+        $Ua,
+        float $M = 80.,
+        float $Icl = 0.9,
+        string $bodyPosition = "standing",
+        string $sex = "male",
+        float $mbody = 75.,
+        float $age = 35.,
+        float $ht = 1.8
+    ) {
         # To avoid a lot of edits, translate variables from new to old names
         $ta = $Ta;
         $tmrt = $mrt;
@@ -693,9 +698,9 @@ class PETService
         $fcl = 1 + (0.31 * $icl); # Increase of the exchange area depending on the clothing level:
         if ($bodyPosition == "sitting") {
             $feff = 0.696;
-        } else if ($bodyPosition == "standing") {
+        } elseif ($bodyPosition == "standing") {
             $feff = 0.725;
-        } else if ($bodyPosition == "crouching") {
+        } elseif ($bodyPosition == "crouching") {
             $feff = 0.67;
         }
 
@@ -764,17 +769,14 @@ class PETService
         # clothed surface
         $Acl = $Adu * $facl + $Adu * ($fcl - 1.0);
         # skin temperatures
-        for ($j = 1; $j < 7; $j++)
-        {
+        for ($j = 1; $j < 7; $j++) {
             $tsk = $tsk_set;
             $count1 = 0;
             $tcl = ($ta + $tmrt + $tsk) / 3.0; # Average value between the temperatures to estimate Tclothes
             $enbal2 = 0.0;
             $isCalculatingSkinTemperatures = true;
-            while ($isCalculatingSkinTemperatures)
-            {
-                for ($count2 = 1; $count2 < 100; $count2++)
-                {
+            while ($isCalculatingSkinTemperatures) {
+                for ($count2 = 1; $count2 < 100; $count2++) {
                     # Estimation of the radiation losses
                     $rclo2 = $emcl * $sigm * (pow($tcl + 273.2, 4.0) - pow($tmrt + 273.2, 4.0)) * $feff;
                     # Calculation of the thermal resistance of the body:
@@ -903,34 +905,38 @@ class PETService
                 if ($count1 == 0.0 or $count1 == 1.0 or $count1 == 2.0) {
                     $count1 = $count1 + 1;
                     $enbal2 = 0.0;
-                }
-                else {
+                } else {
                     break;
                 }
             # end "While True" (using 'break' statements)
-            for ($k = 0; $k < 20; $k++)
-            {
-                $g100 = 0;
-                if ($count1 == 3.0 and ($j != 2 and $j != 5)) {
-                    if ($j != 6 and $j != 1) {
-                        if ($j != 3) {
-                            if ($j != 7) {
-                                if ($j == 4) {
+                for ($k = 0; $k < 20; $k++) {
+                    $g100 = 0;
+                    if ($count1 == 3.0 and ($j != 2 and $j != 5)) {
+                        if ($j != 6 and $j != 1) {
+                            if ($j != 3) {
+                                if ($j != 7) {
+                                    if ($j == 4) {
+                                        $g100 = true;
+                                        break;
+                                    }
+                                } else {
+                                    if ($tcore[$j - 1] >= $tc_set or $tsk <= $tsk_set) {
+                                        $g100 = false;
+                                        break;
+                                    }
                                     $g100 = true;
                                     break;
                                 }
-                            }
-                            else {
-                                if ($tcore[$j - 1] >= $tc_set or $tsk <= $tsk_set) {
+                            } else {
+                                if ($tcore[$j - 1] >= $tc_set or $tsk > $tsk_set) {
                                     $g100 = false;
                                     break;
                                 }
                                 $g100 = true;
                                 break;
                             }
-                        }
-                        else {
-                            if ($tcore[$j - 1] >= $tc_set or $tsk > $tsk_set) {
+                        } else {
+                            if ($c[10] < 0.0 or ($tcore[$j - 1] < $tc_set or $tsk <= 33.85)) {
                                 $g100 = false;
                                 break;
                             }
@@ -938,55 +944,45 @@ class PETService
                             break;
                         }
                     }
-                    else {
-                        if ($c[10] < 0.0 or ($tcore[$j - 1] < $tc_set or $tsk <= 33.85)) {
-                            $g100 = false;
-                            break;
-                        }
-                        $g100 = true;
+                    if ($c[8] < 0.0 or ($tcore[$j - 1] < $tc_set or $tsk > $tsk_set + 0.05)) {
+                        $g100 = false;
                         break;
                     }
                 }
-                if ($c[8] < 0.0 or ($tcore[$j - 1] < $tc_set or $tsk > $tsk_set + 0.05)) {
-                    $g100 = false;
-                    break;
-                }
-            }
-            if ($g100 == false) {
-                continue;
-            }
-            else {
-                if (($j == 4 or $vb < 91.0) and ($j != 4 or $vb >= 89.0)) {
-                    # Maximum blood flow
-                    if ($vb > 90.0) {
-                        $vb = 90.0;
+                if ($g100 == false) {
+                    continue;
+                } else {
+                    if (($j == 4 or $vb < 91.0) and ($j != 4 or $vb >= 89.0)) {
+                        # Maximum blood flow
+                        if ($vb > 90.0) {
+                            $vb = 90.0;
+                        }
+                        # water loss in g/m2/h
+                        $ws = $swm * 3600.0 * 1000.0;
+                        if ($ws > 2000.0) {
+                            $ws = 2000.0;
+                        }
+                        # wd and wr are not used at present. Original code lines are kept as comment
+                        # to avoid errors, but allow possible future use by decommenting
+                        # $wd = $ed / $Lv * 3600.0 * (-1000.0);
+                        # $wr = $Eres / $Lv * 3600.0 * (-1000.0);
+                        return [$tcore[$j - 1], $tsk, $tcl, $esw];
                     }
-                    # water loss in g/m2/h
-                    $ws = $swm * 3600.0 * 1000.0;
-                    if ($ws > 2000.0) {
-                        $ws = 2000.0;
-                    }
-                    # wd and wr are not used at present. Original code lines are kept as comment
-                    # to avoid errors, but allow possible future use by decommenting
-                    # $wd = $ed / $Lv * 3600.0 * (-1000.0);
-                    # $wr = $Eres / $Lv * 3600.0 * (-1000.0);
-                    return [$tcore[$j - 1], $tsk, $tcl, $esw];
                 }
-            }
             # water loss
-            $ws = $swm * 3600.0 * 1000.0; # sweating
+                $ws = $swm * 3600.0 * 1000.0; # sweating
             # wd and wr are not used at present. Original code lines are kept as comment
             # to avoid errors,  but allow possible future use by decommenting
             # $wd = $ed / $Lv * 3600.0 * (-1000.0); # diffusion = perspiration
             # $wr = $Eres / $Lv * 3600.0 * (-1000.0); # respiration latent
 
-            if ($j - 3 < 0) {
-                $index = 3;
-            } else {
-                $index = $j - 3;
-            }
+                if ($j - 3 < 0) {
+                    $index = 3;
+                } else {
+                    $index = $j - 3;
+                }
 
-            return [$tcore[$index], $tsk, $tcl, $esw];
+                return [$tcore[$index], $tsk, $tcl, $esw];
             }
         }
     }
@@ -1008,7 +1004,8 @@ class PETService
      * @param float $ht
      * @return float|mixed
      */
-    public function pet($tc, $tsk, $tcl, $ta_init, $esw_real, float $M = 80., $Icl = 0.9, string $bodyPosition = "standing", string $sex = "male", float $mbody = 75., float $age = 35., float $ht = 1.8) {
+    public function pet($tc, $tsk, $tcl, $ta_init, $esw_real, float $M = 80., $Icl = 0.9, string $bodyPosition = "standing", string $sex = "male", float $mbody = 75., float $age = 35., float $ht = 1.8)
+    {
 
         $po = 1013.25; # atmospheric pressure [hPa]
         $p = 1013.25; # real pressure [hPa]
@@ -1145,13 +1142,15 @@ class PETService
      * @param float $longitude
      * @return float|null Physiologically Equivalent Temperature in Celsius
      */
-    public function computePETFromMeasurement(?string $createdDateTime,
-                                              ?float $airTemperature,
-                                              ?float $solarRadiation,
-                                              ?float $humidity,
-                                              ?float $windSpeed,
-                                              ?float $latitude = 52.,
-                                              ?float $longitude = 5.1) {
+    public function computePETFromMeasurement(
+        ?string $createdDateTime,
+        ?float $airTemperature,
+        ?float $solarRadiation,
+        ?float $humidity,
+        ?float $windSpeed,
+        ?float $latitude = 52.,
+        ?float $longitude = 5.1
+    ) {
 
         /*
             Check if necessary parameters aren't null
@@ -1178,15 +1177,18 @@ class PETService
         // Correct for incorrect values of solar radiation
         if ($solarRadiation < 0) {
             $solarRadiation = 0;
-        }
-        else if ($solarRadiation > 75. + 1.2 * $this->solar_clear(  $longitude,
-                                                                    $latitude,
-                                                                    $dayOfTheYear,
-                                                                    $decimalTime)) {
-            $solarRadiation = $this->solar_clear(   $longitude,
-                                                    $latitude,
-                                                    $dayOfTheYear,
-                                                    $decimalTime);
+        } elseif ($solarRadiation > 75. + 1.2 * $this->solar_clear(
+            $longitude,
+            $latitude,
+            $dayOfTheYear,
+            $decimalTime
+        )) {
+            $solarRadiation = $this->solar_clear(
+                $longitude,
+                $latitude,
+                $dayOfTheYear,
+                $decimalTime
+            );
         }
 
         // Currently no urban correction applied
@@ -1194,52 +1196,64 @@ class PETService
         $urbanFactor = 1.;
 
         // Get fraction of diffuse and direct solar radiation
-        $fractionOfDiffuseSolarRadiation = $this->fr_diffuse(   $solarRadiation,
-                                                                $latitude,
-                                                                $longitude,
-                                                                $dayOfTheYear,
-                                                                $decimalTime);
+        $fractionOfDiffuseSolarRadiation = $this->fr_diffuse(
+            $solarRadiation,
+            $latitude,
+            $longitude,
+            $dayOfTheYear,
+            $decimalTime
+        );
         $fractionOfDirectSolarRadiation = 1. - $fractionOfDiffuseSolarRadiation;
 
         // Get cosine of zenith angle
-        $cosineOfZenithAngle = $this->sin_solar_elev(   $latitude,
-                                                        $longitude,
-                                                        $dayOfTheYear,
-                                                        $decimalTime);
+        $cosineOfZenithAngle = $this->sin_solar_elev(
+            $latitude,
+            $longitude,
+            $dayOfTheYear,
+            $decimalTime
+        );
 
         // Get globe temperature
-        $globeTemperature = $this->calc_Tglobe( $airTemperature,
-                                                $humidity,
-                                            $urbanFactor * $windSpeed,
-                                                $solarRadiation,
-                                                $fractionOfDirectSolarRadiation,
-                                                $cosineOfZenithAngle);
+        $globeTemperature = $this->calc_Tglobe(
+            $airTemperature,
+            $humidity,
+            $urbanFactor * $windSpeed,
+            $solarRadiation,
+            $fractionOfDirectSolarRadiation,
+            $cosineOfZenithAngle
+        );
         // If calc_Tglobe returns NAN, then return null
         if (is_nan($globeTemperature)) {
             return null;
         }
 
         // Get median radiant temperature
-        $medianRadiantTemperature = $this->Tmrt($globeTemperature,
-                                                $airTemperature,
-                                                $windSpeed);
+        $medianRadiantTemperature = $this->Tmrt(
+            $globeTemperature,
+            $airTemperature,
+            $windSpeed
+        );
 
         // Get system output
-        $systemOutput = $this->system(  $airTemperature,
-                                        $medianRadiantTemperature,
-                                        $humidity,
-                                        $windSpeed);
+        $systemOutput = $this->system(
+            $airTemperature,
+            $medianRadiantTemperature,
+            $humidity,
+            $windSpeed
+        );
         $coreTemperature = $systemOutput[0];
         $temperatureOfSkin = $systemOutput[1];
         $temperatureOfClothes = $systemOutput[2];
         $evaporationOfSweat = $systemOutput[3];
 
         // Calculate and return PET value
-        return $this->pet(  $coreTemperature,
-                            $temperatureOfSkin,
-                            $temperatureOfClothes,
-                            $airTemperature,
-                            $evaporationOfSweat);
+        return $this->pet(
+            $coreTemperature,
+            $temperatureOfSkin,
+            $temperatureOfClothes,
+            $airTemperature,
+            $evaporationOfSweat
+        );
     }
 
     #*************************************************************************************
