@@ -38,7 +38,6 @@ class CreateMeasurementsTable extends Migration
             $table->float('sol_evo')->nullable();
             $table->float('sun_total')->nullable();
         });
-
     }
 
     /**

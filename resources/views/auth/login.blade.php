@@ -1,69 +1,47 @@
-@extends('layouts.hero')
+<x-guest-layout>
+    <!-- Session Status -->
+    <x-auth-session-status class="mb-4" :status="session('status')" />
 
-@section('main')
-    <div class="column is-5-tablet is-4-desktop is-3-widescreen">
+    <form method="POST" action="{{ route('login') }}">
+        @csrf
 
-        <div class="title">{{ config('app.name', 'BPiKA') }}</div>
-        <form method="POST" action="{{ route('login') }}" class="box">
-            @csrf
-            <div class="field">
-                <label for="email" class="label">{{ __('E-Mail Address') }}</label>
-                <div class="control has-icons-left has-icons-right">
-                    <input type="email" name="email" placeholder="{{ __('e.g. bobsmith@gmail.com') }}"
-                           class="input @error('email') is-danger @enderror"
-                           value="{{ old('email') }}" required autocomplete="email" autofocus>
-                    <span class="icon is-small is-left">
-                    <i class="fas fa-envelope"></i>
-                </span>
-                    @error('email')
-                    <span class="icon is-small is-right">
-                    <i class="fas fa-exclamation-triangle"></i>
-                </span>
-                    @enderror
-                </div>
-                @error('email')
-                <p class="help is-danger">{{ $message }}</p>
-                @enderror
-            </div>
-            <div class="field">
-                <label for="password" class="label">{{ __('Password') }}</label>
-                <div class="control has-icons-left has-icons-right">
-                    <input id="password" type="password"
-                           class="input @error('password') is-danger @enderror"
-                           name="password" required autocomplete="current-password"/>
-                    <span class="icon is-small is-left">
-                    <i class="fa fa-lock"></i>
-                </span>
-                    @error('password')
-                    <span class="icon is-small is-right">
-                    <i class="fas fa-exclamation-triangle"></i>
-                </span>
-                    @enderror
-                </div>
-                @error('password')
-                <p class="help is-danger">{{ $message }}</p>
-                @enderror
-            </div>
-            <div class="field">
-                <label class="checkbox" for="remember">
-                    <input type="checkbox" name="remember" id="remember"
-                        {{ old('remember') ? 'checked' : '' }}>
-                    {{ __('Remember Me') }}
-                </label>
-            </div>
-            <div class="field">
-                <button class="button is-success">
-                    {{ __('Login') }}
-                </button>
-            </div>
-            <div class="field">
-                @if (Route::has('password.request'))
-                    <a class="btn btn-link level-right" href="{{ route('password.request') }}">
-                        {{ __('Forgot Your Password?') }}
-                    </a>
-                @endif
-            </div>
-        </form>
-    </div>
-@endsection
+        <!-- Email Address -->
+        <div>
+            <x-input-label for="email" :value="__('Email')" />
+            <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autofocus autocomplete="username" />
+            <x-input-error :messages="$errors->get('email')" class="mt-2" />
+        </div>
 
+        <!-- Password -->
+        <div class="mt-4">
+            <x-input-label for="password" :value="__('Password')" />
+
+            <x-text-input id="password" class="block mt-1 w-full"
+                            type="password"
+                            name="password"
+                            required autocomplete="current-password" />
+
+            <x-input-error :messages="$errors->get('password')" class="mt-2" />
+        </div>
+
+        <!-- Remember Me -->
+        <div class="block mt-4">
+            <label for="remember_me" class="inline-flex items-center">
+                <input id="remember_me" type="checkbox" class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500" name="remember">
+                <span class="ml-2 text-sm text-gray-600">{{ __('Remember me') }}</span>
+            </label>
+        </div>
+
+        <div class="flex items-center justify-end mt-4">
+            @if (Route::has('password.request'))
+                <a class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" href="{{ route('password.request') }}">
+                    {{ __('Forgot your password?') }}
+                </a>
+            @endif
+
+            <x-primary-button class="ml-3">
+                {{ __('Log in') }}
+            </x-primary-button>
+        </div>
+    </form>
+</x-guest-layout>

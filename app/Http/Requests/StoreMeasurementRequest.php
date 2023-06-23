@@ -13,7 +13,7 @@ class StoreMeasurementRequest extends FormRequest
      *
      * @return bool
      */
-    public function authorize()
+    public function authorize(): bool
     {
         return true;
     }
@@ -23,7 +23,7 @@ class StoreMeasurementRequest extends FormRequest
      *
      * @return array
      */
-    public function rules()
+    public function rules(): array
     {
         return [
             'station_name' => 'required|exists:stations,code',
@@ -49,6 +49,12 @@ class StoreMeasurementRequest extends FormRequest
         ];
     }
 
+    /**
+     * Handle failed validation
+     *
+     * @param Validator $validator
+     * @return void
+     */
     protected function failedValidation(Validator $validator)
     {
         throw new HttpResponseException(response()->json($validator->errors(), 422));

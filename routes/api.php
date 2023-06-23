@@ -1,5 +1,8 @@
 <?php
 
+use App\Http\Controllers\Api\MeasurementController;
+use App\Http\Controllers\Api\Ping;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -8,18 +11,20 @@ use Illuminate\Support\Facades\Route;
 |--------------------------------------------------------------------------
 |
 | Here is where you can register API routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
-| is assigned the "api" middleware group. Enjoy building your API!
+| routes are loaded by the RouteServiceProvider and all of them will
+| be assigned to the "api" middleware group. Make something great!
 |
 */
 
-Route::middleware('auth:api')->group(function() {
-    Route::get('user', 'Api\UserController@user');
+Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+    return $request->user();
 });
 
-Route::get('ping', 'Api\PingController@handle');
+Route::get('ping', Ping::class);
 
-Route::get('store', 'Api\MeasurementController@store');
+Route::get('store', [MeasurementController::class, 'store']);
 
-Route::get('measurement/startDate={startDate?}&endDate={endDate?}&stations={stations?}&grouping={grouping?}&aggregation={aggregation?}&columns={columns?}&order={order?}', 'Api\MeasurementController@getJSON');
-
+Route::get(
+    'stations/{station}/measurements',
+    [MeasurementController::class, 'getChartTimeSeries']
+);
