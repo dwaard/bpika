@@ -11,8 +11,6 @@
             <x-label>{{ __('Name') }}</x-label>{{ $station->name }}
             <x-label>{{ __('City') }}</x-label>{{ $station->city }}
             <x-label>{{ __('Timezone') }}</x-label>{{ $station->timezone }}
-            <x-label>{{ __('Amount of measurements') }}</x-label>{{ $station->measurements->count() }}
-            <x-label>{{ __('Last measurement') }}</x-label>{{ $station->measurements()->latest()->first()->created_at ?? '' }}
             {{-- Divider --}}
             <div class="border-t border-gray-100 w-full"></div>
             <x-primary-button class="my-4"
