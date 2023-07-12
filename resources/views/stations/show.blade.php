@@ -64,7 +64,7 @@
                         x: {
                             type: 'time',
                             time: {
-                                parser: 'M/dd/yyyy H:mm:ss',
+                                parser: 'M/dd/yyyy H:mm',
                                 tooltipFormat: 'H:mm',
                                 unit: 'day'
                             },
@@ -107,6 +107,7 @@
                     let sevenDaysAgo = new Date();
                     sevenDaysAgo.setDate(today.getDate() - 7);
                     let timeString = sevenDaysAgo.toISOString();
+                    console.log(timeString);
                     let url = `/api/stations/${station}/measurements?startDate=${timeString}&grouping=hourly&column=th_temp`;
 
                     fetch(url)

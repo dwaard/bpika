@@ -132,7 +132,7 @@
                     x: {
                         type: 'time',
                         time: {
-                            parser: 'M/dd/yyyy H:mm:ss',
+                            parser: 'M/dd/yyyy H:mm',
                             tooltipFormat: 'HH:mm',
                             unit: 'day'
                         },

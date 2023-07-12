@@ -71,7 +71,7 @@ class MeasurementController extends Controller
      * @param Request $request
      * @return array
      */
-    #[ArrayShape(['label' => "mixed", 'column' => "mixed|string", 'chart_color' => "string", 'data' => "mixed"])]
+    #[ArrayShape(['label' => "mixed", 'column' => "mixed|string", 'chart_color' => "string", 'count' => 'int', 'data' => "mixed"])]
     public function getChartTimeSeries(Station $station, PETService $petservice, Request $request): array
     {
         // Build a query based on the request data, start with the measurements of the station
@@ -105,11 +105,19 @@ class MeasurementController extends Controller
                 $variable_select = "$aggr(th_temp) AS th_temp, $aggr(sol_rad) AS sol_rad, $aggr(th_hum) AS th_hum, ".
                     "$aggr(wind_avgwind) AS wind_avgwind";
             }
+            $variable_select .= ", CONCAT(DATE_FORMAT(created_at, '%c/%d/%Y %H:00:00'), ' UTC') AS x";
+            //dd($variable_select);
             // TODO support for other groupings than just hourly. Just change the date formatting accordingly
-            $query->selectRaw("$variable_select, DATE_FORMAT(created_at, '%c/%d/%Y %H:00:00') AS x");
+            $query->selectRaw($variable_select);
             $query->groupBy('x');
         } else {
-            $query->selectRaw("$column AS y, DATE_FORMAT(created_at, '%c/%d/%Y %H:%i:%s') AS x");
+            if ($column !== 'pet') {
+                $variable_select = "$column AS y";
+            } else {
+                // If PET, we need these columns to compute the PET value from
+                $variable_select = "th_temp, sol_rad, th_hum, wind_avgwind";
+            }
+            $query->selectRaw("$variable_select, CONCAT(DATE_FORMAT(created_at, '%c/%d/%Y %H:%i:%s'), ' UTC') AS x");
         }
 
         // Set the ORDER BY
@@ -117,26 +125,29 @@ class MeasurementController extends Controller
 
         // Fetch the data
         $output = $query->get();
-        // Map the data, if it's PET they want
-        if ($column === 'pet') {
-            $output = $output->map(fn($item) => [
-                'x' => $item->x,
-                'y' => $petservice->computePETFromMeasurement(
-                    $item->x,
-                    $item->th_temp,
-                    $item->sol_rad,
-                    $item->th_hum,
-                    $item->wind_avgwind,
-                    $station->latitude,
-                    $station->longitude
-                )
-            ]);
-        }
+
+        // Map the data, if it's PET they want, call the PET service
+        $output = $output->map(fn($item) => [
+            'x' => Carbon::createFromFormat('n/d/Y G:i:s T', $item->x)
+                ->timezone($station->timezone)
+                ->format('n/d/Y G:i'),
+            'y' => $column !== 'pet' ? $item->y : $petservice->computePETFromMeasurement(
+                $item->x,
+                $item->th_temp,
+                $item->sol_rad,
+                $item->th_hum,
+                $item->wind_avgwind,
+                $station->latitude,
+                $station->longitude
+            )
+        ]);
+
         // Return a structure fit for ChartJS
         return [
         'label' => $station->label,
         'column' => $column,
         'chart_color' => $station->chart_color,
+        'count' => count($output),
         'data' => $output
         ];
     }
