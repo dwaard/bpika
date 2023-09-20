@@ -74,13 +74,19 @@ class MeasurementApiTest extends TestCase
         ]);
     }
 
-    public function testStoreWithOnlyStationNameShouldAddtoDatabase()
+    public function testStoreWithOnlyStationNameShouldNotAddtoDatabase()
     {
-        // Act by trying to store a measurement with only the station name
-        $response = $this->get('/api/store?station_name='.$this->station->code);
+        $str = "station_name=HZ3&th_temp=[th*temp-avg1]&th_hum=[th*hum-avg1]&th_dew=[th*dew-avg1]&th_heatindex=[th*heatindex-avg1]&thb_temp=[thb*temp-avg1]&thb_hum=[thb*hum-avg1]&thb_dew=[thb*dew-avg1]&thb_press=[thb*press-avg1]&thb_seapress=[thb*seapress-avg1]&wind_wind=[wind*wind-max1]&wind_avgwind=[wind*avgwind-avg1]&wind_dir=[wind*dir-avg1]&rain_rate=[rain*rate-avg1]&rain_total=[rain*total-sum1]&sol_rad=[sol*rad-avg1]";
+        parse_str($str, $data);
+        //dd($data);
+        $data['station_name'] = $this->station->code;
 
-        $response->assertOk();
-        $this->assertDatabaseHas('measurements', [
+        // Act by trying to store the arranged measurement
+        $response = $this->get('/api/store?' . http_build_query($data, '', '&'));
+
+
+        $response->assertStatus(412);
+        $this->assertDatabaseMissing('measurements', [
             'station_name' => $this->station->code
         ]);
     }
