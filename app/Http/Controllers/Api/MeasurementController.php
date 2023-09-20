@@ -41,9 +41,16 @@ class MeasurementController extends Controller
 
         $evaluated = collect($input)->filter(function ($value, $key) {
                 return $key == 'station_name' || is_numeric($value);
-        })->toArray();
+        });
 
-        $measurement = Measurement::create($evaluated);
+        if ($evaluated->count() <= 1) {
+            $msg = "This request has no valid data.";
+            return new Response([
+                'error' => $msg
+            ], ResponseAlias::HTTP_PRECONDITION_FAILED);
+        }
+
+        $measurement = Measurement::create($evaluated->toArray());
 
         return json_encode(['measurement.created' => 'Measurement created with id ' . $measurement->id]);
     }
