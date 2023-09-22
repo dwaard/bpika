@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Models\Measurement;
 use App\Models\Station;
+use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
@@ -15,7 +16,7 @@ class SummarizeMeasurements extends Command
      *
      * @var string
      */
-    protected $signature = 'app:summarize-measurements';
+    protected $signature = 'app:summarize-measurements {station_code}';
 
     /**
      * The console command description.
@@ -30,20 +31,43 @@ class SummarizeMeasurements extends Command
      */
     public function handle()
     {
-        $this->info("Starting");
-        foreach (Station::all() as $station) {
-            $this->info("Summarizing $station->name");
-            $data = collect();
-            foreach ($station->measurements as $m) {
-                if ($data->count() > 0 && $data[0]->created_at->diffInMinutes($m->created_at) > 10) {
-                    $this->summarize($data);
-                    $data = collect();
+        $station_name = $this->argument('station_code');
+        $station = Station::where('code', '=', $station_name)->first();
+        if (!$station) {
+            exit('Station not found');
+        }
+        $this->info("Summarizing $station->name ($station->code)");
+        $data = collect();
+        $last_committed = null;
+        foreach ($station->measurements()->cursor() as $m) {
+            if ($m->sun_total != null) {
+                // Skip it
+            } else {
+                // Check if we want to commit (first one is an empty commit)
+                if (!$last_committed || !$m->created_at->isSameDay($last_committed)) {
+                    $this->info('    summarized: '.$m->created_at->format('Y F d'));
+                    $last_committed = $m->created_at;
                 }
-                $data->push($m);
+                // Create groups and summarize, if needed
+                if ($data->count() == 0) {
+                    $data->push($m);
+                } else {
+                    if ($data[0]->created_at->diffInSeconds($m->created_at) >= 600) {
+                        if ($data->count() > 1) {
+                            $this->summarize($data);
+                        }
+                        $data = collect([$m]);
+                    } else {
+                        $data->push($m);
+                    }
+                }
             }
-            if ($data->count() > 0) {
-                $this->summarize($data);
-            }
+            // End loop, move to next measurement
+        }
+
+        // If there's any remaining data left
+        if ($data->count() > 1) {
+            $this->summarize($data);
         }
     }
 
@@ -55,31 +79,26 @@ class SummarizeMeasurements extends Command
      * @param Collection $data
      * @return void
      */
-    private function summarize(Collection $data): void
+    private function summarize(Collection $data)
     {
         $attrs = [
             'th_temp', 'th_hum', 'th_dew', 'th_heatindex', 'thb_temp', 'thb_hum', 'thb_dew',
             'thb_press', 'thb_seapress', 'wind_wind', 'wind_avgwind', 'wind_dir', 'wind_chill',
             'rain_rate', 'rain_total', 'uv_index', 'sol_rad', 'sol_evo', 'sun_total'
         ];
-        try {
-            DB::beginTransaction();
-            $remainder = $data->last();
-            foreach ($attrs as $attr) {
-                $remainder->$attr = $this->summarizeAttribute($attr, $data);
-            }
-            $remainder->save();
-            // Delete the other records
-            $others = $data->filter(function (Measurement $value, int $key) use ($remainder) {
-                return $value->id != $remainder->id;
-            });
-            $others->each(function (Measurement $value) {
-                $value->delete();
-            });
-            DB::commit();
-        } catch (\Throwable $e) {
-            DB::rollBack();
+        $remainder = $data->last();
+        foreach ($attrs as $attr) {
+            $remainder->$attr = $this->summarizeAttribute($attr, $data);
         }
+        $remainder->save();
+
+        // Mark the records that must be deleted
+        $others = $data->filter(function (Measurement $value, int $key) use ($remainder) {
+            return $value->id != $remainder->id;
+        });
+        Measurement::whereIn('id', $others->pluck('id'))->update([
+            'sun_total' => -255
+        ]);
     }
 
     /**
