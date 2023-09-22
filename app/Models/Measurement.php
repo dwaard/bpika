@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
@@ -106,5 +107,20 @@ class Measurement extends Model
             'sol_evo' => 'sometimes',
             'sun_total' => 'sometimes',
         ];
+    }
+
+    public function station()
+    {
+        return $this->belongsTo(Station::class, 'station_name', 'code');
+    }
+
+    /**
+     * Get the created_at set to the stations' timezone.
+     */
+    protected function createdAtLocal(): Attribute
+    {
+        return Attribute::make(
+            get: fn (mixed $value) => $this->created_at->setTimezone($this->station->timezone)
+        );
     }
 }

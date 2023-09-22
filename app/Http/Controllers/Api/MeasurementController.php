@@ -88,14 +88,14 @@ class MeasurementController extends Controller
         if ($request->has('startDate')) {
             $timeFormat = DateTimeInterface::RFC3339_EXTENDED;
             $start = Carbon::createFromFormat($timeFormat, $request->startDate);
-            $query->whereDate('created_at', '>=', $start);
+            $query->where('created_at', '>=', $start);
         }
 
         // Add a filter for endDate
         if ($request->has('endDate')) {
             $timeFormat = DateTimeInterface::RFC3339_EXTENDED;
             $end = Carbon::createFromFormat($timeFormat, $request->endDate);
-            $query->whereDate('created_at', '<=', $end);
+            $query->where('created_at', '<=', $end);
         }
 
         // Set the proper SELECT clause, aggregation functions and GROUP BY
@@ -106,38 +106,40 @@ class MeasurementController extends Controller
         if ($grouping) {
             $aggr = $request->has('aggregation') ? $request->aggregation : 'AVG';
             if ($column !== 'pet') {
-                $variable_select = "$aggr($column) AS y";
+                $variable_select = "$aggr($column) AS $column";
             } else {
                 // If PET, we need these columns to compute the PET value from
                 $variable_select = "$aggr(th_temp) AS th_temp, $aggr(sol_rad) AS sol_rad, $aggr(th_hum) AS th_hum, ".
                     "$aggr(wind_avgwind) AS wind_avgwind";
             }
             // TODO support for other groupings than just hourly. Just change the date formatting accordingly
-            $query->selectRaw("$variable_select, DATE_FORMAT(created_at, '%c/%d/%Y %H:00:00') AS x");
-            $query->groupBy('x');
-        } else {
-            $query->selectRaw("$column AS y, DATE_FORMAT(created_at, '%c/%d/%Y %H:%i:%s') AS x");
+            $query->selectRaw("$variable_select, station_name, DATE_FORMAT(created_at, '%c/%d/%Y %H:00:00') AS created_at");
+            $query->groupByRaw("station_name, DATE_FORMAT(created_at, '%c/%d/%Y %H:00:00')");
         }
 
         // Set the ORDER BY
-        $query->orderBy('x', $request->has('order') ? $request->order : 'asc');
+        $query->orderBy('created_at', $request->has('order') ? $request->order : 'asc');
 
         // Fetch the data
         $output = $query->get();
         // Map the data, if it's PET they want
-        $output = $output->map(fn($item) => [
-            'x' => Carbon::parse($item->x, 'UTC')->setTimezone($station->timezone)->format('m/d/Y H:i:s'),
-            'y' => $column!='pet' ? $item->y : $petservice->computePETFromMeasurement(
-                $item->x,
+        $output = $output->map(function ($item) use ($column, $station, $petservice) {
+            $stationLocalTime = $item->created_at_local->format('m/d/Y H:i:s');
+            $value = $column!='pet' ? $item->$column : $petservice->computePETFromMeasurement(
+                $stationLocalTime,
                 $item->th_temp,
                 $item->sol_rad,
                 $item->th_hum,
                 $item->wind_avgwind,
                 $station->latitude,
                 $station->longitude
-            )
-        ]);
-        
+            );
+            return [
+                'x' => $stationLocalTime,
+                'y' => $value ? round($value, 2) : null
+            ];
+        });
+
         // Return a structure fit for ChartJS
         return [
         'label' => $station->label,
