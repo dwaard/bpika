@@ -125,20 +125,19 @@ class MeasurementController extends Controller
         // Fetch the data
         $output = $query->get();
         // Map the data, if it's PET they want
-        if ($column === 'pet') {
-            $output = $output->map(fn($item) => [
-                'x' => $item->x,
-                'y' => $petservice->computePETFromMeasurement(
-                    $item->x,
-                    $item->th_temp,
-                    $item->sol_rad,
-                    $item->th_hum,
-                    $item->wind_avgwind,
-                    $station->latitude,
-                    $station->longitude
-                )
-            ]);
-        }
+        $output = $output->map(fn($item) => [
+            'x' => Carbon::parse($item->x, 'UTC')->setTimezone($station->timezone)->format('m/d/Y H:i:s'),
+            'y' => $column!='pet' ? $item->y : $petservice->computePETFromMeasurement(
+                $item->x,
+                $item->th_temp,
+                $item->sol_rad,
+                $item->th_hum,
+                $item->wind_avgwind,
+                $station->latitude,
+                $station->longitude
+            )
+        ]);
+        
         // Return a structure fit for ChartJS
         return [
         'label' => $station->label,
