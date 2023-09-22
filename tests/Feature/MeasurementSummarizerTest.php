@@ -35,7 +35,7 @@ class MeasurementSummarizerTest extends TestCase
 
         // Act by calling the summarizer service
         Artisan::call("app:summarize-measurements $station->code");
-        Artisan::call("app:purge-measurements");
+//        Artisan::call("app:purge-measurements");
 
 //        dd(Measurement::all()->pluck(['id', 'sun_total']));
         // Assert that the database contains the first element
@@ -67,7 +67,7 @@ class MeasurementSummarizerTest extends TestCase
 
         // Act by calling the summarizer service
         Artisan::call("app:summarize-measurements $station->code");
-        Artisan::call("app:purge-measurements");
+//        Artisan::call("app:purge-measurements");
 
         // Assert that the database contains the first element
         $remainder = $measurements->last();
@@ -102,7 +102,7 @@ class MeasurementSummarizerTest extends TestCase
 
         // Act by calling the summarizer service
         Artisan::call("app:summarize-measurements $station->code");
-        Artisan::call("app:purge-measurements");
+//        Artisan::call("app:purge-measurements");
 
         // Assert that the database contains the first element
         $remainder = $measurements->last();
@@ -144,7 +144,7 @@ class MeasurementSummarizerTest extends TestCase
 
         // Act by calling the summarizer service
         Artisan::call("app:summarize-measurements $station->code");
-        Artisan::call("app:purge-measurements");
+//        Artisan::call("app:purge-measurements");
 
         // Assert that the database contains the first element
         $this->assertDatabaseHas('measurements', [
@@ -172,7 +172,7 @@ class MeasurementSummarizerTest extends TestCase
             ]))->create();
         // Act by calling the summarizer service
         Artisan::call("app:summarize-measurements $station->code");
-        Artisan::call("app:purge-measurements");
+//        Artisan::call("app:purge-measurements");
 
         // Assert that the database has 10 entries
         $this->assertDatabaseCount('measurements', 10);

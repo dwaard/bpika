@@ -37,36 +37,28 @@ class SummarizeMeasurements extends Command
             exit('Station not found\n');
         }
         $this->info("Summarizing $station->name ($station->code)");
-        $data = collect();
-        $last_committed = null;
-        foreach ($station->measurements()->cursor() as $m) {
-            if ($m->sun_total == -255) { // -255 stands for "DELETE ME"
-                // Skip it
-            } else {
-                // Check if we want to commit (first one is an empty commit)
-                if (!$last_committed || !$m->created_at->isSameDay($last_committed)) {
-                    $this->info('    summarized: '.$m->created_at->format('Y F d'));
-                    $last_committed = $m->created_at;
-                }
-                // Create groups and summarize, if needed
-                if ($data->count() == 0) {
-                    $data->push($m);
-                } else {
-                    if ($data[0]->created_at->diffInSeconds($m->created_at) >= 600) {
-                        if ($data->count() > 1) {
-                            $this->summarize($data);
-                        }
-                        $data = collect([$m]);
-                    } else {
-                        $data->push($m);
-                    }
-                }
+
+        $lower = $station->measurements()->first()->created_at;
+
+        $last_committed = $lower;
+        while ($lower <= now()) {
+            // Check if we want to commit (first one is an empty commit)
+            if (!$lower->isSameDay($last_committed)) {
+                $this->info('    summarized: '.$lower->format('Y F d'));
+                $last_committed = $lower;
             }
-            // End loop, move to next measurement
-        }
-        // If there's any remaining data left
-        if ($data->count() > 1) {
-            $this->summarize($data);
+            // Fetch the next 10 min interval
+            $upper = $lower->copy()->addMinutes(10);
+            $data = $station->measurements()
+                ->where('created_at', '>=', $lower)
+                ->where('created_at', '<', $upper)
+                ->get();
+            // Summarize it if needed
+            if ($data->count() > 1) {
+                $this->summarize($data);
+            }
+
+            $lower = $upper;
         }
     }
 
@@ -95,9 +87,7 @@ class SummarizeMeasurements extends Command
         $others = $data->filter(function (Measurement $value, int $key) use ($remainder) {
             return $value->id != $remainder->id;
         });
-        Measurement::whereIn('id', $others->pluck('id'))->update([
-            'sun_total' => -255
-        ]);
+        Measurement::whereIn('id', $others->pluck('id'))->delete();
     }
 
     /**
