@@ -34,13 +34,13 @@ class SummarizeMeasurements extends Command
         $station_name = $this->argument('station_code');
         $station = Station::where('code', '=', $station_name)->first();
         if (!$station) {
-            exit('Station not found');
+            exit('Station not found\n');
         }
         $this->info("Summarizing $station->name ($station->code)");
         $data = collect();
         $last_committed = null;
         foreach ($station->measurements()->cursor() as $m) {
-            if ($m->sun_total != null) {
+            if ($m->sun_total == -255) { // -255 stands for "DELETE ME"
                 // Skip it
             } else {
                 // Check if we want to commit (first one is an empty commit)
@@ -64,7 +64,6 @@ class SummarizeMeasurements extends Command
             }
             // End loop, move to next measurement
         }
-
         // If there's any remaining data left
         if ($data->count() > 1) {
             $this->summarize($data);

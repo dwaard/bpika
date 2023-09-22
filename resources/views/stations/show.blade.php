@@ -108,12 +108,11 @@
                     sevenDaysAgo.setDate(today.getDate() - 7);
                     let timeString = sevenDaysAgo.toISOString();
                     let url = `/api/stations/${station}/measurements?startDate=${timeString}&grouping=hourly&column=th_temp`;
-
                     fetch(url)
                         .then(response => response.text())
                         .then(text => loadData(JSON.parse(text)));
-                    url = `/api/stations/${station}/measurements?startDate=${timeString}&grouping=hourly&column=pet`;
 
+                    url = `/api/stations/${station}/measurements?startDate=${timeString}&grouping=hourly&column=pet`;
                     fetch(url)
                         .then(response => response.text())
                         .then(text => loadData(JSON.parse(text)));

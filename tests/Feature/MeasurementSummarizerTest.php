@@ -31,9 +31,13 @@ class MeasurementSummarizerTest extends TestCase
                 'th_temp' => $sequence->index + 1]))
             ->create();
 
-        // Act by calling the summarizer service
-        Artisan::call('app:summarize-measurements');
+//        dd($measurements);
 
+        // Act by calling the summarizer service
+        Artisan::call("app:summarize-measurements $station->code");
+        Artisan::call("app:purge-measurements");
+
+//        dd(Measurement::all()->pluck(['id', 'sun_total']));
         // Assert that the database contains the first element
         $remainder = $measurements->last();
         $others = $measurements->filter(function (Measurement $value, int $key) use ($remainder) {
@@ -62,7 +66,8 @@ class MeasurementSummarizerTest extends TestCase
         ]);
 
         // Act by calling the summarizer service
-        Artisan::call('app:summarize-measurements');
+        Artisan::call("app:summarize-measurements $station->code");
+        Artisan::call("app:purge-measurements");
 
         // Assert that the database contains the first element
         $remainder = $measurements->last();
@@ -96,7 +101,8 @@ class MeasurementSummarizerTest extends TestCase
         $measurements->last()->update(['th_temp' => null]);
 
         // Act by calling the summarizer service
-        Artisan::call('app:summarize-measurements');
+        Artisan::call("app:summarize-measurements $station->code");
+        Artisan::call("app:purge-measurements");
 
         // Assert that the database contains the first element
         $remainder = $measurements->last();
@@ -137,7 +143,8 @@ class MeasurementSummarizerTest extends TestCase
         $last->save(['timestamps' => false]);
 
         // Act by calling the summarizer service
-        Artisan::call('app:summarize-measurements');
+        Artisan::call("app:summarize-measurements $station->code");
+        Artisan::call("app:purge-measurements");
 
         // Assert that the database contains the first element
         $this->assertDatabaseHas('measurements', [
@@ -164,7 +171,8 @@ class MeasurementSummarizerTest extends TestCase
                 'updated_at' => $now->clone()->addMinutes($sequence->index)
             ]))->create();
         // Act by calling the summarizer service
-        Artisan::call('app:summarize-measurements');
+        Artisan::call("app:summarize-measurements $station->code");
+        Artisan::call("app:purge-measurements");
 
         // Assert that the database has 10 entries
         $this->assertDatabaseCount('measurements', 10);
