@@ -27,7 +27,7 @@
             {{ $latest->th_temp }}&deg;C
         </div>
 
-        <div class="p-6 text-gray-900 h-96">
+        <div class="p-6 text-gray-900 h-80">
             <canvas id="PET_chart"></canvas>
         </div>
 
@@ -120,6 +120,8 @@
         myChart.data.datasets.push({
             label: data.column,
             borderColor: data.column == 'pet' ? '#2ea8db' : '#064e6c',
+            lineTension: 0.3,
+            pointRadius: 0,
             data: data.data
         });
         myChart.update();
