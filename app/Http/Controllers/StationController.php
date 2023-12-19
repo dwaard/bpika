@@ -73,6 +73,19 @@ class StationController extends Controller
     }
 
     /**
+     * Display a narrow casting page about the specified resource.
+     *
+     * @param Station $station
+     * @return Factory|Application|View|\Illuminate\Contracts\Foundation\Application
+     */
+    public function cast(Station $station): Factory|Application|View|\Illuminate\Contracts\Foundation\Application
+    {
+        $latest = $station->measurements()->latest('created_at')->first();
+
+        return view('stations.cast', compact('station', 'latest'));
+    }
+
+    /**
      * Show the form for editing the specified resource.
      *
      * @param Station $station

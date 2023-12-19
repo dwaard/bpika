@@ -123,4 +123,18 @@ class Measurement extends Model
             get: fn (mixed $value) => $this->created_at->setTimezone($this->station->timezone)
         );
     }
+
+    protected function windWindBft(): Attribute
+    {
+        return Attribute::make(
+            get: fn (mixed $value) => ceil(pow(pow($this->wind_wind/0.836, 2),(1.0/3.0)))
+        );
+    }
+
+    protected function windAvgwindBft(): Attribute
+    {
+        return Attribute::make(
+            get: fn (mixed $value) => ceil(pow(pow($this->wind_avgwind/0.836, 2),(1.0/3.0)))
+        );
+    }
 }

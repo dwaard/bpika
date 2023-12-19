@@ -23,6 +23,8 @@ Route::get('/', function () {
 
 Route::get('/dashboard', Dashboard::class)->name('dashboard');
 
+Route::get('/stations/{station}/cast', [StationController::class, 'cast']);
+
 Route::middleware('auth')->group(function () {
     Route::resource('stations', StationController::class);
     Route::put('stations/{station}', [StationController::class, 'enable'])
